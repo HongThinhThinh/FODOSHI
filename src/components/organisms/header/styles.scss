@@ -1,0 +1,23 @@
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 100px 30px 100px;
+}
+.header-input {
+  width: 28%;
+}
+.header-logo {
+  width: 44%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.header-sidebar {
+  width: 28%;
+}
+.header-hero {
+  padding: 10px 100px;
+  border-top: 2px solid #852f1f;
+  border-bottom: 2px solid #852f1f;
+}

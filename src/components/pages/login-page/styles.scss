@@ -1,0 +1,35 @@
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  .login-title {
+    font-size: 37px;
+    text-align: justify;
+    font-weight: 630;
+  }
+  .login-item {
+    &--btn {
+      display: flex;
+      align-items: center;
+      justify-content: end;
+    }
+    &--subtitle {
+      font-size: 16px;
+      text-align: justify;
+    }
+  }
+  .btn-wrapper--change {
+    font-size: 16px;
+    display: flex;
+    justify-content: start;
+    margin-bottom: 20px;
+    gap: 5px;
+    .btn--change {
+      text-decoration: underline;
+      &:hover {
+        color: #1e3779;
+      }
+    }
+  }
+}
