@@ -1,0 +1,10 @@
+.input-fodoshi,
+.input-fodoshi:active,
+.input-fodoshi:valid {
+  background-color: var(--bg-color, transparent) !important;
+  border-radius: var(--border-radius) !important;
+}
+.input-fodoshi {
+  width: var(--width, 100%);
+  height: var(--height);
+}

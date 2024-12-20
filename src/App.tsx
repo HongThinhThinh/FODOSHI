@@ -6,6 +6,8 @@ import { PersistGate } from "redux-persist/integration/react";
 import "aos/dist/aos.css";
 import { StateProvider } from "./context/stateProvider";
 import "./index.scss";
+import { ConfigProvider } from "antd";
+import { theme } from "./config/antd";
 // AOS.init({
 //   // initialise with other settings
 //   duration: 1000,
@@ -13,13 +15,15 @@ import "./index.scss";
 function App() {
   return (
     <>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <StateProvider>
-            <RouterProvider router={router} />
-          </StateProvider>
-        </PersistGate>
-      </Provider>
+      <ConfigProvider theme={theme}>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <StateProvider>
+              <RouterProvider router={router} />
+            </StateProvider>
+          </PersistGate>
+        </Provider>
+      </ConfigProvider>
     </>
   );
 }
