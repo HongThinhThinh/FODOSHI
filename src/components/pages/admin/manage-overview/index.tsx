@@ -125,7 +125,7 @@ function Dashboard() {
             </div>
           </div>
           <div className="dashboard__chart__left__bot">
-            <LineChart width={1090} height={300} data={data}>
+            <LineChart width={700} height={300} data={data}>
               <Line type="monotone" dataKey="uv" stroke="#8884d8" />
               <CartesianGrid stroke="#ccc" />
               <XAxis dataKey="name" />
