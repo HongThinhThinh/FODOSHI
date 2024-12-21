@@ -6,4 +6,40 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: "Rubik", sans-serif;
+}
+
+.menu-sidebar {
+  background-color: white;
+  padding: 10px 10px;
+  .ant-menu-item {
+    color: black;
+    &.ant-menu-item-selected {
+      background-color: #d99041;
+      a {
+        color: white !important;
+      }
+    }
+  }
+}
+:where(.css-dev-only-do-not-override-14i19y2).ant-menu-dark .ant-menu-item a,
+:where(.css-dev-only-do-not-override-14i19y2).ant-menu-dark > .ant-menu .ant-menu-item a,
+:where(.css-dev-only-do-not-override-14i19y2).ant-menu-dark .ant-menu-item a:hover,
+:where(.css-dev-only-do-not-override-14i19y2).ant-menu-dark > .ant-menu .ant-menu-item a:hover {
+  color: black !important;
+}
+
+:where(.css-dev-only-do-not-override-14i19y2).ant-menu-dark .ant-menu-item,
+:where(.css-dev-only-do-not-override-14i19y2).ant-menu-dark > .ant-menu .ant-menu-item,
+:where(.css-dev-only-do-not-override-14i19y2).ant-menu-dark .ant-menu-submenu-title,
+:where(.css-dev-only-do-not-override-14i19y2).ant-menu-dark > .ant-menu .ant-menu-submenu-title {
+  color: black !important;
+}
+.ant-layout {
+  .ant-layout-sider-trigger {
+    background-color: white !important;
+    span {
+      color: #d99041;
+    }
+  }
 }

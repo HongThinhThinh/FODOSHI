@@ -1,0 +1,19 @@
+.header-admin {
+  background-color: #ffff;
+  width: 100%;
+  height: 80px;
+  &__right {
+    height: 100%;
+    padding-right: 60px;
+    &__item {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: right;
+      gap: 40px;
+      span {
+        font-size: 24px;
+      }
+    }
+  }
+}
