@@ -14,6 +14,8 @@ import { FcDataConfiguration } from "react-icons/fc";
 import { FaChartPie } from "react-icons/fa";
 import HeaderAdmin from "../../organisms/header-admin";
 import { toTitle } from "../../../utils/formatStr";
+import { logo } from "../../../assets/contant";
+
 type MenuItem = Required<MenuProps>["items"][number];
 function getItem(
   label: React.ReactNode,
@@ -48,14 +50,14 @@ const AdminLayout: React.FC = () => {
     toast.success("Logged out");
   };
   return (
-    <Layout style={{ height: "100vh" }}>
+    <Layout style={{ height: "100vh", overflow: "hidden" }}>
       <Sider
         style={{ backgroundColor: "white" }}
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
       >
-        <img style={{ padding: "20px 10px 40px 10px" }} src="public\logo.svg"></img>
+        <img style={{ padding: "20px 10px 5px 10px" }} src={logo}></img>
         <div className="demo-logo-vertical" />
         <Menu
           className="menu-sidebar"
@@ -95,7 +97,11 @@ const AdminLayout: React.FC = () => {
             }}
           >
             <h1 style={{ fontWeight: "600", fontSize: "24px" }}>{toTitle(isSelectedKey)}</h1>
-            <h3>Trang chủ/{isSelectedKey}</h3>
+            <h3>
+              <Link to="/">Trang chủ</Link>
+              {" > "}
+              {toTitle(isSelectedKey)}
+            </h3>
             <Outlet />
           </div>
         </Content>
