@@ -3,6 +3,7 @@ import MainLayout from "../layouts/MainLayout";
 import LoginPage from "../components/pages/login-page";
 import AdminLayout from "../components/layouts/admin-layout";
 import Dashboard from "../components/pages/admin/manage-overview";
+import ProductDetail from "../components/pages/admin/product-detail";
 export const router = createBrowserRouter([
   {
     path: "/test",
@@ -33,6 +34,10 @@ export const router = createBrowserRouter([
       {
         path: "orders",
         element: <h1>orders content</h1>,
+      },
+      {
+        path: "products/:id",
+        element: <ProductDetail product_id={"123"} />,
       },
     ],
   },

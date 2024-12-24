@@ -1,0 +1,43 @@
+.product-detail {
+  height: 100%;
+  background-color: white;
+  border-radius: 8px;
+  margin: 20px 0;
+
+  &__form {
+    padding: 20px;
+    display: flex;
+    gap: 30px;
+    &-left {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      width: 50%;
+      float: left;
+      textarea {
+        resize: none;
+      }
+    }
+
+    &-right {
+      width: 50%;
+      float: right;
+    }
+
+    .form-item {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      .upload-btn {
+        width: 100%;
+        border: 2px dashed #ccc;
+        padding: 50px 100px;
+      }
+      .ant-upload-select {
+        width: 100%;
+        padding: auto;
+      }
+    }
+  }
+}

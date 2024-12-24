@@ -55,7 +55,10 @@ const AdminLayout: React.FC = () => {
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
       >
-        <img style={{ padding: "20px 10px 40px 10px" }} src="public\logo.svg"></img>
+        <img
+          style={{ padding: "20px 10px 40px 10px" }}
+          src="public\logo.svg"
+        ></img>
         <div className="demo-logo-vertical" />
         <Menu
           className="menu-sidebar"
@@ -94,7 +97,9 @@ const AdminLayout: React.FC = () => {
               borderRadius: borderRadiusLG,
             }}
           >
-            <h1 style={{ fontWeight: "600", fontSize: "24px" }}>{toTitle(isSelectedKey)}</h1>
+            <h1 style={{ fontWeight: "600", fontSize: "24px" }}>
+              {toTitle(isSelectedKey)}
+            </h1>
             <h3>Trang chủ/{isSelectedKey}</h3>
             <Outlet />
           </div>
