@@ -1,4 +1,14 @@
 .button-fodoshi {
   background-color: var(--bg-color, transparent) !important;
-  color: var(--color, white) !important;
+  color: var(--color, black) !important;
+  &.active {
+    background-color: #3498db;
+    color: #ffffff;
+    font-weight: bold;
+  }
+}
+.ant-btn-default:not(:disabled):not(.ant-btn-disabled):hover {
+  color: #000000;
+  border-color: #000000;
+  background: #f0f0f0;
 }
