@@ -17,9 +17,10 @@ import {
 import { ShoppingOutlined, MoreOutlined } from "@ant-design/icons";
 import CustomizedCard from "../../../molecules/card/Card";
 import "./index.scss";
+import ButtonComponent from "../../../atoms/button";
 function Dashboard() {
   // const [data, setData] = useState([]);
-
+  const [activeButton, setActiveButton] = useState<string>("WEEK");
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
   const data = [
     { name: "Jan", uv: 400, pv: 2400, amt: 2400 },
@@ -148,6 +149,11 @@ function Dashboard() {
       total: "2,200,000 VND",
     },
   ];
+
+  const handleClickButton = (value: string) => {
+    setActiveButton(value);
+  };
+
   return (
     <div className="dashboard">
       <Row gutter={[16, 16]} justify="space-between" className="dashboard__card">
@@ -197,9 +203,24 @@ function Dashboard() {
               <span>Biểu đồ doanh thu</span>
             </div>
             <div className="dashboard__chart__left__top__right">
-              <Button>THEO TUẦN</Button>
-              <Button>THEO THÁNG</Button>
-              <Button>THEO NĂM</Button>
+              <ButtonComponent
+                isActive={activeButton === "WEEK"}
+                onClick={() => handleClickButton("WEEK")}
+              >
+                THEO TUẦN
+              </ButtonComponent>
+              <ButtonComponent
+                isActive={activeButton === "MONTH"}
+                onClick={() => handleClickButton("MONTH")}
+              >
+                THEO THÁNG
+              </ButtonComponent>
+              <ButtonComponent
+                isActive={activeButton === "YEAR"}
+                onClick={() => handleClickButton("YEAR")}
+              >
+                THEO NĂM
+              </ButtonComponent>
             </div>
           </div>
           <div className="dashboard__chart__left__bot">
@@ -255,7 +276,7 @@ function Dashboard() {
           </div>
           <div className="dashboard__chart__right__bot">
             <Button style={{ backgroundColor: "#d99041", color: "white" }}>
-              Báo cáo hoàn chỉnh
+              BÁO CÁO HOÀN CHỈNH
             </Button>
           </div>
         </div>
