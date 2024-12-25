@@ -4,6 +4,7 @@ import LoginPage from "../components/pages/login-page";
 import AdminLayout from "../components/layouts/admin-layout";
 import Dashboard from "../components/pages/admin/manage-overview";
 import ProductDetail from "../components/pages/admin/product-detail";
+import ProductsPage from "../components/pages/admin/products";
 export const router = createBrowserRouter([
   {
     path: "/test",
@@ -29,7 +30,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "products",
-        element: <h1>products content</h1>,
+        element: <ProductsPage />,
       },
       {
         path: "orders",

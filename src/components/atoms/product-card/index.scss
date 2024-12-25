@@ -1,0 +1,73 @@
+.product-card {
+  display: flex;
+  flex-direction: column;
+  width: 23rem;
+  background-color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  gap: 14px;
+  &__top {
+    display: flex;
+    width: 100%;
+    gap: 10px;
+    &--right {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    &--right {
+      flex-grow: 1;
+    }
+    .product-name {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+
+      .more-outlined {
+        padding: 2px 4px;
+        border-radius: 4px;
+        background-color: #ccc;
+      }
+
+      .more-outlined:hover {
+        background-color: #aaa;
+      }
+    }
+    img {
+      max-width: 100px;
+    }
+  }
+
+  &__middle {
+    height: 50px;
+    overflow: hidden; /* Hide overflowing content */
+  }
+  .product-card__middle p {
+    white-space: nowrap; /* Prevents text from wrapping */
+    overflow: hidden; /* Hides overflow text */
+    text-overflow: ellipsis; /* Adds ellipsis for overflowed text */
+    display: block; /* Ensures the element respects block behavior for ellipsis */
+  }
+
+  &__bottom {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px 10px;
+
+    .condition {
+      display: flex;
+      justify-content: space-between;
+
+      &--icon {
+        color: #d99041;
+        margin-right: 4px;
+      }
+    }
+
+    .reach {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+}
