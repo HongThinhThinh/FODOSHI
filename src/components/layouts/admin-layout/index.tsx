@@ -102,6 +102,7 @@ const AdminLayout: React.FC = () => {
               {" > "}
               <Link to={`${selectedKey}`}>{toTitle(selectedKey)}</Link>
             </h3>
+
             <Outlet />
           </div>
         </Content>
