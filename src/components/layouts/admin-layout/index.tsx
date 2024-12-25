@@ -14,6 +14,8 @@ import { FcDataConfiguration } from "react-icons/fc";
 import { FaChartPie } from "react-icons/fa";
 import HeaderAdmin from "../../organisms/header-admin";
 import { toTitle } from "../../../utils/formatStr";
+import { logo } from "../../../assets/contant";
+
 type MenuItem = Required<MenuProps>["items"][number];
 function getItem(
   label: React.ReactNode,
@@ -36,7 +38,7 @@ const items: MenuItem[] = [
 ];
 const AdminLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const [isSelectedKey, setIsSelectedKey] = useState<string>("dashboard");
+  const [selectedKey, setSelectedKey] = useState<string>("dashboard");
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -48,17 +50,14 @@ const AdminLayout: React.FC = () => {
     toast.success("Logged out");
   };
   return (
-    <Layout style={{ height: "100vh" }}>
+    <Layout style={{ height: "100vh", overflow: "hidden" }}>
       <Sider
         style={{ backgroundColor: "white" }}
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
       >
-        <img
-          style={{ padding: "20px 10px 40px 10px" }}
-          src="public\logo.svg"
-        ></img>
+        <img style={{ padding: "20px 10px 5px 10px" }} src={logo}></img>
         <div className="demo-logo-vertical" />
         <Menu
           className="menu-sidebar"
@@ -66,10 +65,10 @@ const AdminLayout: React.FC = () => {
             height: "100%",
           }}
           theme="dark"
-          selectedKeys={[isSelectedKey]}
+          selectedKeys={[selectedKey]}
           mode="inline"
           items={items}
-          onClick={(e) => setIsSelectedKey(e.key)}
+          onClick={(e) => setSelectedKey(e.key)}
         />
         <div className="w-full menu-sidebar flex justify-center">
           <ButtonComponent
@@ -97,10 +96,13 @@ const AdminLayout: React.FC = () => {
               borderRadius: borderRadiusLG,
             }}
           >
-            <h1 style={{ fontWeight: "600", fontSize: "24px" }}>
-              {toTitle(isSelectedKey)}
-            </h1>
-            <h3>Trang chủ/{isSelectedKey}</h3>
+            <h1 style={{ fontWeight: "600", fontSize: "24px" }}>{toTitle(selectedKey)}</h1>
+            <h3>
+              <Link to="/">Trang chủ</Link>
+              {" > "}
+              <Link to={`${selectedKey}`}>{toTitle(selectedKey)}</Link>
+            </h3>
+
             <Outlet />
           </div>
         </Content>

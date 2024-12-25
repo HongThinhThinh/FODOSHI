@@ -1,4 +1,4 @@
-import { Button, Col, Row, Statistic } from "antd";
+import { Button, Col, Row, Statistic, Table } from "antd";
 import { ArrowDownOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
 import {
@@ -17,9 +17,10 @@ import {
 import { ShoppingOutlined, MoreOutlined } from "@ant-design/icons";
 import CustomizedCard from "../../../molecules/card/Card";
 import "./index.scss";
+import ButtonComponent from "../../../atoms/button";
 function Dashboard() {
   // const [data, setData] = useState([]);
-  const [top5Mentor, seTop5Mentor] = useState([]);
+  const [activeButton, setActiveButton] = useState<string>("WEEK");
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
   const data = [
     { name: "Jan", uv: 400, pv: 2400, amt: 2400 },
@@ -70,8 +71,91 @@ function Dashboard() {
     },
   ];
 
+  const columns = [
+    {
+      title: "Sản phẩm",
+      dataIndex: "product",
+      key: "product",
+    },
+    {
+      title: "Mã đơn",
+      dataIndex: "orderId",
+      key: "orderId",
+    },
+    {
+      title: "Ngày",
+      dataIndex: "date",
+      key: "date",
+    },
+    {
+      title: "Tên khách hàng",
+      dataIndex: "customerName",
+      key: "customerName",
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (status: "Pending" | "Completed" | "Canceled") => {
+        const statusColor = {
+          Pending: "orange",
+          Completed: "green",
+          Canceled: "red",
+        };
+        return <span style={{ color: statusColor[status] }}>{status}</span>;
+      },
+    },
+    {
+      title: "Tổng tiền",
+      dataIndex: "total",
+      key: "total",
+    },
+  ];
+  const ordersData = [
+    {
+      key: "1",
+      product: "Nike Air Max",
+      orderId: "ORD12345",
+      date: "2024-12-20",
+      customerName: "Nguyen Van A",
+      status: "Pending",
+      total: "2,500,000 VND",
+    },
+    {
+      key: "2",
+      product: "Adidas UltraBoost",
+      orderId: "ORD12346",
+      date: "2024-12-19",
+      customerName: "Tran Thi B",
+      status: "Completed",
+      total: "3,000,000 VND",
+    },
+    {
+      key: "3",
+      product: "Puma Suede",
+      orderId: "ORD12347",
+      date: "2024-12-18",
+      customerName: "Le Van C",
+      status: "Canceled",
+      total: "1,800,000 VND",
+    },
+    {
+      key: "4",
+      product: "Reebok Classic",
+      orderId: "ORD12348",
+      date: "2024-12-17",
+      customerName: "Pham Thi D",
+      status: "Pending",
+      total: "2,200,000 VND",
+    },
+  ];
+
+  const handleClickButton = (value: string) => {
+    setActiveButton(value);
+  };
+
   return (
-    <div>
+    <div className="dashboard">
       <Row gutter={[16, 16]} justify="space-between" className="dashboard__card">
         {[
           { title: "Tổng đơn hàng", value: 0 },
@@ -119,9 +203,24 @@ function Dashboard() {
               <span>Biểu đồ doanh thu</span>
             </div>
             <div className="dashboard__chart__left__top__right">
-              <Button>THEO TUẦN</Button>
-              <Button>THEO THÁNG</Button>
-              <Button>THEO NĂM</Button>
+              <ButtonComponent
+                isActive={activeButton === "WEEK"}
+                onClick={() => handleClickButton("WEEK")}
+              >
+                THEO TUẦN
+              </ButtonComponent>
+              <ButtonComponent
+                isActive={activeButton === "MONTH"}
+                onClick={() => handleClickButton("MONTH")}
+              >
+                THEO THÁNG
+              </ButtonComponent>
+              <ButtonComponent
+                isActive={activeButton === "YEAR"}
+                onClick={() => handleClickButton("YEAR")}
+              >
+                THEO NĂM
+              </ButtonComponent>
             </div>
           </div>
           <div className="dashboard__chart__left__bot">
@@ -177,8 +276,28 @@ function Dashboard() {
           </div>
           <div className="dashboard__chart__right__bot">
             <Button style={{ backgroundColor: "#d99041", color: "white" }}>
-              Báo cáo hoàn chỉnh
+              BÁO CÁO HOÀN CHỈNH
             </Button>
+          </div>
+        </div>
+      </div>
+      <div className="dashboard__table">
+        <div className="dashboard__table__container">
+          <div className="dashboard__table__container__header">
+            <div className="dashboard__table__container__header__left">
+              <span>Đơn hàng gần đây</span>
+            </div>
+            <div className="dashboard__table__container__header__right">
+              <MoreOutlined />
+            </div>
+          </div>
+          <div className="dashboard__table__container__body">
+            <Table
+              columns={columns}
+              dataSource={ordersData}
+              pagination={{ pageSize: 5 }}
+              scroll={{ x: "max-content" }}
+            />
           </div>
         </div>
       </div>

@@ -146,3 +146,33 @@
     }
   }
 }
+.dashboard__table {
+  padding: 24px 16px;
+
+  &__container {
+    background-color: #ffff;
+    border-radius: 10px;
+    padding: 20px 10px;
+    &__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 0.7px solid darkgray;
+      padding: 10px 0;
+      &__left {
+        span {
+          font-size: 24px;
+          font-weight: 600;
+        }
+      }
+      &__right {
+        span {
+          font-size: 24px;
+        }
+      }
+    }
+    &__body {
+      padding-top: 20px;
+    }
+  }
+}
