@@ -1,0 +1,33 @@
+.register-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  .register-title {
+    font-size: 30px;
+    font-weight: 450;
+  }
+  .register-item {
+    &--btn {
+      display: flex;
+      align-items: center;
+      justify-content: end;
+    }
+    &--subtitle {
+      font-size: 16px;
+      cursor: pointer;
+    }
+  }
+  .btn-wrapper--change {
+    font-size: 16px;
+    margin-bottom: 30px;
+    .btn--change {
+      font-weight: 300;
+      cursor: pointer;
+      text-decoration: underline;
+      &:hover {
+        color: #1e3779;
+      }
+    }
+  }
+}

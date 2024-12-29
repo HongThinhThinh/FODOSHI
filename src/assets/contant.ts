@@ -1,5 +1,9 @@
 import fodoshi from "../../public/logo.svg";
+import fodoshi_white from "../../public/logo-white.png"
+import background from "../../public/Footer.png"
+export const footerBackground = background
 export const logo = fodoshi;
+export const logoWhite = fodoshi_white
 export const navbar =[
     {
         path: "NewProduct",
