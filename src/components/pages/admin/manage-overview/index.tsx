@@ -18,6 +18,8 @@ import { ShoppingOutlined, MoreOutlined } from "@ant-design/icons";
 import CustomizedCard from "../../../molecules/card/Card";
 import "./index.scss";
 import ButtonComponent from "../../../atoms/button";
+import { recentOrdersDummyData } from "../../../../dummy-data/recent-order-data";
+import { OrderStatus } from "../../../../model/order";
 function Dashboard() {
   // const [data, setData] = useState([]);
   const [activeButton, setActiveButton] = useState<string>("WEEK");
@@ -96,11 +98,11 @@ function Dashboard() {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      render: (status: "Pending" | "Completed" | "Canceled") => {
+      render: (status: OrderStatus.Pending | OrderStatus.Completed | OrderStatus.Cancelled) => {
         const statusColor = {
           Pending: "orange",
           Completed: "green",
-          Canceled: "red",
+          Cancelled: "red",
         };
         return <span style={{ color: statusColor[status] }}>{status}</span>;
       },
@@ -109,44 +111,6 @@ function Dashboard() {
       title: "Tổng tiền",
       dataIndex: "total",
       key: "total",
-    },
-  ];
-  const ordersData = [
-    {
-      key: "1",
-      product: "Nike Air Max",
-      orderId: "ORD12345",
-      date: "2024-12-20",
-      customerName: "Nguyen Van A",
-      status: "Pending",
-      total: "2,500,000 VND",
-    },
-    {
-      key: "2",
-      product: "Adidas UltraBoost",
-      orderId: "ORD12346",
-      date: "2024-12-19",
-      customerName: "Tran Thi B",
-      status: "Completed",
-      total: "3,000,000 VND",
-    },
-    {
-      key: "3",
-      product: "Puma Suede",
-      orderId: "ORD12347",
-      date: "2024-12-18",
-      customerName: "Le Van C",
-      status: "Canceled",
-      total: "1,800,000 VND",
-    },
-    {
-      key: "4",
-      product: "Reebok Classic",
-      orderId: "ORD12348",
-      date: "2024-12-17",
-      customerName: "Pham Thi D",
-      status: "Pending",
-      total: "2,200,000 VND",
     },
   ];
 
@@ -164,7 +128,7 @@ function Dashboard() {
           { title: "Đơn hàng hoàn trả", value: 0 },
         ].map((item, index) => (
           <Col key={index} flex="1 1 0" style={{ maxWidth: "300px" }}>
-            <CustomizedCard width={"100%"} height={"140px"}>
+            <CustomizedCard width={"100%"} height={"140px"} borderRadious={"10px"}>
               <div className="dashboard__card__top">
                 <div className="dashboard__card__top__left">{item.title}</div>
                 <div className="dashboard__card__top__right">
@@ -294,7 +258,7 @@ function Dashboard() {
           <div className="dashboard__table__container__body">
             <Table
               columns={columns}
-              dataSource={ordersData}
+              dataSource={recentOrdersDummyData}
               pagination={{ pageSize: 5 }}
               scroll={{ x: "max-content" }}
             />
