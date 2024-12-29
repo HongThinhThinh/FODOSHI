@@ -1,0 +1,16 @@
+.success-auth-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 30px;
+  .success-auth-title {
+    font-size: 30px;
+    font-weight: 450;
+    text-align: center;
+  }
+  .success-auth-link {
+    color: #1e3779;
+    text-decoration: underline;
+  }
+}

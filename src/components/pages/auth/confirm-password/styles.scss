@@ -1,14 +1,13 @@
-.login-container {
+.confirm-password-container {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  .login-title {
-    font-size: 37px;
-    text-align: justify;
-    font-weight: 630;
+  .confirm-password-title {
+    font-size: 30px;
+    font-weight: 450;
   }
-  .login-item {
+  .confirm-password-item {
     &--btn {
       display: flex;
       align-items: center;
@@ -16,16 +15,15 @@
     }
     &--subtitle {
       font-size: 16px;
-      text-align: justify;
+      cursor: pointer;
     }
   }
   .btn-wrapper--change {
     font-size: 16px;
-    display: flex;
-    justify-content: start;
-    margin-bottom: 20px;
-    gap: 5px;
+    margin-bottom: 30px;
     .btn--change {
+      font-weight: 300;
+      cursor: pointer;
       text-decoration: underline;
       &:hover {
         color: #1e3779;

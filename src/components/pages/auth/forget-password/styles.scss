@@ -1,0 +1,23 @@
+.forget-password-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  .forget-password-title {
+    font-size: 30px;
+    text-align: justify;
+    font-weight: 450;
+    margin-bottom: 30px;
+  }
+  .forget-password-item {
+    &--btn {
+      display: flex;
+      align-items: center;
+      justify-content: end;
+    }
+    &--subtitle {
+      font-size: 16px;
+      text-align: justify;
+    }
+  }
+}
