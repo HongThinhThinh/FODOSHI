@@ -4,6 +4,8 @@ import LoginPage from "../components/pages/login-page";
 import AdminLayout from "../components/layouts/admin-layout";
 import Dashboard from "../components/pages/admin/manage-overview";
 import ProductDetail from "../components/pages/admin/product-detail";
+import OrderManagement from "../components/pages/admin/manage-orders";
+import OrderDetails from "../components/pages/admin/order-details";
 export const router = createBrowserRouter([
   {
     path: "/test",
@@ -33,7 +35,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "orders",
-        element: <h1>orders content</h1>,
+        element: <OrderManagement />,
+      },
+      {
+        path: "orders/:id",
+        element: <OrderDetails />,
       },
       {
         path: "products/:id",
