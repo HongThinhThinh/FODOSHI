@@ -1,0 +1,217 @@
+.order-details {
+  padding: 24px 16px;
+
+  &__info {
+    background-color: #ffff;
+    border-radius: 10px;
+    padding: 20px 10px;
+    &__header {
+      display: flex;
+      align-items: center;
+      justify-content: left;
+      gap: 20px;
+      &__id {
+        font-size: 15px;
+        font-weight: 600;
+      }
+      &__status {
+        background-color: #ffa52f;
+        border-radius: 8px;
+        padding: 8px 5px;
+        span {
+          font-size: 11px;
+          font-weight: 500;
+        }
+      }
+    }
+    &__sub-header {
+      padding: 20px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      &__date {
+        span {
+          font-size: 13px;
+          font-weight: 600;
+        }
+      }
+      &__tools {
+        display: flex;
+        align-items: center;
+        gap: 50px;
+        &__print,
+        &__save {
+          padding: 10px 15px;
+          background-color: #f4f2f2;
+          border-radius: 8px;
+          span {
+            font-size: 13px;
+            font-weight: 500;
+          }
+          .anticon-printer {
+            font-size: 20px;
+          }
+        }
+        &__status {
+          span {
+            font-size: 13px;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+    &__customer-info {
+      padding: 20px 10px;
+
+      &__container {
+        border-radius: 13px;
+        &__top {
+          display: flex;
+          gap: 10px;
+          &__icon {
+            background-color: #832f21;
+            padding: 20px 20px;
+            max-width: 45px;
+            max-height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            span {
+              color: white;
+              font-size: 20px;
+            }
+          }
+          &__details {
+            &__header {
+              font-size: 15px;
+              font-weight: 600;
+            }
+            &__description {
+              height: 75px;
+              color: #70706e;
+            }
+          }
+        }
+        &__bottom {
+          display: flex;
+          justify-content: center;
+          padding: 10px 0;
+          &__button {
+            padding: 5px 121px;
+            background-color: #d99041;
+            border-radius: 8px;
+            transition: all 0.3s;
+            button {
+              color: white;
+            }
+            &:hover {
+              border: 1px solid black;
+              border-color: black;
+              cursor: pointer;
+            }
+          }
+        }
+      }
+    }
+    &__payment {
+      display: flex;
+      padding: 20px 10px;
+      gap: 20px;
+      &__info {
+        flex: 1;
+        background-color: #ffff;
+        border-radius: 10px;
+        padding: 20px 10px;
+        border: 1px solid #f0f0f0;
+        &__title {
+          padding: 5px 0px;
+          font-size: 15px;
+          font-weight: 600;
+        }
+        &__description {
+          svg {
+            font-size: 15px;
+          }
+          &__item {
+            padding: 5px 0px;
+            font-size: 14px;
+            color: #70706e;
+          }
+        }
+      }
+
+      &__note {
+        flex: 2;
+        padding: 20px 10px;
+        padding-left: 30px;
+        background-color: #ffff;
+        border-radius: 10px;
+        padding-bottom: 90px;
+        border: 1px solid #f0f0f0;
+        width: 100%;
+
+        &__title {
+          padding: 5px 0px;
+          font-size: 15px;
+          font-weight: 600;
+        }
+        &__description {
+          span {
+            font-size: 14px;
+            color: #70706e;
+          }
+        }
+      }
+    }
+  }
+  &__list {
+    margin-top: 20px;
+    background-color: #ffff;
+    border-radius: 10px;
+    padding: 20px 10px;
+    &__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid darkgray;
+      padding: 10px 0;
+      &__left {
+        font-size: 15px;
+        font-weight: 600;
+      }
+      &__right {
+        span {
+          font-size: 15px;
+        }
+      }
+    }
+    &__bill {
+      display: flex;
+      flex-direction: column;
+      align-items: end;
+      padding: 20px 10px;
+      &__content {
+        &__item {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+          padding: 6px 0px;
+          span {
+            font-size: 14px;
+            font-weight: 500;
+          }
+          &__title {
+            width: 100px;
+          }
+          #total,
+          #totalValue {
+            font-size: 19px;
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+}

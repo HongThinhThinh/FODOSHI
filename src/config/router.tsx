@@ -4,11 +4,17 @@ import LoginPage from "../components/pages/auth/login-page";
 import AdminLayout from "../components/layouts/admin-layout";
 import Dashboard from "../components/pages/admin/manage-overview";
 import ProductDetail from "../components/pages/admin/product-detail";
+
 import Authentication from "../components/pages/auth/authentication";
 import RegisterPage from "../components/pages/auth/register-page";
 import ForgetPassword from "../components/pages/auth/forget-password";
 import ConfirmPassword from "../components/pages/auth/confirm-password";
 import SuccessAuth from "../components/pages/auth/success-auth";
+
+import ProductsPage from "../components/pages/admin/products";
+import OrderManagement from "../components/pages/admin/manage-orders";
+import OrderDetails from "../components/pages/admin/order-details";
+
 export const router = createBrowserRouter([
   {
     path: "/test",
@@ -34,11 +40,15 @@ export const router = createBrowserRouter([
       },
       {
         path: "products",
-        element: <h1>products content</h1>,
+        element: <ProductsPage />,
       },
       {
         path: "orders",
-        element: <h1>orders content</h1>,
+        element: <OrderManagement />,
+      },
+      {
+        path: "orders/:id",
+        element: <OrderDetails />,
       },
       {
         path: "products/:id",

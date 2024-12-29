@@ -14,6 +14,7 @@ interface CustomizedCardProps {
   children?: React.ReactNode;
   width: string | number;
   height: string | number;
+  borderRadious?: string | number;
 }
 
 const CustomizedCard: FC<CustomizedCardProps> = ({
@@ -23,6 +24,7 @@ const CustomizedCard: FC<CustomizedCardProps> = ({
   children,
   width,
   height,
+  borderRadious,
   ...props
 }) => {
   return loading ? (
@@ -30,7 +32,12 @@ const CustomizedCard: FC<CustomizedCardProps> = ({
   ) : (
     <Card
       className={[`w-full h-full bg-cover`, styleClass].join(" ")}
-      style={{ backgroundImage: background, width: width || "100%", height: height || "100%" }}
+      style={{
+        backgroundImage: background,
+        width: width || "100%",
+        height: height || "100%",
+        borderRadius: borderRadious || "0px",
+      }}
       {...props}
     >
       {children}
