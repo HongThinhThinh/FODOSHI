@@ -14,6 +14,9 @@ import SuccessAuth from "../components/pages/auth/success-auth";
 import ProductsPage from "../components/pages/admin/products";
 import OrderManagement from "../components/pages/admin/manage-orders";
 import OrderDetails from "../components/pages/admin/order-details";
+import HomePage from "../components/pages/homepage";
+import NewProductPage from "../components/pages/new-product-page";
+import ShoezizePage from "../components/pages/shoe-size-page";
 
 export const router = createBrowserRouter([
   {
@@ -26,7 +29,15 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "",
-        element: <h1>hi</h1>,
+        element: <HomePage />,
+      },
+      {
+        path: "/newProduct",
+        element: <NewProductPage />,
+      },
+      {
+        path: "/shoeSize",
+        element: <ShoezizePage />,
       },
     ],
   },
