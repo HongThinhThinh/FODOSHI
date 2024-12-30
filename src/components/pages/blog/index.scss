@@ -1,0 +1,39 @@
+.blog {
+  margin: 20px 0;
+  padding: 0 90px;
+  &__top {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    & .navigation {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+
+      .home:hover {
+        color: #ccc;
+        cursor: pointer;
+      }
+    }
+    p {
+      font-size: 60px;
+      font-weight: 700;
+    }
+  }
+
+  &__bottom {
+    .bold {
+      font-weight: 600;
+      font-size: 32px;
+      margin-bottom: 30px;
+    }
+
+    .blog-list {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+  }
+}
