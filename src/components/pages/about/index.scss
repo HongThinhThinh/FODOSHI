@@ -1,0 +1,122 @@
+.about {
+  margin: 24px 0;
+
+  &__top {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    & .navigation {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+
+      .home:hover {
+        color: #ccc;
+        cursor: pointer;
+      }
+    }
+    p {
+      font-size: 60px;
+      font-weight: 700;
+    }
+  }
+
+  &__bottom {
+    background-color: #f0eee6;
+    padding: 36px 36px;
+    .part-one {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 48px;
+      height: 100%;
+      gap: 40px;
+      .description {
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+      }
+
+      .images {
+        .image2 {
+          position: relative;
+          max-width: 70%;
+          .image1 {
+            position: absolute;
+            max-width: 80%;
+            top: 50%;
+            left: -40%;
+          }
+        }
+      }
+    }
+    .part-two {
+      margin-top: 200px;
+      font-size: 32px;
+      text-align: center;
+      .content {
+        display: flex;
+        gap: 30px;
+
+        .selection {
+          width: 30%;
+          text-align: left;
+
+          p.choosen {
+            background-color: #832f21;
+            color: white;
+            border-radius: 8px;
+            padding: 4px 8px;
+            margin-left: -8px;
+          }
+          p {
+            cursor: pointer;
+            font-size: 15px;
+            color: #832f21;
+            margin-bottom: 20px;
+            // margin-left: 8px;
+          }
+        }
+        .description {
+          width: 30%;
+          text-align: left;
+          font-size: 15px;
+        }
+      }
+    }
+    .part-three {
+      font-size: 32px;
+      text-align: center;
+      margin: 40px 0;
+      &__bottom {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        .item {
+          width: 30%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 20px;
+        }
+      }
+    }
+    .part-four {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 100px;
+      //   background-color: #832f21;
+
+      .item {
+        text-align: center;
+        font-size: 20px;
+      }
+    }
+  }
+}

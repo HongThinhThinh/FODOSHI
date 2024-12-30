@@ -14,6 +14,8 @@ import SuccessAuth from "../components/pages/auth/success-auth";
 import ProductsPage from "../components/pages/admin/products";
 import OrderManagement from "../components/pages/admin/manage-orders";
 import OrderDetails from "../components/pages/admin/order-details";
+import About from "../components/pages/about";
+import Blog from "../components/pages/blog";
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +29,14 @@ export const router = createBrowserRouter([
       {
         path: "",
         element: <h1>hi</h1>,
+      },
+      {
+        path: "about",
+        element: <About />,
+      },
+      {
+        path: "blog",
+        element: <Blog />,
       },
     ],
   },
@@ -56,6 +66,7 @@ export const router = createBrowserRouter([
       },
     ],
   },
+
   {
     path: "/auth",
     element: <Authentication />,
