@@ -1,5 +1,6 @@
 import { Button, ButtonProps } from "antd";
 import "./styles.scss";
+import { ButtonShape } from "antd/es/button";
 interface ButtonComponentProps extends ButtonProps {
   className?: string;
   color?: string;
@@ -19,7 +20,10 @@ function ButtonComponent({
     <Button
       className={`button-fodoshi ${className} ${isActive ? "active" : ""}`}
       {...rest}
-      style={{ "--bg-color": isActive ? "#d99041" : bgColor, "--color": isActive ? "#ffff"  : color }}
+      style={{
+        "--bg-color": isActive ? "#d99041" : bgColor,
+        "--color": isActive ? "#ffff" : color,
+      }}
     >
       {children}
     </Button>
