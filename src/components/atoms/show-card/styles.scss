@@ -1,8 +1,8 @@
 .show-card-container {
   cursor: pointer;
   background: #fff;
-  max-width: 230px;
-  height: fit-content;
+  width: 260px;
+  height: 400px;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   border: 1px solid black;
   display: flex;
@@ -10,19 +10,20 @@
   justify-content: center;
   flex-direction: column;
   .show-card__img {
-    margin-top: 13px;
     width: 100%;
     height: 230px;
     object-fit: cover;
+    object-position: center;
   }
   .show-card__wrapper {
+    width: 100%;
     flex-grow: 1;
     display: flex;
     align-items: start;
     justify-content: center;
     flex-direction: column;
     margin-bottom: 30px;
-    padding: 13px 13px;
+    padding: 18px 13px 0 13px;
   }
   .show-card__name,
   .show-card__price {

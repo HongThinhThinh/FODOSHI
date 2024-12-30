@@ -28,7 +28,7 @@ function NewProductPage() {
           </div>
         </Col>
         <Col className="new-product-page__products" span={20}>
-          <Row gutter={[10, 10]}>
+          <Row justify="space-between" wrap gutter={[20, 20]}>
             {showCardModel?.map((item) => (
               <Col>
                 <ShowCard key={item.id} card={item} />
