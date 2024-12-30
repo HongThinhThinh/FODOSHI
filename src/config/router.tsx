@@ -17,6 +17,9 @@ import OrderDetails from "../components/pages/admin/order-details";
 import HomePage from "../components/pages/homepage";
 import NewProductPage from "../components/pages/new-product-page";
 import ShoezizePage from "../components/pages/shoe-size-page";
+import About from "../components/pages/about";
+import Blog from "../components/pages/blog";
+
 
 export const router = createBrowserRouter([
   {
@@ -38,6 +41,14 @@ export const router = createBrowserRouter([
       {
         path: "/shoeSize",
         element: <ShoezizePage />,
+      },
+      {
+        path: "about",
+        element: <About />,
+      },
+      {
+        path: "blog",
+        element: <Blog />,
       },
     ],
   },
@@ -67,6 +78,7 @@ export const router = createBrowserRouter([
       },
     ],
   },
+
   {
     path: "/auth",
     element: <Authentication />,
