@@ -12,3 +12,15 @@
   border-color: #000000;
   background: #f0f0f0;
 }
+.btn-sign {
+  &-status {
+    &-danger {
+      background-color: #ff0004 !important;
+
+      &:hover {
+        background-color: #ff7875 !important;
+        border-color: #ff7875 !important;
+      }
+    }
+  }
+}

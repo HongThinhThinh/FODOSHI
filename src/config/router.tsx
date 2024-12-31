@@ -14,6 +14,7 @@ import SuccessAuth from "../components/pages/auth/success-auth";
 import ProductsPage from "../components/pages/admin/products";
 import OrderManagement from "../components/pages/admin/manage-orders";
 import OrderDetails from "../components/pages/admin/order-details";
+import Cart from "../components/pages/customer/cart";
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +28,10 @@ export const router = createBrowserRouter([
       {
         path: "",
         element: <h1>hi</h1>,
+      },
+      {
+        path: "cart",
+        element: <Cart />,
       },
     ],
   },
