@@ -1,0 +1,32 @@
+.shoe-size-page__container {
+  margin: 0 auto;
+  max-width: 1200px;
+  .shoe-size-page__title {
+    font-size: 36px;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .shoe-size-page__desc {
+    font-size: 16px;
+    font-weight: 400;
+    margin-bottom: 40px;
+  }
+  .shoe-size-page__table thead > tr > th {
+    background-color: #282828;
+    color: #fff;
+  }
+  .shoe-size-page__table {
+    &--pagination > li {
+      border-color: #282828;
+      & > a {
+        color: #282828;
+      }
+      & :hover {
+        color: #282828;
+      }
+      &:hover {
+        border-color: #282828;
+      }
+    }
+  }
+}

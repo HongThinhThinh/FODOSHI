@@ -1,0 +1,31 @@
+.card {
+  width: 20rem;
+  display: flex;
+  height: auto;
+  width: 100%;
+  gap: 20px;
+  align-items: center;
+  &__image {
+    img {
+      width: 20rem;
+      height: 12rem;
+    }
+  }
+  &__information {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    .bold {
+      font-weight: 600;
+      font-size: 20px;
+    }
+  }
+}
+
+.card:hover {
+  cursor: pointer;
+  opacity: 0.6;
+}

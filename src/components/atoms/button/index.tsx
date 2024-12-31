@@ -1,5 +1,6 @@
 import { Button, ButtonProps } from "antd";
 import "./styles.scss";
+import { ButtonShape } from "antd/es/button";
 interface ButtonComponentProps extends ButtonProps {
   className?: string;
   color?: string;

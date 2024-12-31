@@ -1,0 +1,110 @@
+.homepage-banner__container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .homepage-banner__img {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .homepage-banner__content {
+    position: absolute;
+    top: 20%;
+    left: 20%;
+    &--title {
+      line-height: 1em;
+      font-size: 66px;
+      font-weight: 700;
+      font-family: "Times New Roman", Times, serif;
+      span {
+        font-family: "Times New Roman", Times, serif;
+      }
+    }
+    &--desc {
+      font-weight: 500;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+    &--btn {
+      border-radius: 0px;
+    }
+  }
+}
+.homepage-category__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  .homepage-category__title {
+    font-size: 23px;
+    font-weight: 550;
+    padding: 20px 0;
+    font-family: "Times New Roman", Times, serif;
+  }
+  .homepage-category__wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .homepage-category__item {
+    &--img {
+      width: 300px;
+      height: 300px;
+      object-fit: cover;
+      object-position: top;
+      margin-bottom: 15px;
+    }
+    &--title {
+      text-align: center;
+      font-size: 16px;
+      font-weight: 550;
+    }
+  }
+}
+.homepage-outfitOfDay__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 30px;
+  .homepage-outfitOfDay__title {
+    font-size: 23px;
+    font-weight: 550;
+    padding: 20px 0;
+    font-family: "Times New Roman", Times, serif;
+  }
+  .homepage-outfitOfDay__wrapper {
+    .homepage-outfitOfDay__carousel {
+      padding: 10px 0;
+      &-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+}
+.homepage-outfitToClass__container {
+  background-color: #f0eee6;
+
+  .homepage-outfitToClass__wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    .homepage-outfitToClass__img {
+      width: 40%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .homepage-outfitToClass__content {
+      padding: 30px 0;
+      width: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      flex-direction: column;
+    }
+  }
+}

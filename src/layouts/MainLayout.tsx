@@ -7,7 +7,7 @@ function MainLayout() {
   return (
     <>
       <Header />
-      <main className="min-h-screen px-3">
+      <main className="min-h-screen my-[80px]">
         <Outlet />
       </main>
       <Footer />
