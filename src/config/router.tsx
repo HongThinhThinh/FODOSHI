@@ -19,7 +19,8 @@ import NewProductPage from "../components/pages/new-product-page";
 import ShoezizePage from "../components/pages/shoe-size-page";
 import About from "../components/pages/about";
 import Blog from "../components/pages/blog";
-
+import InfomationLayout from "../layouts/InfomationLayout";
+import InfoPersonal from "../components/pages/infomation-page/info-personal";
 
 export const router = createBrowserRouter([
   {
@@ -49,6 +50,16 @@ export const router = createBrowserRouter([
       {
         path: "blog",
         element: <Blog />,
+      },
+    ],
+  },
+  {
+    path: "infomation",
+    element: <InfomationLayout />,
+    children: [
+      {
+        path: "infomationPersonal",
+        element: <InfoPersonal />,
       },
     ],
   },
