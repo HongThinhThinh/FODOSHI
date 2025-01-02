@@ -32,7 +32,7 @@ function InfomationLayout() {
               ))}
             </ul>
           </Col>
-          <Col span={17}>
+          <Col span={17} className="py-[40px]">
             <Outlet />
           </Col>
         </Row>
