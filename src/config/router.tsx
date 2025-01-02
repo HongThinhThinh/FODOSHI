@@ -19,7 +19,8 @@ import NewProductPage from "../components/pages/new-product-page";
 import ShoezizePage from "../components/pages/shoe-size-page";
 import About from "../components/pages/about";
 import Blog from "../components/pages/blog";
-
+import DeliveryAddress from "../components/pages/delivery-address";
+import PaymentMethod from "../components/pages/payment-method";
 
 export const router = createBrowserRouter([
   {
@@ -49,6 +50,14 @@ export const router = createBrowserRouter([
       {
         path: "blog",
         element: <Blog />,
+      },
+      {
+        path: "delivery-address",
+        element: <DeliveryAddress />,
+      },
+      {
+        path: "payment-method",
+        element: <PaymentMethod />,
       },
     ],
   },
