@@ -109,11 +109,11 @@ export const linkInfomation = [
     name: "Trạng thái đơn hàng",
   },
   {
-    path: "",
+    path: "delivery-address",
     name: "Địa chỉ giao hàng",
   },
   {
-    path: "",
+    path: "payment-method",
     name: "Phương thức thanh toán",
   },
   {

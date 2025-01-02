@@ -21,6 +21,8 @@ import About from "../components/pages/about";
 import Blog from "../components/pages/blog";
 import InfomationLayout from "../layouts/InfomationLayout";
 import InfoPersonal from "../components/pages/infomation-page/info-personal";
+import DeliveryAddress from "../components/pages/infomation-page/delivery-address";
+import PaymentMethod from "../components/pages/infomation-page/payment-method";
 
 export const router = createBrowserRouter([
   {
@@ -54,12 +56,20 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "infomation",
+    path: "information",
     element: <InfomationLayout />,
     children: [
       {
         path: "infomationPersonal",
         element: <InfoPersonal />,
+      },
+      {
+        path: "delivery-address",
+        element: <DeliveryAddress />,
+      },
+      {
+        path: "payment-method",
+        element: <PaymentMethod />,
       },
     ],
   },
