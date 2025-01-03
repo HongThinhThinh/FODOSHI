@@ -22,8 +22,9 @@ import About from "../components/pages/about";
 import Blog from "../components/pages/blog";
 import InfomationLayout from "../layouts/InfomationLayout";
 import InfoPersonal from "../components/pages/infomation-page/info-personal";
-import InfomationTabLayout from "../layouts/InfomationTabLayout";import Checkout from "../components/pages/customer/check-out";
-import ConfirmModal from "../components/molecules/confirm-modal";
+import InfomationTabLayout from "../layouts/InfomationTabLayout";
+
+
 
 export const router = createBrowserRouter([
   {
