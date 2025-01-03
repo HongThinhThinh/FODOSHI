@@ -6,7 +6,7 @@ interface InputComponentProps extends InputProps {
   bgColor?: number | string | undefined;
   width?: number | string | undefined;
   height?: number | string | undefined;
-  shape?: "round" | "primary";
+  shape?: "round" | "primary" | "square";
 }
 
 // Component chính
@@ -24,7 +24,8 @@ function InputComponent({
       {...rest}
       style={{
         "--bg-color": bgColor,
-        "--border-radius": shape === "primary" ? "6px" : "15px",
+        "--border-radius":
+          shape === "primary" ? "6px" : shape === "round" ? "15px" : "0px",
         "--width": width,
         "--height": height,
       }}
