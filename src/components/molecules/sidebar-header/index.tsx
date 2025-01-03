@@ -5,7 +5,9 @@ interface SideBarHeaderProps {
   className: string;
 }
 import "./styles.scss";
+import { useNavigate } from "react-router-dom";
 function SideBarHeader({ name, className, ...rest }: SideBarHeaderProps) {
+  const navigate = useNavigate();
   return (
     <nav className={`sidebar_header ${className}`} {...rest}>
       <ul className="sidebar_header-container">
@@ -18,7 +20,13 @@ function SideBarHeader({ name, className, ...rest }: SideBarHeaderProps) {
           <li className="sidebar_header__item">Đăng nhập</li>
         )}
         <li className="sidebar_header__item">
-          <FiShoppingCart fontSize={24} />
+          <FiShoppingCart
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              navigate("/cart");
+            }}
+            fontSize={24}
+          />
         </li>
       </ul>
     </nav>

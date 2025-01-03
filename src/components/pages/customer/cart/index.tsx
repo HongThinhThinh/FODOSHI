@@ -7,15 +7,18 @@ import { Product, ProductCategory } from "../../../../model/product";
 
 import { RootState } from "../../../../redux/store";
 import ButtonComponent from "../../../atoms/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { formatMoney } from "../../../../utils/formatMoney";
+import Checkout from "../check-out";
 
 export default function Cart() {
   const cart = useSelector((state: RootState) => state.cart);
   const [total, setTotal] = useState(0);
   const [grandTotal, setGrandTotal] = useState(0);
   const [tax, setTax] = useState(5);
+  const [openCheckout, setOpenCheckout] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const handleIncrement = (product: Product) => {
     dispatch(changeQuantity({ productId: product.productId, quantity: product.quantity + 1 }));
   };
@@ -127,11 +130,26 @@ export default function Cart() {
           >
             Clear Cart
           </ButtonComponent>
-          <ButtonComponent color="#fff" bgColor="#d99041" className="cart__actions__button">
-            Checkout
-          </ButtonComponent>
+          {cart.products.length > 0 && (
+            <ButtonComponent
+              onClick={() => {
+                setOpenCheckout(true);
+                console.log("Clicked checkout " + openCheckout);
+              }}
+              color="#fff"
+              bgColor="#d99041"
+              className="cart__actions__button"
+            >
+              Checkout
+            </ButtonComponent>
+          )}
         </div>
       </div>
+      <Checkout
+        setOpen={setOpenCheckout}
+        open={openCheckout && cart.products.length > 0}
+        grandTotalBeforeShipping={grandTotal}
+      />
     </div>
   );
 }

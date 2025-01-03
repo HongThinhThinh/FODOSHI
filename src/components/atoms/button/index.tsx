@@ -7,7 +7,7 @@ interface ButtonComponentProps extends ButtonProps {
   bgColor?: string;
   children?: React.ReactNode;
   isActive?: boolean;
-  status?: "default" | "danger" | "success" | "warning" | "info";
+  status?: "default" | "danger" | "success" | "warning" | "info" | "disabled";
 }
 function ButtonComponent({
   className,

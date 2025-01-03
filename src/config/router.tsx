@@ -20,7 +20,8 @@ import NewProductPage from "../components/pages/new-product-page";
 import ShoezizePage from "../components/pages/shoe-size-page";
 import About from "../components/pages/about";
 import Blog from "../components/pages/blog";
-
+import Checkout from "../components/pages/customer/check-out";
+import ConfirmModal from "../components/molecules/confirm-modal";
 
 export const router = createBrowserRouter([
   {
@@ -54,6 +55,10 @@ export const router = createBrowserRouter([
       {
         path: "cart",
         element: <Cart />,
+      },
+      {
+        path: "confirm",
+        element: <ConfirmModal />,
       },
     ],
   },
