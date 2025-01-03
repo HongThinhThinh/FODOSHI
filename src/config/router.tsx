@@ -20,7 +20,9 @@ import NewProductPage from "../components/pages/new-product-page";
 import ShoezizePage from "../components/pages/shoe-size-page";
 import About from "../components/pages/about";
 import Blog from "../components/pages/blog";
-import Checkout from "../components/pages/customer/check-out";
+import InfomationLayout from "../layouts/InfomationLayout";
+import InfoPersonal from "../components/pages/infomation-page/info-personal";
+import InfomationTabLayout from "../layouts/InfomationTabLayout";import Checkout from "../components/pages/customer/check-out";
 import ConfirmModal from "../components/molecules/confirm-modal";
 
 export const router = createBrowserRouter([
@@ -56,9 +58,113 @@ export const router = createBrowserRouter([
         path: "cart",
         element: <Cart />,
       },
+    ],
+  },
+  {
+    path: "infomation",
+    element: <InfomationLayout />,
+    children: [
       {
-        path: "confirm",
-        element: <ConfirmModal />,
+        path: "infomationPersonal",
+        element: <InfoPersonal />,
+        children: [
+          {
+            path: "waitingForShipping",
+            element: <h1>Waiting for shipping</h1>,
+          },
+          {
+            path: "shipping",
+            element: <h1>Shipping</h1>,
+          },
+          {
+            path: "handDelivered",
+            element: <h1>Hand delivered</h1>,
+          },
+        ],
+      },
+      {
+        path: "orderStatus",
+        element: (
+          <InfomationTabLayout
+            data={[
+              { path: "waitingForShipping", name: "Chờ vận chuyển" },
+              { path: "shipping", name: "Đang vận chuyển" },
+              { path: "handDelivered", name: "Đã giao tận tay" },
+            ]}
+          />
+        ),
+        children: [
+          {
+            path: "waitingForShipping",
+            element: <h1>Waiting for shipping</h1>,
+          },
+          {
+            path: "shipping",
+            element: <h1>Shipping</h1>,
+          },
+          {
+            path: "handDelivered",
+            element: <h1>Hand delivered</h1>,
+          },
+        ],
+      },
+      {
+        path: "deliveryAddress",
+        element: <h1>Địa chỉ Giao hàng</h1>,
+      },
+    ],
+  },
+  {
+    path: "infomation",
+    element: <InfomationLayout />,
+    children: [
+      {
+        path: "infomationPersonal",
+        element: <InfoPersonal />,
+        children: [
+          {
+            path: "waitingForShipping",
+            element: <h1>Waiting for shipping</h1>,
+          },
+          {
+            path: "shipping",
+            element: <h1>Shipping</h1>,
+          },
+          {
+            path: "handDelivered",
+            element: <h1>Hand delivered</h1>,
+          },
+        ],
+      },
+      {
+        path: "orderStatus",
+        element: (
+          <InfomationTabLayout
+            data={[
+              { path: "waitingForShipping", name: "Chờ vận chuyển" },
+              { path: "shipping", name: "Đang vận chuyển" },
+              { path: "handDelivered", name: "Đã giao tận tay" },
+            ]}
+          />
+        ),
+        children: [
+          {
+            path: "waitingForShipping",
+            element: <h1>Waiting for shipping</h1>,
+          },
+          {
+            path: "shipping",
+            element: <h1>Shipping</h1>,
+          },
+          {
+            path: "handDelivered",
+            element: <h1>Hand delivered</h1>,
+          },
+        ],
+      },
+      {
+        path: "deliveryAddress",
+        element: <h1>Địa chỉ Giao hàng</h1>,
       },
     ],
   },
