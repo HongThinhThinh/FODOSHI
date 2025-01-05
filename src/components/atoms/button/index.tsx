@@ -7,6 +7,7 @@ interface ButtonComponentProps extends ButtonProps {
   bgColor?: string;
   children?: React.ReactNode;
   isActive?: boolean;
+  status?: "default" | "danger" | "success" | "warning" | "info" | "disabled";
 }
 function ButtonComponent({
   className,
@@ -14,11 +15,14 @@ function ButtonComponent({
   color,
   children,
   isActive,
+  status = "default",
   ...rest
 }: ButtonComponentProps) {
   return (
     <Button
-      className={`button-fodoshi ${className} ${isActive ? "active" : ""}`}
+      className={`button-fodoshi ${className} ${
+        isActive ? "active" : ""
+      } btn-sign-status-${status}`}
       {...rest}
       style={{
         "--bg-color": isActive ? "#d99041" : bgColor,

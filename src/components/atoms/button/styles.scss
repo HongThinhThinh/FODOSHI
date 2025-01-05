@@ -12,3 +12,28 @@
   border-color: #000000;
   background: #f0f0f0;
 }
+.btn-sign {
+  &-status {
+    &-danger {
+      background-color: #ff0004 !important;
+      color: #fff !important;
+      &:hover {
+        background-color: #ff7875 !important;
+        border-color: #ff7875 !important;
+      }
+    }
+    &-disabled {
+      background-color: #f0f0f0 !important;
+      color: #000000 !important;
+      border-color: #f0f0f0 !important;
+    }
+    &-success {
+      background-color: #069806 !important;
+      color: #fff !important;
+      &:hover {
+        background-color: #288728 !important;
+        border-color: #288728 !important;
+      }
+    }
+  }
+}

@@ -43,6 +43,12 @@ type categoryType = {
   image: string;
   title: string;
 };
+
+export type DataTabType = {
+  path: string;
+  name: string;
+};
+
 export const category: categoryType[] = [
   {
     image:
@@ -105,11 +111,11 @@ export const linkInfomation = [
     name: "thông tin cá nhân",
   },
   {
-    path: "",
+    path: "orderStatus",
     name: "Trạng thái đơn hàng",
   },
   {
-    path: "delivery-address",
+    path: "deliveryAddress",
     name: "Địa chỉ giao hàng",
   },
   {
