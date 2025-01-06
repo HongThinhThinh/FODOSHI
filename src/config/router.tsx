@@ -26,6 +26,7 @@ import InfomationTabLayout from "../layouts/InfomationTabLayout";
 
 import DeliveryAddress from "../components/pages/infomation-page/delivery-address";
 import PaymentMethod from "../components/pages/infomation-page/payment-method";
+import DepositPolicy from "../components/pages/infomation-page/deposit/policy";
 
 export const router = createBrowserRouter([
   {
@@ -67,24 +68,6 @@ export const router = createBrowserRouter([
     element: <InfomationLayout />,
     children: [
       {
-        path: "infomationPersonal",
-        element: <InfoPersonal />,
-        children: [
-          {
-            path: "waitingForShipping",
-            element: <h1>Waiting for shipping</h1>,
-          },
-          {
-            path: "shipping",
-            element: <h1>Shipping</h1>,
-          },
-          {
-            path: "handDelivered",
-            element: <h1>Hand delivered</h1>,
-          },
-        ],
-      },
-      {
         path: "orderStatus",
         element: (
           <InfomationTabLayout
@@ -109,10 +92,6 @@ export const router = createBrowserRouter([
             element: <h1>Hand delivered</h1>,
           },
         ],
-      },
-      {
-        path: "deliveryAddress",
-        element: <h1>Địa chỉ Giao hàng</h1>,
       },
     ],
   },
@@ -166,7 +145,42 @@ export const router = createBrowserRouter([
       },
       {
         path: "deliveryAddress",
-        element: <h1>Địa chỉ Giao hàng</h1>,
+        element: <DeliveryAddress />,
+      },
+      {
+        path: "paymentMethod",
+        element: <PaymentMethod />,
+      },
+      {
+        path: "deposit",
+        element: (
+          <InfomationTabLayout
+            data={[
+              { path: "tracking", name: "Theo dõi đơn hàng" },
+              { path: "registration", name: "Đăng ký ký gửi" },
+              { path: "instruction", name: "Hướng dẫn ký gửi" },
+              { path: "policy", name: "Chính sách ký gửi" },
+            ]}
+          />
+        ),
+        children: [
+          {
+            path: "tracking",
+            element: <>hello youtube</>,
+          },
+          {
+            path: "registration",
+            element: <>hello youtube</>,
+          },
+          {
+            path: "instruction",
+            element: <>hello youtube</>,
+          },
+          {
+            path: "policy",
+            element: <DepositPolicy />,
+          },
+        ],
       },
     ],
   },
