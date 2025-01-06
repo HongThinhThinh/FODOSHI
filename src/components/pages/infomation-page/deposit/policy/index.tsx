@@ -2,8 +2,8 @@ import "./index.scss";
 function DepositPolicy() {
   return (
     <div className="wrapper">
-      <div className="form-1">
-        <form action="" className="form form-1">
+      <div className="form-information">
+        <form action="" className="form form-information">
           <div className="form__item">
             <input type="text" className="form__input" placeholder="Tran Thi" />
           </div>
@@ -16,8 +16,8 @@ function DepositPolicy() {
         </form>
       </div>
 
-      <div className="form-2">
-        <form action="" className="form form-2">
+      <div className="form-account">
+        <form action="" className="form form-account">
           <b>Thông Tin Đăng Nhập</b>
 
           <div className="form__item">
@@ -43,8 +43,8 @@ function DepositPolicy() {
         </form>
       </div>
 
-      <div className="form-3">
-        <form action="" className="form form-3">
+      <div className="form-contact">
+        <form action="" className="form form-contact">
           <b>Số điện thoại liên lạc</b>
 
           <div className="form__item">
