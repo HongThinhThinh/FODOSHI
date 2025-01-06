@@ -1,0 +1,24 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 500px;
+
+  &__item:nth-last-child(1) {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__input {
+    width: 100%;
+    border: 2px solid #1e3779;
+    border-radius: 4px;
+    padding: 12px 20px;
+  }
+
+  &__btn {
+    border: 2px solid #1e3779;
+    border-radius: 4px;
+    padding: 12px 20px;
+  }
+}
