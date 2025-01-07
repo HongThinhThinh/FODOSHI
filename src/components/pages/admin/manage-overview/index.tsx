@@ -161,7 +161,7 @@ function Dashboard() {
         ))}
       </Row>
       <div className="dashboard__chart">
-        <div className="dashboard__chart__left">
+        <div className="dashboard__chart__left dashboard__chart__children">
           <div className="dashboard__chart__left__top">
             <div className="dashboard__chart__left__top__left">
               <span>Biểu đồ doanh thu</span>
@@ -196,7 +196,7 @@ function Dashboard() {
             </LineChart>
           </div>
         </div>
-        <div className="dashboard__chart__right">
+        <div className="dashboard__chart__right dashboard__chart__children">
           <div className="dashboard__chart__right__top">
             <div className="dashboard__chart__right__top__left">
               <span>Những brand bán chạy</span>

@@ -23,8 +23,9 @@ import Blog from "../components/pages/blog";
 import InfomationLayout from "../layouts/InfomationLayout";
 import InfoPersonal from "../components/pages/infomation-page/info-personal";
 import InfomationTabLayout from "../layouts/InfomationTabLayout";
-
-import DeliveryAddress from "../components/pages/infomation-page/delivery-address";
+import AdminLayoutCustom from "../layouts/admin/AdminLayout";
+import { mockAdminCategoryRouteData, mockAdminRouteData } from "../dummy-data/mockAdminRouteData";
+import CategoryAdminLayout from "../layouts/admin/admin-category";import DeliveryAddress from "../components/pages/infomation-page/delivery-address";
 import PaymentMethod from "../components/pages/infomation-page/payment-method";
 import DepositPolicy from "../components/pages/infomation-page/deposit/policy";
 
@@ -33,6 +34,7 @@ export const router = createBrowserRouter([
     path: "/test",
     element: <div className="text-3xl font-bold underline bg-black">Hi</div>,
   },
+
   {
     path: "",
     element: <MainLayout />,
@@ -185,8 +187,8 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "admin",
-    element: <AdminLayout />,
+    path: "/admin",
+    element: <AdminLayoutCustom routes={mockAdminRouteData} />,
     children: [
       {
         path: "dashboard",
@@ -203,6 +205,36 @@ export const router = createBrowserRouter([
       {
         path: "orders/:id",
         element: <OrderDetails />,
+      },
+      {
+        path: "categories",
+        element: <CategoryAdminLayout categoriesPath={mockAdminCategoryRouteData} />,
+        children: [
+          {
+            path: "clothing",
+            element: "Clothing",
+          },
+          {
+            path: "bags",
+            element: "Túi xách",
+          },
+          {
+            path: "shoes",
+            element: "Giày dép",
+          },
+          {
+            path: "accessories",
+            element: "Phụ kiện",
+          },
+          {
+            path: "jewelry",
+            element: "Trang sức",
+          },
+          {
+            path: "other",
+            element: "Khác",
+          },
+        ],
       },
       {
         path: "products/:id",

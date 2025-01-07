@@ -62,12 +62,13 @@
     }
   }
 }
-
-p {
-  position: relative;
-  top: -25px;
-  white-space: normal;
-  width: 500px;
-  font-size: 12px;
-  font-weight: 100;
+.wrapper {
+  p {
+    position: relative;
+    top: -25px;
+    white-space: normal;
+    width: 500px;
+    font-size: 12px;
+    font-weight: 100;
+  }
 }
