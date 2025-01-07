@@ -1,0 +1,29 @@
+.method {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  &__title {
+    font-weight: 500;
+    font-size: 20px;
+  }
+
+  &__description {
+    font-size: 16px;
+    color: #605e5e;
+  }
+
+  &__icons {
+    display: flex;
+    gap: 60px;
+    img {
+      width: 70px;
+    }
+    img:hover {
+      cursor: pointer;
+    }
+    p {
+      font-size: 13px;
+      color: #1e3779;
+    }
+  }
+}
