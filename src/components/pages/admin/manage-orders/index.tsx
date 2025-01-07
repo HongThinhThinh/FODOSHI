@@ -68,7 +68,7 @@ function OrderManagement() {
               onRow={(record) => {
                 return {
                   onClick: () => {
-                    navigate(`/admin/orders/${record.orderId}`);
+                    navigate(`/test-admin/orders/${record.orderId}`);
                   },
                 };
               }}
