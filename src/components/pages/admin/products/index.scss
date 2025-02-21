@@ -3,7 +3,6 @@
   flex-wrap: wrap;
   gap: 20px;
   padding: 20px 0;
-
   .item {
     flex: 0 1 calc(33.333% - 20px); /* Chia mỗi phần tử thành 1/3 chiều rộng hàng */
   }
