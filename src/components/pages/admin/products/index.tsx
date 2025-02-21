@@ -133,6 +133,7 @@ function ProductsPage() {
         <div
           style={{
             position: "relative",
+            zIndex: 1000000,
           }}
           onClick={() => navigate("/admin/products/products")}
         >
