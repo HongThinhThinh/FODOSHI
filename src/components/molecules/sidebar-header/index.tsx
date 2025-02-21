@@ -24,7 +24,7 @@ function SideBarHeader({ name, className, ...rest }: SideBarHeaderProps) {
           <li className="sidebar_header__item">Đăng nhập</li>
         )}
         <li className="sidebar_header__item">
-          <Badge count={cart.products.length}>
+          <Badge count={cart?.products?.length}>
             <FiShoppingCart
               style={{ cursor: "pointer" }}
               onClick={() => {

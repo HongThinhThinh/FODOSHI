@@ -8,7 +8,7 @@ interface showCardProps {
 
 function ShowCard({ card }: showCardProps) {
   return (
-    <div className="show-card-container">
+    <div className="show-card-container" onClick={() => alert(card?.id)}>
       <img className="show-card__img" src={card?.image} alt="" />
       <div className="show-card__wrapper">
         <p className="show-card__name">{card?.name}</p>
