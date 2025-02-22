@@ -3,57 +3,102 @@ import React, { useState } from "react";
 import "./index.scss";
 import { UploadOutlined } from "@ant-design/icons";
 import type { UploadProps, UploadFile } from "antd";
-import { message, Upload, Image, Button } from "antd";
+import { message, Upload, Image, Button, Select } from "antd";
 import ButtonComponent from "../../../atoms/button";
 import useGetParams from "../../../../hooks/useGetParams";
 import { Link } from "react-router-dom";
 import { toTitle } from "../../../../utils/formatStr";
+import { useCreateProduct } from "../../../../services/adminService"; // Hook API
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../../../../config/firebase"; // Import Firebase config
+
 const { Dragger } = Upload;
+const { Option } = Select;
+
+// Firebase upload helper function
+const uploadFile = async (file: File) => {
+  const storageRef = ref(storage, `products/${file.name}`);
+  const response = await uploadBytes(storageRef, file);
+  const downloadURL = await getDownloadURL(response.ref);
+  return downloadURL;
+};
 
 interface ProductDetailProps {
   product_id: string;
 }
 
 export default function ProductDetail({ product_id }: ProductDetailProps) {
-  const [tags, setTags] = useState(["Lorem", "Lorem"]);
   const params = useGetParams();
   const id = params("id");
-  // const [fileList, setFileList] = useState<UploadFile[]>([
-  //   {
-  //     uid: "0",
-  //     name: "xxx.png",
-  //     status: "uploading",
-  //     percent: 33,
-  //   },
-  //   {
-  //     uid: "-1",
-  //     name: "yyy.png",
-  //     status: "done",
-  //     url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-  //     thumbUrl:
-  //       "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-  //   },
-  //   {
-  //     uid: "-2",
-  //     name: "zzz.png",
-  //     status: "error",
-  //   },
-  // ]);
+
+  // The 'product' state holds ALL product data, including the tags.
+  const [product, setProduct] = useState({
+    name: "",
+    description: "",
+    category: [] as string[], // category is an array
+    brand: [] as string[], // brand is an array
+    condition: "",
+    size: "",
+    originalPrice: "",
+    sellingPrice: "",
+    productStatus: "ACTIVE",
+    tags: [] as string[], // tags is an array!  It starts empty.
+    imageUrls: [] as string[],
+    consignorId: 1,
+  });
+
   const currentPath = location.pathname.split("/")[2];
   const currentSubPath = location.pathname.split("/")[3];
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
-  const [previewTitle, setPreviewTitle] = useState("");
-  const removeTag = (index: number) => {
-    setTags(tags.filter((_, i) => i !== index));
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+
+  // Example data for category and brand dropdowns.  Replace with your actual data.
+  const categoryOptions = [
+    { value: "sneakers", label: "Sneakers" },
+    { value: "apparel", label: "Apparel" },
+    { value: "electronics", label: "Electronics" },
+  ];
+
+  const brandOptions = [
+    { value: "nike", label: "Nike" },
+    { value: "adidas", label: "Adidas" },
+    { value: "puma", label: "Puma" },
+  ];
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setProduct((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleSelectChange = (value: string[], name: "category" | "brand") => {
+    setProduct((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // THIS IS THE FUNCTION THAT ADDS TAGS
   const addTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const value = (e.target as HTMLInputElement).value.trim();
-    if (e.key === "Enter" && value) {
-      setTags([...tags, value]);
-      (e.target as HTMLInputElement).value = "";
+    const value = (e.target as HTMLInputElement).value.trim(); // Get the tag text, remove whitespace
+
+    // Check if Enter was pressed AND there's text AND the tag isn't already added
+    if (e.key === "Enter" && value && !product.tags.includes(value)) {
+      // Update the 'product' state.  We're modifying the 'tags' ARRAY within 'product'.
+      setProduct((prevProduct) => ({
+        ...prevProduct, // Copy all the existing product data
+        tags: [...prevProduct.tags, value], // Create a NEW array for 'tags':  copy old tags + add new tag
+      }));
+      (e.target as HTMLInputElement).value = ""; // Clear the input field
     }
+  };
+
+  // THIS IS THE FUNCTION THAT REMOVES TAGS
+  const removeTag = (index: number) => {
+    // Update the 'product' state, modifying the 'tags' array.
+    setProduct((prevProduct) => ({
+      ...prevProduct, // Copy all existing product data
+      tags: prevProduct.tags.filter((_, i) => i !== index), // Create a NEW 'tags' array without the removed tag
+    }));
   };
 
   const getBase64 = (file: File): Promise<string> => {
@@ -65,16 +110,14 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
     });
   };
 
-  const fetchProductById = async () => {};
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const createProduct = useCreateProduct();
 
   const props: UploadProps = {
     name: "file",
-    multiple: false,
+    multiple: true,
     beforeUpload: (file) => {
       const isImage = file.type.startsWith("image/");
-      const isLt2M = file.size / 1024 / 1024 < 2; // Kiểm tra dung lượng file
+      const isLt2M = file.size / 1024 / 1024 < 2;
 
       if (!isImage) {
         message.error("Chỉ hỗ trợ file hình ảnh!");
@@ -87,20 +130,54 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
       return true;
     },
     onChange: async (info) => {
-      const { file } = info;
+      const { fileList } = info;
+      setFileList(fileList);
 
-      if (file.status === "done" || file.originFileObj) {
-        try {
-          const imageUrl = await getBase64(file.originFileObj as File);
-          setBackgroundImage(imageUrl); // Cập nhật ảnh nền
-        } catch (error) {
-          message.error("Lỗi khi hiển thị ảnh.");
-        }
-      } else if (file.status === "error") {
-        message.error(`${file.name} tải lên thất bại.`);
+      if (fileList.length > 0) {
+        const imageUrl = await getBase64(fileList[0].originFileObj as File);
+        setPreviewImage(imageUrl);
       }
     },
   };
+
+  const handleSubmit = async () => {
+    if (!product.name || !product.description || !product.category) {
+      message.error("Vui lòng điền đầy đủ thông tin.");
+      return;
+    }
+
+    const originalPrice = parseFloat(product.originalPrice);
+    const sellingPrice = parseFloat(product.sellingPrice);
+
+    if (isNaN(originalPrice) || isNaN(sellingPrice)) {
+      message.error("Giá gốc và giá bán phải là số.");
+      return;
+    }
+
+    const imageUrls: string[] = [];
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList[i];
+      if (file.status === "done" && file.originFileObj) {
+        try {
+          const downloadUrl = await uploadFile(file.originFileObj as File);
+          imageUrls.push(downloadUrl);
+        } catch (error) {
+          message.error("Lỗi khi tải ảnh lên.");
+          return;
+        }
+      }
+    }
+
+    // Send the data to the API.  'tags' is now sent as an array.
+    createProduct.mutate({
+      ...product, // All other product data
+      originalPrice: originalPrice, // Price as a number
+      sellingPrice: sellingPrice, // Price as a number
+      tags: product.tags, // Send the tags array directly
+      imageUrls, // Array of image URLs
+    });
+  };
+
   return (
     <>
       <div>
@@ -132,7 +209,9 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
               </label>
               <input
                 type="text"
-                placeholder="..."
+                name="name"
+                value={product.name}
+                onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-700 rounded"
               />
             </div>
@@ -142,8 +221,9 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
                 <b>Mô tả</b>
               </label>
               <textarea
-                name=""
-                id=""
+                name="description"
+                value={product.description}
+                onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-700 rounded"
                 placeholder="..."
                 rows={5}
@@ -151,25 +231,41 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
             </div>
 
             <div className="form-item">
-              <label htmlFor="" className="block ">
+              <label htmlFor="category" className="block">
                 <b>Danh mục</b>
               </label>
-              <input
-                type="text"
-                placeholder="Sneaker"
-                className="w-full px-3 py-2 border border-gray-700 rounded"
-              />
+              <Select
+                mode="multiple"
+                style={{ width: "100%" }}
+                placeholder="Chọn danh mục"
+                value={product.category}
+                onChange={(value) => handleSelectChange(value, "category")}
+              >
+                {categoryOptions.map((option) => (
+                  <Option key={option.value} value={option.value}>
+                    {option.label}
+                  </Option>
+                ))}
+              </Select>
             </div>
 
             <div className="form-item">
-              <label htmlFor="" className="block ">
+              <label htmlFor="brand" className="block">
                 <b>Brand</b>
               </label>
-              <input
-                type="text"
-                placeholder="Adidas"
-                className="w-full px-3 py-2 border border-gray-700 rounded"
-              />
+              <Select
+                mode="multiple"
+                style={{ width: "100%" }}
+                placeholder="Chọn thương hiệu"
+                value={product.brand}
+                onChange={(value) => handleSelectChange(value, "brand")}
+              >
+                {brandOptions.map((option) => (
+                  <Option key={option.value} value={option.value}>
+                    {option.label}
+                  </Option>
+                ))}
+              </Select>
             </div>
 
             <div className="flex gap-4">
@@ -179,6 +275,9 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
                 </label>
                 <input
                   type="text"
+                  name="condition"
+                  value={product.condition}
+                  onChange={handleInputChange}
                   placeholder="Very good"
                   className="w-full px-3 py-2 border border-gray-700 rounded"
                 />
@@ -190,6 +289,9 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
                 </label>
                 <input
                   type="text"
+                  name="size"
+                  value={product.size}
+                  onChange={handleInputChange}
                   placeholder="35"
                   className="w-full px-3 py-2 border border-gray-700 rounded"
                 />
@@ -203,6 +305,9 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
                 </label>
                 <input
                   type="text"
+                  name="originalPrice"
+                  value={product.originalPrice}
+                  onChange={handleInputChange}
                   placeholder="100"
                   className="w-full px-3 py-2 border border-gray-700 rounded"
                 />
@@ -214,6 +319,9 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
                 </label>
                 <input
                   type="text"
+                  name="sellingPrice"
+                  value={product.sellingPrice}
+                  onChange={handleInputChange}
                   placeholder="10000000"
                   className="w-full px-3 py-2 border border-gray-700 rounded"
                 />
@@ -223,12 +331,14 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
             <div className="form-item">
               <label className="block font-bold mb-2">Tag</label>
               <div className="border border-gray-300 rounded p-3 flex flex-wrap gap-2">
-                {tags.map((tag, index) => (
+                {/* This loop displays the tags.  product.tags is an ARRAY. */}
+                {product.tags.map((tag, index) => (
                   <div
                     key={index}
                     className="flex items-center bg-gray-800 text-white text-sm px-3 py-1 rounded-full"
                   >
                     {tag}
+                    {/* This button calls removeTag with the correct index */}
                     <button
                       type="button"
                       className="ml-2 text-white"
@@ -238,6 +348,7 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
                     </button>
                   </div>
                 ))}
+                {/* This input calls addTag when Enter is pressed */}
                 <input
                   type="text"
                   placeholder="Add tag"
@@ -252,28 +363,23 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
             <div
               className="w-full h-[370px] rounded mb-6 transition-all duration-300"
               style={{
-                background: backgroundImage
-                  ? `url(${backgroundImage}) center/contain no-repeat`
+                background: previewImage
+                  ? `url(${previewImage}) center/contain no-repeat`
                   : "linear-gradient(to right, #e0e0e0, #f5f5f5)",
-                border: backgroundImage ? "none" : "2px dashed #ccc",
+                border: previewImage ? "none" : "2px dashed #ccc",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              {!backgroundImage && <p className="text-gray-600">Chưa có ảnh</p>}
+              {!previewImage && <p className="text-gray-600">Chưa có ảnh</p>}
             </div>
 
             <div className="form-item">
               <label htmlFor="">
                 <b>Thư viện ảnh</b>
               </label>
-              <Upload
-                {...props}
-                listType="picture"
-                action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-                defaultFileList={fileList}
-              >
+              <Upload {...props} listType="picture" fileList={fileList}>
                 <Button icon={<UploadOutlined />} className="upload-btn">
                   Upload product's image
                 </Button>
@@ -290,6 +396,7 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
                 />
               ) : (
                 <ButtonComponent
+                  onClick={handleSubmit}
                   color="white"
                   children="Thêm"
                   bgColor="#626a3f"
@@ -297,14 +404,6 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
                 />
               )}
 
-              {id != null && (
-                <ButtonComponent
-                  color="white"
-                  children="Xóa"
-                  bgColor="#626A3F"
-                  className="w-1/3 h-[50px] "
-                />
-              )}
               <ButtonComponent
                 color="#D99041"
                 children="Hủy"
@@ -313,17 +412,6 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
             </div>
           </div>
         </form>
-        {previewImage && (
-          <Image
-            wrapperStyle={{ display: "none" }}
-            preview={{
-              visible: previewOpen,
-              onVisibleChange: (visible) => setPreviewOpen(visible),
-              afterOpenChange: (visible) => !visible && setPreviewImage(""),
-            }}
-            src={previewImage}
-          />
-        )}
       </div>
     </>
   );
