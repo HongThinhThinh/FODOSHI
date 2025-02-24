@@ -12,39 +12,72 @@ import "react-image-gallery/styles/css/image-gallery.css";
 import { FaCaretRight } from "react-icons/fa";
 import { formatMoney } from "../../../../utils/formatMoney";
 import ButtonComponent from "../../../atoms/button";
+import { useGetProductDetail } from "../../../../services/productService";
+import { ColorPicker } from "antd";
 type Product = {
-  name?: string;
-  image?: string;
-  size?: number;
-  type?: string;
-  price?: number;
+  id: number;
+  name: string;
+  description: string;
+  brands: {
+    id: number;
+    name: string;
+    isDeleted: boolean;
+  }[];
+  categories: {
+    id: number;
+    name: string;
+    isDeleted: boolean;
+  }[];
+  productCondition: string;
+  size: string;
+  color: string;
+  imageUrls: {
+    id: number;
+    image: string;
+  }[];
+  tags: string[];
+  originalPrice: number;
+  sellingPrice: number;
+  status: string;
+  gender: string;
+  reports: any[];
+  consignor: {
+    id: string;
+    name: string;
+    email: string;
+    phoneNumber: string;
+    password: string;
+    role: string;
+    createdAt: string;
+    cart: any | null;
+    reports: any[];
+    enabled: boolean;
+    accountNonExpired: boolean;
+    accountNonLocked: boolean;
+    credentialsNonExpired: boolean;
+    username: string;
+    authorities: {
+      authority: string;
+    }[];
+  };
+  createdAt: string;
 };
 
 const ProductDetails = () => {
   const { id } = useParams();
-  const [productDetail, setProductDetail] = useState<Product>({});
   console.log(id);
+  const { data: product } = useGetProductDetail(id) as { data?: Product };
+  const items =
+    product?.imageUrls?.map((img) => ({
+      original: img.image,
+      thumbnail: img.image,
+    })) || [];
 
   useEffect(() => {
-    setProductDetail(showCardModel[1]);
-    console.log(productDetail);
+    window.scrollTo(0, 0);
   }, []);
 
-  const images = [
-    {
-      original: "https://placehold.co/600x402",
-      thumbnail: "https://placehold.co/600x402",
-    },
-    {
-      original: "https://placehold.co/600x400",
-      thumbnail: "https://placehold.co/600x400",
-    },
-    {
-      original: "https://placehold.co/600x401",
-      thumbnail: "https://placehold.co/600x400",
-    },
-  ];
-
+  console.log(product);
   return (
     <main className="min-h-screen my-[80px]">
       <section className="product-details-section">
@@ -52,51 +85,71 @@ const ProductDetails = () => {
         <div className="product-details__container">
           <div className="product-details__wrapper">
             <div className="product-details__image">
-              <ImageGallery
-                renderLeftNav={(onClick) => (
-                  <button
-                    className="button-next absolute top-[45%] z-10 left-3 p-1 "
-                    onClick={onClick}
-                  >
-                    <FaCaretLeft
-                      className="text-white hover:text-[#d99041]"
-                      size={30}
-                    />
-                  </button>
-                )}
-                renderRightNav={(onClick) => (
-                  <button
-                    className="button-next absolute top-[45%] z-10 right-3 p-1 "
-                    onClick={onClick}
-                  >
-                    <FaCaretRight
-                      className="text-white hover:text-[#d99041]"
-                      size={30}
-                    />
-                  </button>
-                )}
-                items={images}
-                thumbnailPosition="left"
-              />
+              {items.length > 0 && (
+                <ImageGallery
+                  renderLeftNav={(onClick) => (
+                    <button
+                      className="button-next absolute top-[45%] z-10 left-3 p-1 "
+                      onClick={onClick}
+                    >
+                      <FaCaretLeft
+                        className="text-white hover:text-[#d99041]"
+                        size={30}
+                      />
+                    </button>
+                  )}
+                  renderRightNav={(onClick) => (
+                    <button
+                      className="button-next absolute top-[45%] z-10 right-3 p-1 "
+                      onClick={onClick}
+                    >
+                      <FaCaretRight
+                        className="text-white hover:text-[#d99041]"
+                        size={30}
+                      />
+                    </button>
+                  )}
+                  items={items}
+                  thumbnailPosition="left"
+                />
+              )}
             </div>
             <div className="product-details__info">
-              <p className="product-details__name">{productDetail?.name}</p>
-              <p className="product-details__type">{productDetail?.type}</p>
+              <p className="product-details__name">{product?.name}</p>
+              <p className="product-details__type">
+                {product?.brands?.map((brand) => brand.name).join(", ")}
+              </p>
+              <p className="product-details__category">
+                {product?.categories
+                  ?.map((category) => category.name)
+                  .join(", ")}
+              </p>
               <p>
                 Size:{" "}
-                <span className="product-details__size">
-                  {productDetail?.size}
-                </span>
+                <span className="product-details__size">{product?.size}</span>
+              </p>
+              <p>
+                Color:{" "}
+                <ColorPicker
+                  value={product?.color}
+                  disabled
+                  className="product-details__color"
+                />
               </p>
               <p className="product-details__price">
-                {formatMoney(productDetail?.price)}
+                {formatMoney(product?.sellingPrice)}
               </p>
               <p className="text-[#832F21] text-[15px] mb-4">
                 Dùng mã “FODOSHIXINCHAO” để được giảm 10% lần thanh toán đầu
                 tiên
               </p>
               <div className="product-details__button flex gap-5">
-                <ButtonComponent size="large" bgColor="#d99041" color="white">
+                <ButtonComponent
+                  size="large"
+                  bgColor="#d99041"
+                  color="white"
+                  onClick={() => console.log()}
+                >
                   Thêm vào giỏ hàng
                 </ButtonComponent>
                 <ButtonComponent size="large" bgColor="#d99041" color="white">
