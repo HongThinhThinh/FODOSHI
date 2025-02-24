@@ -16,10 +16,8 @@ export const useGetProducts = createQueryWithPathParamHook(
   "product",
   "/products"
 );
-export const useGetCategory = createQueryWithPathParamHook(
-  "category",
-  "/category"
-);
+export const useGetCategory = createQueryHook("categories", "/categories");
+export const useGetBrand = createQueryHook("brand", "/brands");
 
 export const useGetCreatedProducts = createQueryHook(
   "createdProducts",

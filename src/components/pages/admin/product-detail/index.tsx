@@ -2,15 +2,22 @@ import React, { useState } from "react";
 import "./index.scss";
 import { UploadOutlined } from "@ant-design/icons";
 import type { UploadProps, UploadFile } from "antd";
-import { message, Upload, Button, Select } from "antd";
+import { message, Upload, Button, Select, Input } from "antd";
 import ButtonComponent from "../../../atoms/button";
 import useGetParams from "../../../../hooks/useGetParams";
 import { Link } from "react-router-dom";
 import { toTitle } from "../../../../utils/formatStr";
-import { useCreateProduct } from "../../../../services/adminService";
+import {
+  useCreateProduct,
+  useGetBrand,
+  useGetCategory,
+} from "../../../../services/adminService";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../../../config/firebase";
 import ProductSwiper from "./productSwiper";
+import TagInput from "./TagInput"; // Import the TagInput component
+import { useGetUserByPhone } from "../../../../services/useUserService";
+
 const { Option } = Select;
 
 // Firebase upload helper function
@@ -28,7 +35,9 @@ interface ProductDetailProps {
 export default function ProductDetail({ product_id }: ProductDetailProps) {
   const params = useGetParams();
   const id = params("id");
-
+  const getCategory = useGetCategory("");
+  const getBrand = useGetBrand("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [product, setProduct] = useState({
     name: "",
     description: "",
@@ -36,31 +45,20 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
     brand: [] as string[],
     condition: "",
     size: "",
+    color: "#000000", // New field for color
+    gender: "", // New field for gender
     originalPrice: "",
     sellingPrice: "",
-    productStatus: "ACTIVE",
-    tags: [] as string[],
+    productStatus: "AVAILABLE",
+    tags: [] as string[], // Use tags array from state
     imageUrls: [] as string[],
-    consignorId: 1,
+    consignorId: "e717d28f-bc86-4df2-a847-134f0ca54d88",
   });
 
   const currentPath = location.pathname.split("/")[2];
   const currentSubPath = location.pathname.split("/")[3];
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-
-  // Category and brand options
-  const categoryOptions = [
-    { value: "sneakers", label: "Sneakers" },
-    { value: "apparel", label: "Apparel" },
-    { value: "electronics", label: "Electronics" },
-  ];
-
-  const brandOptions = [
-    { value: "nike", label: "Nike" },
-    { value: "adidas", label: "Adidas" },
-    { value: "puma", label: "Puma" },
-  ];
-
+  const { data: userByPhone, isLoading } = useGetUserByPhone(phoneNumber);
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -72,16 +70,11 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
     setProduct((prev) => ({ ...prev, [name]: value }));
   };
 
-  const addTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const value = (e.target as HTMLInputElement).value.trim();
-
-    if (e.key === "Enter" && value && !product.tags.includes(value)) {
-      setProduct((prevProduct) => ({
-        ...prevProduct,
-        tags: [...prevProduct.tags, value],
-      }));
-      (e.target as HTMLInputElement).value = "";
-    }
+  const addTag = (newTag: string) => {
+    setProduct((prevProduct) => ({
+      ...prevProduct,
+      tags: [...prevProduct.tags, newTag],
+    }));
   };
 
   const removeTag = (index: number) => {
@@ -115,6 +108,14 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
     },
   };
 
+  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setProduct((prev) => ({ ...prev, color: e.target.value }));
+  };
+
+  const handleGenderChange = (value: string) => {
+    setProduct((prev) => ({ ...prev, gender: value }));
+  };
+
   const handleSubmit = async () => {
     if (
       !product.name ||
@@ -142,14 +143,41 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
         }
       }
 
-      createProduct.mutate({
-        ...product,
-        originalPrice,
-        sellingPrice,
-        imageUrls,
-      });
-
-      message.success("Thêm sản phẩm thành công!");
+      createProduct.mutate(
+        {
+          ...product,
+          originalPrice,
+          sellingPrice,
+          imageUrls,
+        },
+        {
+          onSuccess: () => {
+            message.success("Thêm sản phẩm thành công!");
+            // Reset form fields after successful submission
+            setProduct({
+              name: "",
+              description: "",
+              category: [],
+              brand: [],
+              condition: "",
+              size: "",
+              color: "#000000",
+              gender: "Unisex",
+              originalPrice: "",
+              sellingPrice: "",
+              productStatus: "AVAILABLE",
+              tags: [],
+              imageUrls: [],
+              consignorId: userByPhone?.id,
+            });
+            setFileList([]); // Clear file list after success
+          },
+          onError: (error) => {
+            message.error("Có lỗi xảy ra khi thêm sản phẩm.");
+            console.error(error); // Optionally log the error for debugging
+          },
+        }
+      );
     } catch (error) {
       message.error("Có lỗi xảy ra khi thêm sản phẩm.");
     }
@@ -219,9 +247,9 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
                 value={product.category}
                 onChange={(value) => handleSelectChange(value, "category")}
               >
-                {categoryOptions.map((option) => (
-                  <Option key={option.value} value={option.value}>
-                    {option.label}
+                {getCategory.data?.map((option) => (
+                  <Option key={option.id} value={option.id}>
+                    {option.name}
                   </Option>
                 ))}
               </Select>
@@ -238,9 +266,9 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
                 value={product.brand}
                 onChange={(value) => handleSelectChange(value, "brand")}
               >
-                {brandOptions.map((option) => (
-                  <Option key={option.value} value={option.value}>
-                    {option.label}
+                {getBrand?.data?.map((option) => (
+                  <Option key={option.id} value={option.id}>
+                    {option.name}
                   </Option>
                 ))}
               </Select>
@@ -262,17 +290,18 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
               </div>
 
               <div className="w-1/2 form-item">
-                <label htmlFor="" className="block ">
-                  <b>Kích cỡ</b>
-                </label>
-                <input
-                  type="text"
-                  name="size"
-                  value={product.size}
-                  onChange={handleInputChange}
-                  placeholder="35"
-                  className="w-full px-3 py-2 border border-gray-700 rounded"
-                />
+                <div className="form-item rounded-lg">
+                  <label htmlFor="color" className="block">
+                    <b>Màu sắc</b>
+                  </label>
+                  <Input
+                    type="color"
+                    name="color"
+                    value={product.color}
+                    onChange={handleColorChange}
+                    className="w-full"
+                  />
+                </div>
               </div>
             </div>
 
@@ -307,35 +336,87 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
             </div>
 
             <div className="form-item">
-              <label className="block font-bold mb-2">Tag</label>
-              <div className="border border-gray-300 rounded p-3 flex flex-wrap gap-2">
-                {product.tags.map((tag, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center bg-gray-800 text-white text-sm px-3 py-1 rounded-full"
-                  >
-                    {tag}
-                    <button
-                      type="button"
-                      className="ml-2 text-white"
-                      onClick={() => removeTag(index)}
+              <div className="flex items-center gap-4">
+                <div className="w-1/2">
+                  <div className="form-item">
+                    <label htmlFor="size" className="block">
+                      <b>Kích cỡ</b>
+                    </label>
+                    <Select
+                      style={{ width: "100%" }}
+                      placeholder="Chọn kích cỡ"
+                      value={product.size}
+                      onChange={(value) => handleSelectChange(value, "size")}
                     >
-                      &times;
-                    </button>
+                      <Option value="XS">XS</Option>
+                      <Option value="S">S</Option>
+                      <Option value="M">M</Option>
+                      <Option value="L">L</Option>
+                      <Option value="XL">XL</Option>
+                      <Option value="XXL">XXL</Option>
+                      <Option value="XXXL">XXXL</Option>
+                    </Select>
                   </div>
-                ))}
-                <input
+                </div>
+                <div className="w-1/2">
+                  <div className="form-item">
+                    <label htmlFor="gender" className="block ">
+                      <b>Giới tính</b>
+                    </label>
+                    <Select
+                      style={{ width: "100%" }}
+                      placeholder="Chọn giới tính"
+                      value={product.gender}
+                      onChange={handleGenderChange}
+                    >
+                      <Option value="MALE">Male</Option>
+                      <Option value="FEMALE">Female</Option>
+                      <Option value="UNISEX">Unisex</Option>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="w-full">
+              <div className="form-item">
+                <label htmlFor="consignorPhone" className="block">
+                  <b>SDT chủ kí gửi</b>
+                </label>
+                <Input
                   type="text"
-                  placeholder="Add tag"
-                  onKeyDown={addTag}
-                  className="flex-grow outline-none text-sm"
+                  name="consignorPhone"
+                  value={phoneNumber}
+                  onChange={(e: any) => setPhoneNumber(e.target.value)}
+                  placeholder="Nhập số điện thoại"
                 />
               </div>
+
+              {userByPhone && (
+                <div className="customer-info mt-4">
+                  <div>
+                    <b>Tên khách hàng:</b> {userByPhone.name}
+                  </div>
+                  <div>
+                    <b>Email:</b> {userByPhone.email || "Chưa có email"}
+                  </div>
+                  <div>
+                    <b>Địa chỉ:</b> {userByPhone.address || "Chưa có địa chỉ"}
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="w-full ">
+              <label className="block font-bold mb-2">Tag</label>
+              <TagInput
+                initialTags={product.tags}
+                onChange={(newTags) =>
+                  setProduct((prev) => ({ ...prev, tags: newTags }))
+                }
+              />
             </div>
           </div>
 
           <div className="product-detail__form-right overflow-hidden">
-            {/* Use the new ProductSwiper component */}
             <ProductSwiper fileList={fileList} />
 
             <div className="form-item">
