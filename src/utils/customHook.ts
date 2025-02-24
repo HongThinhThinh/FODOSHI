@@ -9,7 +9,7 @@ import {
 } from "@tanstack/react-query";
 import api from "../config/api";
 
-export const createQueryHook =
+export const createQueryHook = 
   (queryKey: string, url: string) =>
   (
     options?: any,
@@ -36,6 +36,7 @@ export const createQueryWithPathParamHook =
 
 export const createMutationHook =
   (queryKey: string, url: string) =>
+    
   (
     id?: string
   ): UseMutationResult<any, AxiosError<{ message: string }>, any> => {

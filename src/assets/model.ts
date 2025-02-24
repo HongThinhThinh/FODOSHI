@@ -1,9 +1,11 @@
 import { ShowCardType } from "./contant";
-
-export const showCardModel:ShowCardType[] = [ {
+import frame80 from "../../public/Frame_70.png";
+const frame = frame80;
+export const showCardModel: ShowCardType[] = [
+  {
     id: 1,
     type: "Shoes",
-    image: "https://via.placeholder.com/150",
+    image: frame,
     name: "Nike Air Max 2024",
     size: 42,
     price: 220000,
@@ -11,17 +13,17 @@ export const showCardModel:ShowCardType[] = [ {
   {
     id: 2,
     type: "T-shirt",
-    image: "https://via.placeholder.com/150",
+    image: frame,
     name: "Adidas Classic T-shirt",
-    size:  3,
+    size: 3,
     price: 180000,
   },
   {
     id: 3,
     type: "Laptop",
     image: "https://via.placeholder.com/150",
-    name: "MacBook Pro 14\"",
-    size:  1,
+    name: 'MacBook Pro 14"',
+    size: 1,
     price: 40000000, // Giá bằng đồng VND
   },
   {
@@ -29,7 +31,7 @@ export const showCardModel:ShowCardType[] = [ {
     type: "Watch",
     image: "https://via.placeholder.com/150",
     name: "Rolex Submariner",
-    size:  42,
+    size: 42,
     price: 100000000, // Giá bằng đồng VND
   },
   {
@@ -37,7 +39,7 @@ export const showCardModel:ShowCardType[] = [ {
     type: "Bag",
     image: "https://via.placeholder.com/150",
     name: "Louis Vuitton Handbag",
-    size:  1,
+    size: 1,
     price: 25000000, // Giá bằng đồng VND
   },
   {
@@ -45,7 +47,7 @@ export const showCardModel:ShowCardType[] = [ {
     type: "Shoes",
     image: "https://via.placeholder.com/150",
     name: "Adidas Ultraboost",
-    size:  44,
+    size: 44,
     price: 250000,
   },
   {
@@ -53,7 +55,7 @@ export const showCardModel:ShowCardType[] = [ {
     type: "Smartphone",
     image: "https://via.placeholder.com/150",
     name: "iPhone 15 Pro Max",
-    size:  1,
+    size: 1,
     price: 35000000, // Giá bằng đồng VND
   },
   {
@@ -61,6 +63,7 @@ export const showCardModel:ShowCardType[] = [ {
     type: "Headphones",
     image: "https://via.placeholder.com/150",
     name: "Sony WH-1000XM5",
-    size:  1,
+    size: 1,
     price: 8000000, // Giá bằng đồng VND
-  },]
+  },
+];

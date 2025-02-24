@@ -1,7 +1,7 @@
 .navbar {
   display: flex;
   align-items: center;
-  justify-content: start;
+  justify-content: space-around;
   gap: 50px;
   &-item {
     font-size: 18px;

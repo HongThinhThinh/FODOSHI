@@ -9,11 +9,25 @@
   align-items: start;
   justify-content: center;
   flex-direction: column;
-  .show-card__img {
+  .show-card__image {
     width: 100%;
     height: 230px;
-    object-fit: cover;
-    object-position: center;
+    position: relative;
+    &--img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+    &--icon {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      color: #fff;
+      background-color: rgba(98, 106, 63, 1);
+      padding: 2px;
+      font-size: 30px;
+    }
   }
   .show-card__wrapper {
     width: 100%;
@@ -25,12 +39,16 @@
     margin-bottom: 30px;
     padding: 18px 13px 0 13px;
   }
-  .show-card__name,
-  .show-card__price {
+  .show-card__name {
     font-size: 16px;
     font-weight: 480;
   }
-  .show-card__type,
+  .show-card__price {
+    color: rgba(131, 47, 33, 1);
+    font-size: 18px;
+    font-weight: 550;
+  }
+  .show-card__name .show-card__type,
   .show-card__size {
     font-size: 16px;
     font-weight: 380;

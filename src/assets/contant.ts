@@ -3,6 +3,9 @@ import fodoshi_white from "../../public/logo-white.png";
 import background from "../../public/Footer.png";
 import banner from "../../public/image/frame.png";
 import image8 from "../../public/image/image 8.png";
+import social1 from "../../public/soical-card/Frame 2609149.png";
+import social2 from "../../public/soical-card/Frame 2609149 (1).png";
+import social3 from "../../public/soical-card/Frame 2609149 (2).png";
 export const imageGirl = image8;
 export const footerBackground = background;
 export const bannerHomepage = banner;
@@ -137,5 +140,41 @@ export const linkInfomation = [
   {
     path: "",
     name: "Đăng xuất",
+  },
+];
+
+export const reasonCard = [
+  {
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdVA2l2F6HIuR9VpdBqKnANH6QOcDp7zFqzA&s",
+    content: "Chất liệu thân thiện với môi trường",
+  },
+  {
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdVA2l2F6HIuR9VpdBqKnANH6QOcDp7zFqzA&s",
+    content: "Giá cả hợp lý, giao hàng nhanh chóng",
+  },
+  {
+    image:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdVA2l2F6HIuR9VpdBqKnANH6QOcDp7zFqzA&s",
+    content: "Phong cách hiện đại, dễ phối đồ",
+  },
+];
+
+export const socialCard = [
+  {
+    image: social1,
+    title: "Tiktok",
+    content: "Cập nhật những tips hay ho về thời gian bền vững cùng FODOSHI",
+  },
+  {
+    image: social2,
+    title: "Instagram",
+    content: "Không bỏ lỡ bất kỳ sản phẩm mới nào",
+  },
+  {
+    image: social3,
+    title: "Thread",
+    content: "Cùng chúng mình chia sẻ những câu chuyện",
   },
 ];
