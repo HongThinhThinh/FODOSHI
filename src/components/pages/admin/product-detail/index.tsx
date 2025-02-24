@@ -1,18 +1,16 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import "./index.scss";
 import { UploadOutlined } from "@ant-design/icons";
 import type { UploadProps, UploadFile } from "antd";
-import { message, Upload, Image, Button, Select } from "antd";
+import { message, Upload, Button, Select } from "antd";
 import ButtonComponent from "../../../atoms/button";
 import useGetParams from "../../../../hooks/useGetParams";
 import { Link } from "react-router-dom";
 import { toTitle } from "../../../../utils/formatStr";
-import { useCreateProduct } from "../../../../services/adminService"; // Hook API
+import { useCreateProduct } from "../../../../services/adminService";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "../../../../config/firebase"; // Import Firebase config
-
-const { Dragger } = Upload;
+import { storage } from "../../../../config/firebase";
+import ProductSwiper from "./productSwiper";
 const { Option } = Select;
 
 // Firebase upload helper function
@@ -31,29 +29,26 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
   const params = useGetParams();
   const id = params("id");
 
-  // The 'product' state holds ALL product data, including the tags.
   const [product, setProduct] = useState({
     name: "",
     description: "",
-    category: [] as string[], // category is an array
-    brand: [] as string[], // brand is an array
+    category: [] as string[],
+    brand: [] as string[],
     condition: "",
     size: "",
     originalPrice: "",
     sellingPrice: "",
     productStatus: "ACTIVE",
-    tags: [] as string[], // tags is an array!  It starts empty.
+    tags: [] as string[],
     imageUrls: [] as string[],
     consignorId: 1,
   });
 
   const currentPath = location.pathname.split("/")[2];
   const currentSubPath = location.pathname.split("/")[3];
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
-  // Example data for category and brand dropdowns.  Replace with your actual data.
+  // Category and brand options
   const categoryOptions = [
     { value: "sneakers", label: "Sneakers" },
     { value: "apparel", label: "Apparel" },
@@ -77,37 +72,23 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
     setProduct((prev) => ({ ...prev, [name]: value }));
   };
 
-  // THIS IS THE FUNCTION THAT ADDS TAGS
   const addTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const value = (e.target as HTMLInputElement).value.trim(); // Get the tag text, remove whitespace
+    const value = (e.target as HTMLInputElement).value.trim();
 
-    // Check if Enter was pressed AND there's text AND the tag isn't already added
     if (e.key === "Enter" && value && !product.tags.includes(value)) {
-      // Update the 'product' state.  We're modifying the 'tags' ARRAY within 'product'.
       setProduct((prevProduct) => ({
-        ...prevProduct, // Copy all the existing product data
-        tags: [...prevProduct.tags, value], // Create a NEW array for 'tags':  copy old tags + add new tag
+        ...prevProduct,
+        tags: [...prevProduct.tags, value],
       }));
-      (e.target as HTMLInputElement).value = ""; // Clear the input field
+      (e.target as HTMLInputElement).value = "";
     }
   };
 
-  // THIS IS THE FUNCTION THAT REMOVES TAGS
   const removeTag = (index: number) => {
-    // Update the 'product' state, modifying the 'tags' array.
     setProduct((prevProduct) => ({
-      ...prevProduct, // Copy all existing product data
-      tags: prevProduct.tags.filter((_, i) => i !== index), // Create a NEW 'tags' array without the removed tag
+      ...prevProduct,
+      tags: prevProduct.tags.filter((_, i) => i !== index),
     }));
-  };
-
-  const getBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
-    });
   };
 
   const createProduct = useCreateProduct();
@@ -129,19 +110,17 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
       }
       return true;
     },
-    onChange: async (info) => {
-      const { fileList } = info;
-      setFileList(fileList);
-
-      if (fileList.length > 0) {
-        const imageUrl = await getBase64(fileList[0].originFileObj as File);
-        setPreviewImage(imageUrl);
-      }
+    onChange: (info) => {
+      setFileList(info.fileList);
     },
   };
 
   const handleSubmit = async () => {
-    if (!product.name || !product.description || !product.category) {
+    if (
+      !product.name ||
+      !product.description ||
+      product.category.length === 0
+    ) {
       message.error("Vui lòng điền đầy đủ thông tin.");
       return;
     }
@@ -154,32 +133,30 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
       return;
     }
 
-    const imageUrls: string[] = [];
-    for (let i = 0; i < fileList.length; i++) {
-      const file = fileList[i];
-      if (file.status === "done" && file.originFileObj) {
-        try {
+    try {
+      const imageUrls: string[] = [];
+      for (const file of fileList) {
+        if (file.originFileObj) {
           const downloadUrl = await uploadFile(file.originFileObj as File);
           imageUrls.push(downloadUrl);
-        } catch (error) {
-          message.error("Lỗi khi tải ảnh lên.");
-          return;
         }
       }
-    }
 
-    // Send the data to the API.  'tags' is now sent as an array.
-    createProduct.mutate({
-      ...product, // All other product data
-      originalPrice: originalPrice, // Price as a number
-      sellingPrice: sellingPrice, // Price as a number
-      tags: product.tags, // Send the tags array directly
-      imageUrls, // Array of image URLs
-    });
+      createProduct.mutate({
+        ...product,
+        originalPrice,
+        sellingPrice,
+        imageUrls,
+      });
+
+      message.success("Thêm sản phẩm thành công!");
+    } catch (error) {
+      message.error("Có lỗi xảy ra khi thêm sản phẩm.");
+    }
   };
 
   return (
-    <>
+    <div className="w-[1200px]">
       <div>
         <h1 style={{ fontWeight: "600", fontSize: "24px" }}>
           Thêm sản phẩm mới
@@ -203,6 +180,7 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
       <div className="product-detail">
         <form action="" className="product-detail__form">
           <div className="product-detail__form-left">
+            {/* Form fields remain the same */}
             <div className="form-item">
               <label htmlFor="" className="block ">
                 <b>Tên sản phẩm</b>
@@ -331,14 +309,12 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
             <div className="form-item">
               <label className="block font-bold mb-2">Tag</label>
               <div className="border border-gray-300 rounded p-3 flex flex-wrap gap-2">
-                {/* This loop displays the tags.  product.tags is an ARRAY. */}
                 {product.tags.map((tag, index) => (
                   <div
                     key={index}
                     className="flex items-center bg-gray-800 text-white text-sm px-3 py-1 rounded-full"
                   >
                     {tag}
-                    {/* This button calls removeTag with the correct index */}
                     <button
                       type="button"
                       className="ml-2 text-white"
@@ -348,7 +324,6 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
                     </button>
                   </div>
                 ))}
-                {/* This input calls addTag when Enter is pressed */}
                 <input
                   type="text"
                   placeholder="Add tag"
@@ -359,21 +334,9 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
             </div>
           </div>
 
-          <div className="product-detail__form-right">
-            <div
-              className="w-full h-[370px] rounded mb-6 transition-all duration-300"
-              style={{
-                background: previewImage
-                  ? `url(${previewImage}) center/contain no-repeat`
-                  : "linear-gradient(to right, #e0e0e0, #f5f5f5)",
-                border: previewImage ? "none" : "2px dashed #ccc",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {!previewImage && <p className="text-gray-600">Chưa có ảnh</p>}
-            </div>
+          <div className="product-detail__form-right overflow-hidden">
+            {/* Use the new ProductSwiper component */}
+            <ProductSwiper fileList={fileList} />
 
             <div className="form-item">
               <label htmlFor="">
@@ -413,6 +376,6 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
           </div>
         </form>
       </div>
-    </>
+    </div>
   );
 }

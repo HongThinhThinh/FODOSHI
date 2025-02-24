@@ -1,0 +1,53 @@
+.product-swiper-container {
+  // Add shadow for better depth
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  .swiper {
+    height: 100%;
+
+    .swiper-button-next,
+    .swiper-button-prev {
+      color: #4a5568;
+      background: rgba(255, 255, 255, 0.8);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+
+      &:after {
+        font-size: 18px;
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.95);
+      }
+    }
+
+    .swiper-pagination-bullet {
+      background: #4a5568;
+      opacity: 0.5;
+
+      &-active {
+        opacity: 1;
+      }
+    }
+  }
+
+  .image-container {
+    transition: all 0.3s ease;
+
+    img {
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: scale(1.02);
+      }
+    }
+  }
+}
+
+// Apply styles for when there are no images
+.empty-state {
+  svg {
+    opacity: 0.7;
+  }
+}
