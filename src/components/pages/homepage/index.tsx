@@ -13,7 +13,10 @@ import ShowCard from "../../atoms/show-card";
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import ReasonCard from "../../atoms/reason-card";
 import SocialCard from "../../atoms/social-card";
+import { useGetProduct } from "../../../services/productService";
 function HomePage() {
+  const { data: products } = useGetProduct();
+  console.log(products);
   return (
     <>
       {/* -------------Banner------------- */}
@@ -82,7 +85,7 @@ function HomePage() {
             }}
             modules={[Navigation]}
           >
-            {showCardModel?.map((item) => (
+            {products?.map((item) => (
               <Carousel.Item className="homepage-outfitOfDay__carousel-item">
                 <ShowCard key={item.id} card={item} />
               </Carousel.Item>
