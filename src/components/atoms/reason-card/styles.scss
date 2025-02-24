@@ -1,0 +1,24 @@
+.reason-card__container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  .reason-card__content {
+    background-color: rgba(237, 235, 228, 1);
+    padding: 50px 70px;
+    width: 55%;
+    p {
+      font-weight: 400;
+      font-size: 20px;
+      letter-spacing: 0;
+      text-align: center;
+    }
+  }
+  .reason-card__image {
+    width: 45%;
+    display: inline-block;
+    height: 300px;
+    object-fit: cover;
+    object-position: center;
+  }
+}
