@@ -15,7 +15,6 @@
     min-height: 100vh;
     .new-product-page__aside {
       background-color: #f0eee6;
-      border-right: 1px solid black;
       padding: 40px 30px;
       &__item {
         display: flex;
@@ -33,8 +32,59 @@
     }
 
     .new-product-page__products {
-      background-color: #f0eee6;
+      // background-color: #f0eee6;
+      padding: 40px 30px;
+    }
+
+    .new-product-page__cart {
       padding: 40px 30px;
     }
   }
 }
+.new-product-page__aside {
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.new-product-page__aside__item {
+  margin-bottom: 15px;
+}
+
+.new-product-page__aside__item--title {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+  font-size: 16px;
+}
+
+.filter-button {
+  margin: 5px 0;
+  background-color: #f0f0f0; 
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  text-align: left;
+  width: 100%;
+}
+
+.filter-button:hover {
+  background-color: #e6e6e6; 
+}
+
+.ant-collapse-header {
+  color: #333; 
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.ant-collapse-content-box {
+  background-color: #f0eee6 ;
+}
+
+.ant-collapse > .ant-collapse-item {
+}
+
+
+
+
+
