@@ -40,7 +40,7 @@ function ShowCard({ card }: showCardProps) {
         <img
           onClick={() => navigate(`/product-detail/${card?.id}`)}
           className="show-card__image--img"
-          src={imageUrl}
+          src={card?.mainImage || imageUrl}
           alt=""
         />
         <div

@@ -60,14 +60,17 @@ export default function ProductDetail({
     tags: [] as string[], // Use tags array from state
     imageUrls: [] as string[],
     consignorId: "",
+    mainImage: "",
   });
   const [loading, setLoading] = useState(false);
   const currentPath = location.pathname.split("/")[2];
   const currentSubPath = location.pathname.split("/")[3];
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-
+  const [selectedMainImage, setSelectedMainImage] = useState<number>(0);
   const { data: userByPhone, refetch } = useGetUserByPhone(phoneNumber);
-
+  useEffect(() => {
+    setSelectedMainImage(0);
+  }, [fileList]);
   useEffect(() => {
     if (phoneNumber) {
       refetch();
@@ -127,7 +130,10 @@ export default function ProductDetail({
       message.error("Vui lòng điền đầy đủ thông tin.");
       return;
     }
-
+    if (fileList.length === 0) {
+      message.error("Vui lòng tải lên ít nhất một ảnh.");
+      return;
+    }
     const originalPrice = parseFloat(product.originalPrice);
     const sellingPrice = parseFloat(product.sellingPrice);
     if (isNaN(originalPrice) || isNaN(sellingPrice)) {
@@ -151,6 +157,7 @@ export default function ProductDetail({
           originalPrice,
           sellingPrice,
           imageUrls,
+          mainImage: imageUrls[selectedMainImage],
           consignorId: userByPhone?.id,
         },
 
@@ -435,7 +442,11 @@ export default function ProductDetail({
             </div>
 
             <div className="product-detail__form-right overflow-hidden">
-              <ProductSwiper fileList={fileList} />
+              <ProductSwiper
+                fileList={fileList}
+                onImageSelect={(index) => setSelectedMainImage(index)}
+                selectedMainImage={selectedMainImage}
+              />
 
               <div className="form-item">
                 <label htmlFor="">

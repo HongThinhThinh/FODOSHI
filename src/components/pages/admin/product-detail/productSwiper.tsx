@@ -9,9 +9,15 @@ import "./product.scss"; // Make sure to create this file for custom styles
 
 interface ProductSwiperProps {
   fileList: UploadFile[];
+  onImageSelect: (index: number) => void;
+  selectedMainImage: number;
 }
 
-const ProductSwiper: React.FC<ProductSwiperProps> = ({ fileList }) => {
+const ProductSwiper: React.FC<ProductSwiperProps> = ({
+  fileList,
+  onImageSelect,
+  selectedMainImage,
+}) => {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
   useEffect(() => {
@@ -53,16 +59,25 @@ const ProductSwiper: React.FC<ProductSwiperProps> = ({ fileList }) => {
           className="h-full w-full product-swiper"
         >
           {imagePreviews.map((imageUrl, index) => (
-            <SwiperSlide
-              key={index}
-              className="flex items-center justify-center"
-            >
-              <div className="image-container w-full h-full flex items-center justify-center p-4">
+            <SwiperSlide key={index}>
+              <div
+                className={`relative w-full h-full flex items-center justify-center p-4 cursor-pointer ${
+                  index === selectedMainImage ? "ring-4 ring-green-500" : ""
+                }`}
+                onClick={() => onImageSelect(index)}
+              >
                 <img
                   src={imageUrl}
                   alt={`preview-${index}`}
                   className="max-w-full max-h-[300px] object-contain"
                 />
+
+                {/* Badge hiển thị ảnh chính */}
+                {index === selectedMainImage && (
+                  <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-sm">
+                    Ảnh chính
+                  </div>
+                )}
               </div>
             </SwiperSlide>
           ))}

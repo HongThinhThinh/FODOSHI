@@ -127,29 +127,29 @@ export default function Cart() {
           <span>Giá sản phẩm</span>
           <span></span>
         </div>
-        {!cartData || cartData.length === 0 ? (
+        {!cartData || cartData?.length === 0 ? (
           <div className="cart__items__empty">Giỏ hàng trống</div>
         ) : (
-          cartData.map((cartItem) => {
-            if (!cartItem || !cartItem.product) return null;
+          cartData?.map((cartItem) => {
+            if (!cartItem || !cartItem?.product) return null;
 
-            const product = cartItem.product;
+            const product = cartItem?.product;
             if (!product) return null;
 
             return (
-              <div className="cart__items__item" key={product.id}>
+              <div className="cart__items__item" key={product?.id}>
                 <div className="cart__items__item__checkbox">
                   <input
                     type="checkbox"
-                    checked={selectedItems.includes(product.id)}
-                    onChange={() => handleCheckboxChange(product.id)}
+                    checked={selectedItems.includes(product?.id)}
+                    onChange={() => handleCheckboxChange(product?.id)}
                   />
                 </div>
                 <div className="cart__items__item__product">
                   <div className="cart__items__item__product__image">
-                    {product.imageUrls && product.imageUrls[0] && (
+                    {product?.imageUrls && product?.imageUrls[0] && (
                       <img
-                        src={product.imageUrls[0].image}
+                        src={product?.mainImage || product?.imageUrls[0]?.image}
                         alt={product.name || "Sản phẩm"}
                       />
                     )}
@@ -158,26 +158,26 @@ export default function Cart() {
                 <div className="cart__items__item__category">
                   <div className="cart__items__item__product__details">
                     <div className="cart__items__item__product__details__name">
-                      {product.name || "Không có tên"}
+                      {product?.name || "Không có tên"}
                     </div>
                   </div>
                   <div>
                     <div>Phân loại</div>
-                    <div>Size {product.size || "N/A"}</div>
+                    <div>Size {product?.size || "N/A"}</div>
                     <div className="color-display">
                       <span>Màu</span>
                       <div
                         className="color-swatch"
                         style={{
-                          backgroundColor: product.color || "#ccc",
+                          backgroundColor: product?.color || "#ccc",
                         }}
-                        title={product.color || "Không xác định"} // Tooltip hiển thị tên màu
+                        title={product?.color || "Không xác định"} // Tooltip hiển thị tên màu
                       />
                     </div>
                   </div>
                 </div>
                 <div className="cart__items__item__price">
-                  {formatMoney(product.sellingPrice || 0)} VND
+                  {formatMoney(product?.sellingPrice || 0)} VND
                 </div>
                 <div className="cart__items__item__remove">
                   <button

@@ -8,32 +8,33 @@ function Blog() {
   const [blogs, setBlogs] = useState<BlogCardProps[]>([
     {
       id: "1",
-      title: "May biet cai cho gi ve tao???? 1",
-      author: "Nguyễn Khánh Tùng 1",
-      category: "Danh sach 1",
-      created_at: "2 tiếng trước 1",
+      title: "Khám phá áo thun Uniqlo mới ra mắt",
+      author: "Uniqlo Store",
+      category: "Áo thun nam",
+      created_at: "1 ngày trước",
       image:
-        "https://platinumlist.net/guide/wp-content/uploads/2023/03/IMG-worlds-of-adventure.webp",
+        "https://platinumlist.net/guide/wp-content/uploads/2023/03/IMG-worlds-of-adventure.webp", // Hình ảnh không thay đổi
     },
     {
-      id: "1",
-      title: "May biet cai cho gi ve tao???? 2",
-      author: "Nguyễn Khánh Tùng 2",
-      category: "Danh sach 2",
-      created_at: "2 tiếng trước 2",
+      id: "2",
+      title: "Giảm giá cực sốc cho quần jeans Levi's",
+      author: "Levi's Official",
+      category: "Quần jeans nữ",
+      created_at: "3 ngày trước",
       image:
-        "https://platinumlist.net/guide/wp-content/uploads/2023/03/IMG-worlds-of-adventure.webp",
+        "https://platinumlist.net/guide/wp-content/uploads/2023/03/IMG-worlds-of-adventure.webp", // Hình ảnh không thay đổi
     },
     {
-      id: "1",
-      title: "May biet cai cho gi ve tao???? 3 fffffffffffffffffffffffffffffff",
-      author: "Nguyễn Khánh Tùng 3",
-      category: "Danh sach 3",
-      created_at: "2 tiếng trước 3",
+      id: "3",
+      title: "Áo khoác Zara - Thiết kế mùa thu 2023",
+      author: "Zara Collection",
+      category: "Áo khoác mùa thu",
+      created_at: "5 ngày trước",
       image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNxFFYy9zjsJZVubV5yvwhAV6EpfS34mHGGg&s",
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNxFFYy9zjsJZVubV5yvwhAV6EpfS34mHGGg&s", // Hình ảnh không thay đổi
     },
   ]);
+
   return (
     <div className="blog">
       <div className="blog__top">

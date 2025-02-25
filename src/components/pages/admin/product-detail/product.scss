@@ -1,7 +1,29 @@
 .product-swiper-container {
   // Add shadow for better depth
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  .image-container {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
 
+    &.selected {
+      border: 3px solid #626a3f;
+      border-radius: 8px;
+      padding: 4px;
+    }
+
+    .main-image-label {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(98, 106, 63, 0.8);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+  }
   .swiper {
     height: 100%;
 
