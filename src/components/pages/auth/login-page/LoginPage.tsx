@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Input } from "antd";
+import { Form, Input, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import ButtonComponent from "../../../atoms/button";
 import useApiService from "../../../../hooks/useApi";
@@ -11,6 +11,7 @@ export default function LoginPage() {
   const { callApi, loading } = useApiService();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [messageApi, contextHolder] = message.useMessage();
   const onFinish = async (values: any) => {
     const { username, password } = values;
     const payload = {
@@ -23,33 +24,29 @@ export default function LoginPage() {
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("refreshToken", response.data.refreshToken);
       console.log("Login successful", response);
+      messageApi.success("Login successful");
       dispatch(login(response.data));
       navigate("/", { replace: true });
     } catch (error) {
       console.error("Login failed", error);
+      messageApi.error("Login failed");
       // Xử lý thông báo lỗi cho người dùng...
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center px-4 pb-8">
+      {contextHolder}
       {/* Card đăng nhập */}
       <div className="w-full max-w-md rounded-lg shadow-lg p-6 border">
         <h1 className="text-center text-2xl mb-4">Sign in</h1>
 
         {/* Form Ant Design */}
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={onFinish}
-          className="space-y-3"
-        >
+        <Form form={form} layout="vertical" onFinish={onFinish} className="">
           <Form.Item
             label="Email or mobile phone number"
             name="username"
-            rules={[
-              { required: true, message: "Please enter your email or phone" },
-            ]}
+            rules={[{ required: true, message: "Please enter your email or phone" }]}
           >
             <Input />
           </Form.Item>
