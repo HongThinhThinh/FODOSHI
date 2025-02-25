@@ -33,6 +33,7 @@ import AuthenticationLayout from "../layouts/auth/AuthenticationLayout";
 import RegisterPage from "../components/pages/auth/register-page/RegisterPage";
 import LoginPage from "../components/pages/auth/login-page/LoginPage";
 import ConsignmentPage from "../components/pages/consignment";
+import MalePage from "../components/pages/male-page";
 
 export const router = createBrowserRouter([
   {
@@ -77,7 +78,15 @@ export const router = createBrowserRouter([
         element: <Cart />,
       },
       {
-        path: "/product-detail?/:id",
+        path: "cart",
+        element: <Cart />,
+      },
+      {
+        path: "male",
+        element: <MalePage />,
+      },
+      {
+        path: "/product-detail/:id",
         element: <ProductDetails />,
       },
     ],

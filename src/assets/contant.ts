@@ -2,6 +2,7 @@ import fodoshi from "../../public/logo.svg";
 import fodoshi_white from "../../public/logo-white.png";
 import background from "../../public/Footer.png";
 import banner from "../../public/image/frame.png";
+import Malebanner from "../../public/image/male-banner.png";
 import image8 from "../../public/image/image 8.png";
 import social1 from "../../public/soical-card/Frame 2609149.png";
 import social2 from "../../public/soical-card/Frame 2609149 (1).png";
@@ -9,6 +10,7 @@ import social3 from "../../public/soical-card/Frame 2609149 (2).png";
 export const imageGirl = image8;
 export const footerBackground = background;
 export const bannerHomepage = banner;
+export const bannerMalePage = Malebanner;
 export const logo = fodoshi;
 export const logoWhite = fodoshi_white;
 
