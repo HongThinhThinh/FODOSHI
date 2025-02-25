@@ -16,9 +16,7 @@ function LoginPage() {
       <div className="container login-container">
         <img src={logo} alt="" className="inline-block w-[40%] mb-8" />
         <div className="login-form">
-          <h1 className="login-title">
-            Nhập mật khẩu của bạn để đăng nhập vào Fodoshi nha!
-          </h1>
+          <h1 className="login-title">Nhập mật khẩu của bạn để đăng nhập vào Fodoshi nha!</h1>
           <span className="btn-wrapper--change">
             <p>{email}</p>
             <span className="btn--change" onClick={() => navigate("/auth")}>

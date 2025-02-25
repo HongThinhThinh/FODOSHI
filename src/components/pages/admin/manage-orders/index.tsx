@@ -3,16 +3,12 @@ import "./index.scss";
 import { Table } from "antd";
 import { recentOrdersDummyData } from "../../../../dummy-data/recent-order-data";
 import { MoreOutlined } from "@ant-design/icons";
-import { OrderStatus } from "../../../../model/order";
+import { Order, OrderStatus } from "../../../../model/order";
 import { useNavigate } from "react-router-dom";
+import GenericTable, { ColumnType } from "../../../atoms/table";
 function OrderManagement() {
   const navigate = useNavigate();
-  const columns = [
-    {
-      title: "Sản phẩm",
-      dataIndex: "product",
-      key: "product",
-    },
+  const columns: ColumnType<Order>[] = [
     {
       title: "Mã đơn",
       dataIndex: "orderId",
@@ -60,17 +56,11 @@ function OrderManagement() {
             </div>
           </div>
           <div className="orders__table__container__body">
-            <Table
+            <GenericTable
               columns={columns}
-              dataSource={recentOrdersDummyData}
-              pagination={{ pageSize: 5 }}
-              scroll={{ x: "max-content" }}
+              data={recentOrdersDummyData}
               onRow={(record) => {
-                return {
-                  onClick: () => {
-                    navigate(`/test-admin/orders/${record.orderId}`);
-                  },
-                };
+                navigate(`${record.orderId}`);
               }}
             />
           </div>

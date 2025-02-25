@@ -27,6 +27,7 @@ import {
   mockAdminCategoryRouteData,
   mockAdminRouteData,
 } from "../dummy-data/mockAdminRouteData";
+
 import CategoryAdminLayout from "../layouts/admin/admin-category";
 import DeliveryAddress from "../components/pages/infomation-page/delivery-address";
 import PaymentMethod from "../components/pages/infomation-page/payment-method";

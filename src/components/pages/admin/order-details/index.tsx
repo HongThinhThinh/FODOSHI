@@ -15,20 +15,17 @@ import { faCcMastercard } from "@fortawesome/free-brands-svg-icons";
 import { formatMoney } from "../../../../utils/formatMoney";
 import { toTitle } from "../../../../utils/formatStr";
 import { useParams } from "react-router-dom";
+import GenericTable, { ColumnType } from "../../../atoms/table";
+import type { OrderDetails } from "../../../../model/order";
 
 export default function OrderDetails() {
   const [status, setStatus] = useState<string>("Đổi trạng thái");
   const { id } = useParams();
-  const columns = [
+  const columns: ColumnType<OrderDetails>[] = [
     {
       title: "Sản phẩm",
-      dataIndex: "product",
-      key: "product",
-    },
-    {
-      title: "Mã đơn",
-      dataIndex: "orderId",
-      key: "orderId",
+      dataIndex: "productName",
+      key: "productName",
     },
     {
       title: "Số lượng",
@@ -41,10 +38,8 @@ export default function OrderDetails() {
       key: "price",
       render: (price: number) => formatMoney(price),
     },
-
     {
       title: "Tổng tiền",
-      dataIndex: "total",
       key: "total",
       render: (_, record) => {
         const total = record.price * record.quantity;
@@ -52,39 +47,34 @@ export default function OrderDetails() {
       },
     },
   ];
-  const dataSource = [
+  const dataSource: OrderDetails[] = [
     {
-      key: "1",
-      product: "Áo thun nam",
-      orderId: "ORD12345",
+      id: 1,
+      productName: "Áo thun nam",
       quantity: 2,
       price: 200000,
     },
     {
-      key: "2",
-      product: "Quần jeans nữ",
-      orderId: "ORD12345",
+      id: 2,
+      productName: "Quần jeans nữ",
       quantity: 1,
       price: 500000,
     },
     {
-      key: "3",
-      product: "Giày thể thao",
-      orderId: "ORD12345",
+      id: 3,
+      productName: "Giày thể thao",
       quantity: 1,
       price: 1200000,
     },
     {
-      key: "4",
-      product: "Đồng hồ đeo tay",
-      orderId: "ORD12345",
+      id: 4,
+      productName: "Đồng hồ đeo tay",
       quantity: 1,
       price: 3000000,
     },
     {
-      key: "5",
-      product: "Balo thời trang",
-      orderId: "ORD12345",
+      id: 5,
+      productName: "Balo thời trang",
       quantity: 3,
       price: 350000,
     },
@@ -238,12 +228,7 @@ export default function OrderDetails() {
           </div>
         </div>
         <div className="order-details__list__table">
-          <Table
-            dataSource={dataSource}
-            columns={columns}
-            pagination={{ pageSize: 5 }}
-            scroll={{ x: "max-content" }}
-          />
+          <GenericTable data={dataSource} columns={columns} />
         </div>
         <div className="order-details__list__bill">
           <div className="order-details__list__bill__content">
