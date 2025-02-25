@@ -10,8 +10,7 @@ api.interceptors.request.use(
     // Do something before request is sent
     // const token = localStorage.getItem("token");
     const token =
-      "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdHJpbmciLCJyZWZyZXNoIjoiZTY2ZjAwYzMtYzE0Ny00NGI4LWE1ZTgtMjIwNDhjYjIwZjBhIiwiZXhwIjoxNzQwNDM1MzA0LCJpYXQiOjE3NDA0MzE3MDQsInNjb3BlIjoiUk9MRV9DT05TSUdOT1IifQ.2mfOLmNRc-dJ6Yfsx78X12jH5AZwZ8ejCuievFsn1WEmHsxrCIBQgn0yCCpjyfTQByEqxOhljHjSx4g98bGJtA";
-
+      "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdHJpbmciLCJyZWZyZXNoIjoiZWMwNDY4MDUtNzdiZi00NmYxLWFmYTYtMTM4OTZjZWU1YWM0IiwiZXhwIjoxNzQwNDQ4MjE4LCJpYXQiOjE3NDA0NDQ2MTgsInNjb3BlIjoiUk9MRV9DT05TSUdOT1IifQ.o4v-MQICX8FcWGd8p-lwvvhkX3Wr6fMbSlO1hVqlAlddwqpB2F1zc1Zmwx4HFl3ehdrQSgUHH1u-KqhMlcHSrw";
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
