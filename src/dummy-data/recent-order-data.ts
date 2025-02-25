@@ -2,8 +2,7 @@ import { Order } from "../model/order";
 import { OrderStatus } from "../model/order";
 export const recentOrdersDummyData: Order[] = [
   {
-    key: "1",
-    product: "Nike Air Max",
+    id: 1,
     orderId: "ORD12345",
     date: "2024-12-20",
     customerName: "Nguyen Van A",
@@ -11,8 +10,7 @@ export const recentOrdersDummyData: Order[] = [
     total: "2,500,000 VND",
   },
   {
-    key: "2",
-    product: "Adidas UltraBoost",
+    id: 2,
     orderId: "ORD12346",
     date: "2024-12-19",
     customerName: "Tran Thi B",
@@ -20,8 +18,7 @@ export const recentOrdersDummyData: Order[] = [
     total: "3,000,000 VND",
   },
   {
-    key: "3",
-    product: "Puma Suede",
+    id: 3,
     orderId: "ORD12347",
     date: "2024-12-18",
     customerName: "Le Van C",
@@ -29,8 +26,7 @@ export const recentOrdersDummyData: Order[] = [
     total: "1,800,000 VND",
   },
   {
-    key: "4",
-    product: "Reebok Classic",
+    id: 4,
     orderId: "ORD12348",
     date: "2024-12-17",
     customerName: "Pham Thi D",

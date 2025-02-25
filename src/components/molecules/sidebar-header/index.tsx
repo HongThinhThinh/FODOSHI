@@ -9,26 +9,25 @@ import { useNavigate } from "react-router-dom";
 import { Badge } from "antd";
 import { RootState } from "../../../redux/store";
 import { useSelector } from "react-redux";
-function SideBarHeader({ name, className, ...rest }: SideBarHeaderProps) {
-  const cart = useSelector((state: RootState) => state.cart);
+function SideBarHeader({ className, ...rest }: SideBarHeaderProps) {
+  const state = useSelector((state: RootState) => state);
+  const { user } = state;
   const navigate = useNavigate();
+  console.log(user);
+  console.log(state.cart);
   return (
     <nav className={`sidebar_header ${className}`} {...rest}>
       <ul className="sidebar_header-container">
-        <li className="sidebar_header__item sidebar_header__item--text ">
-          Ký gửi
-        </li>
-        {name ? (
+        <li className="sidebar_header__item sidebar_header__item--text ">Ký gửi</li>
+        {user ? (
           <li className="sidebar_header__item sidebar_header__item--text ">
-            <span>Chào, {name}</span> <FaRegUser />
+            <span>Chào, {user?.name}</span> <FaRegUser />
           </li>
         ) : (
-          <li className="sidebar_header__item sidebar_header__item--text ">
-            Đăng nhập
-          </li>
+          <li className="sidebar_header__item sidebar_header__item--text ">Đăng nhập</li>
         )}
         <li className="sidebar_header__item">
-          <Badge count={cart?.products?.length}>
+          <Badge count={state.cart?.products?.length}>
             <FiShoppingCart
               style={{ cursor: "pointer" }}
               onClick={() => {

@@ -19,10 +19,13 @@ import CustomizedCard from "../../../molecules/card/Card";
 import "./index.scss";
 import ButtonComponent from "../../../atoms/button";
 import { recentOrdersDummyData } from "../../../../dummy-data/recent-order-data";
-import { OrderStatus } from "../../../../model/order";
+import { Order, OrderStatus } from "../../../../model/order";
+import GenericTable, { ColumnType } from "../../../atoms/table";
+import { useNavigate } from "react-router-dom";
 function Dashboard() {
   // const [data, setData] = useState([]);
   const [activeButton, setActiveButton] = useState<string>("WEEK");
+  const navigate = useNavigate();
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
   const data = [
     { name: "Jan", uv: 400, pv: 2400, amt: 2400 },
@@ -73,7 +76,7 @@ function Dashboard() {
     },
   ];
 
-  const columns = [
+  const columns: ColumnType<Order>[] = [
     {
       title: "Sản phẩm",
       dataIndex: "product",
@@ -256,11 +259,19 @@ function Dashboard() {
             </div>
           </div>
           <div className="dashboard__table__container__body">
-            <Table
+            {/* <Table
               columns={columns}
               dataSource={recentOrdersDummyData}
               pagination={{ pageSize: 5 }}
               scroll={{ x: "max-content" }}
+            /> */}
+            <GenericTable
+              pageSize={2}
+              columns={columns}
+              data={recentOrdersDummyData}
+              onRow={(record) => {
+                navigate(`${record.orderId}`);
+              }}
             />
           </div>
         </div>

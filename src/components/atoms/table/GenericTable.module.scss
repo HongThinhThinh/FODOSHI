@@ -1,0 +1,85 @@
+// Base styles for the table
+.generic-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  color: #333;
+
+  &__header {
+    // background-color: #f4f4f4;
+    color: #000;
+    text-align: left;
+
+    th {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      span {
+        font-weight: 600;
+        opacity: 70%;
+      }
+    }
+  }
+
+  &__row {
+    &:nth-child(even) {
+      background-color: #f9f9f9; // Stripe effect
+    }
+
+    &:hover {
+      background-color: #f1f1f1; // Hover effect
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+
+      &--highlight {
+        font-weight: bold;
+        color: #007bff;
+      }
+    }
+  }
+
+  &__footer {
+    background-color: #f4f4f4;
+
+    td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      font-weight: bold;
+    }
+  }
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+
+  button {
+    margin: 0 4px;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    background: #fff;
+    cursor: pointer;
+
+    &--active {
+      background: #000;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+  &__button {
+    &--active {
+      background: #007bff !important;
+      color: #fff;
+      font-weight: bold;
+    }
+  }
+}

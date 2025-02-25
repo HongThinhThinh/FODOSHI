@@ -26,7 +26,7 @@ function Header() {
         >
           <img src={logo} alt="" />
         </div>
-        <SideBarHeader className="header-sidebar" name="Admin" />
+        <SideBarHeader className="header-sidebar" />
       </div>
       <nav className="header-hero">
         <Hero />
