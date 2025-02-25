@@ -26,7 +26,7 @@ function ShowCard({ card }: showCardProps) {
             message.success("Thêm giỏ hàng thành công");
           },
           onError: (error) => {
-            message.error(error?.response?.data || "cc");
+            message.error(error?.response?.data);
           },
         }
       );

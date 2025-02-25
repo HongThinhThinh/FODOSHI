@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import "./index.scss";
-import { DownCircleOutlined, UpCircleOutlined } from "@ant-design/icons";
+import { PlusOutlined, MinusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
   add,
@@ -16,170 +16,223 @@ import ButtonComponent from "../../../atoms/button";
 import { Link, useNavigate } from "react-router-dom";
 import { formatMoney } from "../../../../utils/formatMoney";
 import Checkout from "../check-out";
-import { useGetCart } from "../../../../services/cartService";
+import { useDeleteCart, useGetCart } from "../../../../services/cartService";
+import { message } from "antd";
+import api from "../../../../config/api";
 
 export default function Cart() {
-  const cart = useSelector((state: RootState) => state.cart);
-  const [total, setTotal] = useState(0);
+  const [subtotal, setSubtotal] = useState(0);
+  const [shippingFee, setShippingFee] = useState(20000);
+  const [discount, setDiscount] = useState(0);
   const [grandTotal, setGrandTotal] = useState(0);
-  const [tax, setTax] = useState(5);
   const [openCheckout, setOpenCheckout] = useState(false);
+  const [selectedItems, setSelectedItems] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const getParams = useGetCart();
-  console.log(getParams?.data?.data?.cartItems);
+  const deleteCart = useDeleteCart();
+  const cartData = getParams?.data?.data?.cartItems || [];
 
-  const handleIncrement = (product: Product) => {
-    dispatch(
-      changeQuantity({
-        productId: product.productId,
-        quantity: product.quantity + 1,
-      })
-    );
+  const calculateTotals = useCallback(() => {
+    // Tính toán dựa trên các mặt hàng được chọn
+    let calculatedSubtotal = 0;
+
+    if (cartData && cartData.length > 0 && selectedItems.length > 0) {
+      for (const item of cartData) {
+        if (item.product && selectedItems.includes(item.product.id)) {
+          calculatedSubtotal +=
+            (item.product.sellingPrice || 0) * (item.quantity || 1);
+        }
+      }
+    }
+
+    setSubtotal(calculatedSubtotal);
+    setGrandTotal(calculatedSubtotal + shippingFee - discount);
+  }, [cartData, selectedItems, shippingFee, discount]);
+
+  useEffect(() => {
+    if (cartData && cartData.length > 0) {
+      dispatch(getAll(cartData));
+    }
+  }, [dispatch, getParams?.data]);
+
+  useEffect(() => {
+    calculateTotals();
+  }, [calculateTotals]);
+
+  const handleCheckboxChange = (productId) => {
+    setSelectedItems((prevSelected) => {
+      if (prevSelected.includes(productId)) {
+        return prevSelected.filter((id) => id !== productId);
+      } else {
+        return [...prevSelected, productId];
+      }
+    });
   };
 
-  const handleDecrement = (product: Product) => {
-    if (product.quantity > 1) {
-      dispatch(
-        changeQuantity({
-          productId: product.productId,
-          quantity: product.quantity - 1,
-        })
-      );
-    } else {
-      dispatch(remove(product.productId));
+  const handleRemoveItem = async (productId) => {
+    try {
+      const response = await api.delete(`/cart/${productId}`);
+      if (response.status === 200) {
+        message.success("Xóa sản phẩm thành công!");
+        getParams.refetch();
+
+        dispatch(remove(productId)); // Xóa sản phẩm khỏi giỏ hàng trong Redux
+
+        // Cập nhật lại danh sách sản phẩm đã chọn nếu cần
+        setSelectedItems((prevSelected) =>
+          prevSelected.filter((id) => id !== productId)
+        );
+        // Tính toán lại tổng giá trị giỏ hàng nếu cần
+        calculateTotals(); // Gọi hàm tính toán lại tổng giỏ hàng nếu cần
+      } else {
+        message.error("Có lỗi xảy ra khi xóa sản phẩm.");
+      }
+    } catch (error) {
+      message.error("Có lỗi xảy ra khi xóa sản phẩm.");
     }
   };
 
-  useEffect(() => {
-    const total: number = cart?.products?.reduce(
-      (total: number, product: Product) =>
-        total + product.price * product.quantity,
-      0
-    );
+  const handleSelectAll = () => {
+    if (selectedItems.length === cartData.length) {
+      setSelectedItems([]);
+    } else {
+      const allIds = cartData
+        .filter((item) => item.product && item.product.id)
+        .map((item) => item.product.id);
+      setSelectedItems(allIds);
+    }
+  };
 
-    setTotal(total);
-    setGrandTotal(total + total * (tax / 100));
-  }, [cart.products]);
+  // Check if all items are selected (safely handle empty arrays)
+  const allSelected =
+    cartData.length > 0 &&
+    selectedItems.length ===
+      cartData.filter((item) => item.product && item.product.id).length;
 
   return (
     <div className="cart">
-      <div className="cart__title">
-        Your Cart ( {cart?.products?.length} items)
-      </div>
+      <div className="cart__title">Giỏ hàng</div>
       <div className="cart__items">
         <div className="cart__items__header">
-          <span>Item</span>
-          <span>Price</span>
-          <span>Total</span>
+          <span>
+            <input
+              type="checkbox"
+              onChange={handleSelectAll}
+              checked={allSelected && cartData.length > 0}
+            />
+          </span>
+          <span>Sản phẩm</span>
+          <span>Phân loại</span>
+          <span>Giá sản phẩm</span>
+          <span></span>
         </div>
-        {cart?.products?.length === 0 ? (
-          <div className="cart__items__empty">Cart is empty</div>
+        {!cartData || cartData.length === 0 ? (
+          <div className="cart__items__empty">Giỏ hàng trống</div>
         ) : (
-          cart?.products?.map((product: Product) => (
-            <div className="cart__items__item">
-              <div className="cart__items__item__info">
-                <div className="cart__items__item__info__image">
-                  <img src={product.image} alt="" />
-                </div>
-                <div className="cart__items__item__info__details">
-                  <div className="cart__items__item__info__details__name">
-                    {product.productName}
-                  </div>
-                  <div className="cart__items__item__info__details__description">
-                    <div className="cart__items__item__info__details__description__category">
-                      {Array.isArray(product?.category) &&
-                      product?.category?.length > 0 ? (
-                        product.category.map((category: ProductCategory) => (
-                          <span key={category.id}>
-                            Category : {category.name}
-                          </span>
-                        ))
-                      ) : (
-                        <span>No categories available</span>
-                      )}
-                    </div>
-                    <div className="cart__items__item__info__details__description__size">
-                      Size : {product.size}
-                    </div>
-                    <div className="cart__items__item__info__details__description__brand">
-                      Brand : {product.brand}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="cart__items__item__price">
-                {formatMoney(product.price)}
-              </div>
+          cartData.map((cartItem) => {
+            if (!cartItem || !cartItem.product) return null;
 
-              <div className="cart__items__item__total">
-                {formatMoney(product.quantity * product.price)}
+            const product = cartItem.product;
+            if (!product) return null;
+
+            return (
+              <div className="cart__items__item" key={product.id}>
+                <div className="cart__items__item__checkbox">
+                  <input
+                    type="checkbox"
+                    checked={selectedItems.includes(product.id)}
+                    onChange={() => handleCheckboxChange(product.id)}
+                  />
+                </div>
+                <div className="cart__items__item__product">
+                  <div className="cart__items__item__product__image">
+                    {product.imageUrls && product.imageUrls[0] && (
+                      <img
+                        src={product.imageUrls[0].image}
+                        alt={product.name || "Sản phẩm"}
+                      />
+                    )}
+                  </div>
+                </div>
+                <div className="cart__items__item__category">
+                  <div className="cart__items__item__product__details">
+                    <div className="cart__items__item__product__details__name">
+                      {product.name || "Không có tên"}
+                    </div>
+                  </div>
+                  <div>
+                    <div>Phân loại</div>
+                    <div>Size {product.size || "N/A"}</div>
+                    <div className="color-display">
+                      <span>Màu</span>
+                      <div
+                        className="color-swatch"
+                        style={{
+                          backgroundColor: product.color || "#ccc",
+                        }}
+                        title={product.color || "Không xác định"} // Tooltip hiển thị tên màu
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="cart__items__item__price">
+                  {formatMoney(product.sellingPrice || 0)} VND
+                </div>
+                <div className="cart__items__item__remove">
+                  <button
+                    className="remove-btn"
+                    onClick={() => handleRemoveItem(cartItem.id)}
+                  >
+                    <DeleteOutlined />
+                  </button>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
-      <div className="cart__bills">
-        <div className="cart__bills__left"></div>
-        <div className="cart__bills__right">
-          <div className="cart__bills__right__item">
-            <span className="cart__bills__right__item__title">
-              Sub total :{" "}
-            </span>
-            <span>{formatMoney(total)}</span>
+
+      <div className="cart__summary">
+        <div className="cart__summary__content">
+          <div className="cart__summary__row">
+            <span>Tiền hàng</span>
+            <span>{formatMoney(subtotal)} VND</span>
           </div>
-          <div className="cart__bills__right__item">
-            <span className="cart__bills__right__item__title">
-              Sales Tax :{" "}
-            </span>{" "}
-            <span>{tax}%</span>
+          <div className="cart__summary__row">
+            <span>Phí vận chuyển</span>
+            <span>{formatMoney(shippingFee)} VND</span>
           </div>
-          <div className="cart__bills__right__item">
-            <span className="cart__bills__right__item__title">
-              Coupon Code :{" "}
-            </span>
-            <span>
-              <Link to={"/"}>Add Coupon</Link>
-            </span>
+          <div className="cart__summary__row">
+            <span>Voucher giảm giá</span>
+            <span>{formatMoney(discount)} VND</span>
           </div>
-          <div id="grand-total" className="cart__bills__right__item">
-            <span className="cart__bills__right__item__title">
-              Grand total :{" "}
-            </span>
-            <span id="grand-total-value"> {formatMoney(grandTotal)}</span>
+          <div className="cart__summary__row cart__summary__row--total">
+            <span>Tổng thanh toán</span>
+            <span>{formatMoney(grandTotal)} VND</span>
           </div>
-        </div>
-      </div>
-      <div className="cart__actions">
-        <div className="cart__actions__left"></div>
-        <div className="cart__actions__right">
-          <ButtonComponent
-            color="#fff"
-            status="danger"
-            className="cart__actions__button"
-            onClick={() => dispatch(reset())}
-          >
-            Clear Cart
-          </ButtonComponent>
-          {cart?.products?.length > 0 && (
+          <div className="cart__summary__checkout">
             <ButtonComponent
-              onClick={() => {
-                setOpenCheckout(true);
-                console.log("Clicked checkout " + openCheckout);
-              }}
+              onClick={() => setOpenCheckout(true)}
               color="#fff"
-              bgColor="#d99041"
-              className="cart__actions__button"
+              bgColor="#8B2E13"
+              className="cart__summary__checkout-btn"
+              disabled={selectedItems.length === 0}
             >
-              Checkout
+              Thanh toán
             </ButtonComponent>
-          )}
+          </div>
         </div>
       </div>
+
       <Checkout
         setOpen={setOpenCheckout}
-        open={openCheckout && cart?.products?.length > 0}
-        grandTotalBeforeShipping={grandTotal}
+        open={openCheckout && selectedItems.length > 0}
+        grandTotalBeforeShipping={subtotal}
+        shippingFee={shippingFee}
+        discount={discount}
+        grandTotal={grandTotal}
+        selectedItems={selectedItems}
       />
     </div>
   );

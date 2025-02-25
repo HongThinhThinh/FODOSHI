@@ -166,7 +166,7 @@ export default function ProductDetail({
               condition: "",
               size: "",
               color: "#000000",
-              gender: "Unisex",
+              gender: "UNISEX",
               originalPrice: "",
               sellingPrice: "",
               productStatus: "AVAILABLE",

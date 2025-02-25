@@ -9,12 +9,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { Badge } from "antd";
 import { RootState } from "../../../redux/store";
 import { useSelector } from "react-redux";
+import { useGetCart } from "../../../services/cartService";
 function SideBarHeader({ className, ...rest }: SideBarHeaderProps) {
   const state = useSelector((state: RootState) => state);
   const { user } = state;
   const navigate = useNavigate();
-  console.log(user);
-  console.log(state.cart);
+  const getParams = useGetCart();
+  const cartData = getParams?.data?.data?.cartItems || [];
   return (
     <nav className={`sidebar_header ${className}`} {...rest}>
       <ul className="sidebar_header-container">
@@ -40,7 +41,7 @@ function SideBarHeader({ className, ...rest }: SideBarHeaderProps) {
           </Link>
         )}
         <li className="sidebar_header__item">
-          <Badge count={state.cart?.products?.length}>
+          <Badge count={cartData.length}>
             <FiShoppingCart
               style={{ cursor: "pointer" }}
               onClick={() => {
