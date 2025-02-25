@@ -22,6 +22,29 @@
     &-right {
       width: 50%;
       float: right;
+      .mySwiper {
+        width: 100%;
+        height: 370px; /* Ensure the Swiper container has a fixed height */
+        position: relative;
+        overflow: hidden;
+      }
+
+      .swiper-slide {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .swiper-slide img {
+        width: 100%;
+        height: 300px; /* Fixed height for the image */
+        object-fit: contain;
+      }
+
+      .swiper-button-prev,
+      .swiper-button-next {
+        z-index: 10; /* Ensure buttons are above the images */
+      }
     }
 
     .form-item {
@@ -39,5 +62,13 @@
         padding: auto;
       }
     }
+  }
+}
+.ant-modal-content {
+  overflow: hidden;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  svg {
+    display: none;
   }
 }

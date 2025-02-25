@@ -15,6 +15,7 @@ function ButtonComponent({
   color,
   children,
   isActive,
+
   status = "default",
   ...rest
 }: ButtonComponentProps) {

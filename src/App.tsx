@@ -8,22 +8,26 @@ import { StateProvider } from "./context/stateProvider";
 import "./index.scss";
 import { ConfigProvider } from "antd";
 import { theme } from "./config/antd";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // AOS.init({
 //   // initialise with other settings
 //   duration: 1000,
 // });
 function App() {
+  const queryClient = new QueryClient();
   return (
     <>
-      <ConfigProvider theme={theme}>
-        <Provider store={store}>
-          <PersistGate loading={null} persistor={persistor}>
-            <StateProvider>
-              <RouterProvider router={router} />
-            </StateProvider>
-          </PersistGate>
-        </Provider>
-      </ConfigProvider>
+      <QueryClientProvider client={queryClient}>
+        <ConfigProvider theme={theme}>
+          <Provider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
+              <StateProvider>
+                <RouterProvider router={router} />
+              </StateProvider>
+            </PersistGate>
+          </Provider>
+        </ConfigProvider>
+      </QueryClientProvider>
     </>
   );
 }

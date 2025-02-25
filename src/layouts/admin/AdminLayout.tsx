@@ -9,8 +9,6 @@ import {
   RouteType,
 } from "../../dummy-data/mockAdminRouteData";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import Dashboard from "../../components/pages/admin/manage-overview";
-import { toTitle } from "../../utils/formatStr";
 import { CaretDownOutlined, CaretUpOutlined } from "@ant-design/icons";
 
 export interface AdminLayoutCustomProps {
@@ -65,32 +63,38 @@ export default function AdminLayoutCustom({ routes }: AdminLayoutCustomProps) {
                   Categories
                 </div>
                 <div className="admin-layout-custom__container__sidebar__categories__title__collapse">
-                  {onCollapseCategory ? <CaretDownOutlined /> : <CaretUpOutlined />}
+                  {onCollapseCategory ? (
+                    <CaretDownOutlined />
+                  ) : (
+                    <CaretUpOutlined />
+                  )}
                 </div>
               </div>
             </Link>
             {onCollapseCategory && (
               <ul>
-                {fashionCategoryRoutesData.map((category: ProductCategoryRoute) => (
-                  <li key={category.id}>
-                    <Link to={`categories/${category.path}`}>
-                      <div
-                        className={`admin-layout-custom__container__sidebar__categories__item ${
-                          category.path === currentSubPath
-                            ? "admin-layout-custom__container__sidebar__categories__item--active"
-                            : ""
-                        }`}
-                      >
-                        <div className="admin-layout-custom__container__sidebar__categories__item__name">
-                          {category.name}
+                {fashionCategoryRoutesData.map(
+                  (category: ProductCategoryRoute) => (
+                    <li key={category.id}>
+                      <Link to={`categories/${category.path}`}>
+                        <div
+                          className={`admin-layout-custom__container__sidebar__categories__item ${
+                            category.path === currentSubPath
+                              ? "admin-layout-custom__container__sidebar__categories__item--active"
+                              : ""
+                          }`}
+                        >
+                          <div className="admin-layout-custom__container__sidebar__categories__item__name">
+                            {category.name}
+                          </div>
+                          <div className="admin-layout-custom__container__sidebar__categories__item__quantity">
+                            {category.quantity}
+                          </div>
                         </div>
-                        <div className="admin-layout-custom__container__sidebar__categories__item__quantity">
-                          {category.quantity}
-                        </div>
-                      </div>
-                    </Link>
-                  </li>
-                ))}
+                      </Link>
+                    </li>
+                  )
+                )}
               </ul>
             )}
 
@@ -113,7 +117,9 @@ export default function AdminLayoutCustom({ routes }: AdminLayoutCustomProps) {
                             : ""
                         } `}
                       >
-                        <Link to={`categories/${categoryPath.path}`}>{categoryPath.name}</Link>
+                        <Link to={`categories/${categoryPath.path}`}>
+                          {categoryPath.name}
+                        </Link>
                       </div>
                     </li>
                   ))}
@@ -121,21 +127,10 @@ export default function AdminLayoutCustom({ routes }: AdminLayoutCustomProps) {
               </nav>
             )}
           </div>
-          <main className="admin-layout-custom__container__content__outlet">
-            <h1 style={{ fontWeight: "600", fontSize: "24px" }}>{toTitle(currentPath)}</h1>
-            <h3>
-              <Link to="/">Trang chủ</Link>
-              {" > "}
-              <Link to={`${currentPath}`}>{toTitle(currentPath)}</Link>
-              {currentSubPath ? (
-                <>
-                  {" > "}
-                  <Link to={`categories/${currentSubPath}`}>{toTitle(currentSubPath)}</Link>
-                </>
-              ) : (
-                ""
-              )}
-            </h3>
+          <main
+            style={{}}
+            className="admin-layout-custom__container__content__outlet"
+          >
             <Outlet
               context={{
                 activateCategoryLayout: (categories: RouteType[]) => {

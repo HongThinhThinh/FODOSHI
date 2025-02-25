@@ -1,12 +1,22 @@
 import { Navigation, Pagination } from "swiper/modules";
-import { bannerHomepage, category, imageGirl } from "../../../assets/contant";
+import {
+  bannerHomepage,
+  category,
+  reasonCard,
+  socialCard,
+} from "../../../assets/contant";
 import ButtonComponent from "../../atoms/button";
 import Carousel from "../../atoms/carousel";
 import "./styles.scss";
 import { showCardModel } from "../../../assets/model";
 import ShowCard from "../../atoms/show-card";
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
+import ReasonCard from "../../atoms/reason-card";
+import SocialCard from "../../atoms/social-card";
+import { useGetProduct } from "../../../services/productService";
 function HomePage() {
+  const { data: products } = useGetProduct();
+  console.log(products);
   return (
     <>
       {/* -------------Banner------------- */}
@@ -28,6 +38,20 @@ function HomePage() {
           >
             Mua ngay
           </ButtonComponent>
+        </div>
+      </section>
+      {/* -------------Reason------------- */}
+      <section className="homepage-reason__container">
+        <h1 className="homepage-reason__title">Tại sao nên chọn FODOSHI</h1>
+        <div className="homepage-reason__wrapper">
+          {reasonCard.map((item, index) => (
+            <ReasonCard
+              key={index}
+              content={item.content}
+              image={item.image}
+              reverse={index % 2 === 0 ? true : false}
+            />
+          ))}
         </div>
       </section>
       {/* ------------Category------------ */}
@@ -61,7 +85,7 @@ function HomePage() {
             }}
             modules={[Navigation]}
           >
-            {showCardModel?.map((item) => (
+            {products?.map((item) => (
               <Carousel.Item className="homepage-outfitOfDay__carousel-item">
                 <ShowCard key={item.id} card={item} />
               </Carousel.Item>
@@ -74,21 +98,22 @@ function HomePage() {
         </div>
       </section>
 
-      {/* ------------------OutfitToClass----------------- */}
-      <section className="homepage-outfitToClass__container">
-        <div className="homepage-outfitToClass__wrapper">
-          <img className="homepage-outfitToClass__img" src={imageGirl} alt="" />
-          <div className="homepage-outfitToClass__content">
-            <span className="text-[26px] font-[300] ">28/10/2024</span>
-            <div className="flex justify-center items-center flex-col gap-[12px]">
-              <div className="w-[40px] h-[40px] bg-[#832f21] rounded-full" />
-              <p className="text-[26px] font-[550]">@Fodoshi</p>
-              <p className="text-[26px] font-[550]">
-                Diện đồ đẹp đi làm là số zách!
-              </p>
-              <p className="text-[26px] font-[550]">#OOTD #FODOSHI #OUTFIT</p>
-            </div>
+      {/* ------------------Social------------------ */}
+      <section className="homepage-social__container">
+        <div className="backdrop" />
+        <div className="homepage-social__content">
+          <h1 className="homepage-social__title">Các kênh social media</h1>
+          <div className="homepage-social__wrapper">
+            {socialCard.map((item, index) => (
+              <SocialCard
+                key={index}
+                title={item.title}
+                content={item.content}
+                image={item.image}
+              />
+            ))}
           </div>
+          <h1 className="homepage-social__title">Đồng hợp tác</h1>
         </div>
       </section>
     </>

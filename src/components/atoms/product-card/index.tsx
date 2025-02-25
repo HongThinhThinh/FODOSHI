@@ -21,7 +21,6 @@ function ProductCard({
   description,
   isForSale,
   reach,
-  className,
 }: ProductCardProps) {
   return (
     <div className={`product-card item`}>

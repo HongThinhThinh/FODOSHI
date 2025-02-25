@@ -1,291 +1,459 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./index.scss";
-import { InboxOutlined, UploadOutlined } from "@ant-design/icons";
+import { UploadOutlined } from "@ant-design/icons";
 import type { UploadProps, UploadFile } from "antd";
-import { message, Upload, Image, Modal, Button } from "antd";
+import { message, Upload, Button, Select, Input, Modal } from "antd";
 import ButtonComponent from "../../../atoms/button";
-const { Dragger } = Upload;
+import useGetParams from "../../../../hooks/useGetParams";
+import { Link } from "react-router-dom";
+import { toTitle } from "../../../../utils/formatStr";
+import {
+  useCreateProduct,
+  useGetBrand,
+  useGetCategory,
+} from "../../../../services/adminService";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../../../../config/firebase";
+import ProductSwiper from "./productSwiper";
+import TagInput from "./TagInput"; // Import the TagInput component
+import { useGetUserByPhone } from "../../../../services/useUserService";
+import LoadingUI from "../../../atoms/loading";
+
+const { Option } = Select;
+
+// Firebase upload helper function
+const uploadFile = async (file: File) => {
+  const storageRef = ref(storage, `products/${file.name}`);
+  const response = await uploadBytes(storageRef, file);
+  const downloadURL = await getDownloadURL(response.ref);
+  return downloadURL;
+};
 
 interface ProductDetailProps {
   product_id: string;
 }
 
 export default function ProductDetail({ product_id }: ProductDetailProps) {
-  const [tags, setTags] = useState(["Lorem", "Lorem"]);
-
-  const [fileList, setFileList] = useState<UploadFile[]>([
-    {
-      uid: "0",
-      name: "xxx.png",
-      status: "uploading",
-      percent: 33,
-    },
-    {
-      uid: "-1",
-      name: "yyy.png",
-      status: "done",
-      url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-      thumbUrl:
-        "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-    },
-    {
-      uid: "-2",
-      name: "zzz.png",
-      status: "error",
-    },
-  ]);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
-  const [previewTitle, setPreviewTitle] = useState("");
-  const removeTag = (index: number) => {
-    setTags(tags.filter((_, i) => i !== index));
+  const params = useGetParams();
+  const id = params("id");
+  const getCategory = useGetCategory("");
+  const getBrand = useGetBrand("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [product, setProduct] = useState({
+    name: "",
+    description: "",
+    category: [] as string[],
+    brand: [] as string[],
+    condition: "",
+    size: "",
+    color: "#000000", // New field for color
+    gender: "", // New field for gender
+    originalPrice: "",
+    sellingPrice: "",
+    productStatus: "AVAILABLE",
+    tags: [] as string[], // Use tags array from state
+    imageUrls: [] as string[],
+    consignorId: "e717d28f-bc86-4df2-a847-134f0ca54d88",
+  });
+  const [loading, setLoading] = useState(false);
+  const currentPath = location.pathname.split("/")[2];
+  const currentSubPath = location.pathname.split("/")[3];
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const { data: userByPhone } = useGetUserByPhone(phoneNumber);
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setProduct((prev) => ({ ...prev, [name]: value }));
   };
 
-  const addTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const value = (e.target as HTMLInputElement).value.trim();
-    if (e.key === "Enter" && value) {
-      setTags([...tags, value]);
-      (e.target as HTMLInputElement).value = "";
-    }
+  const handleSelectChange = (value: string[], name: "category" | "brand") => {
+    setProduct((prev) => ({ ...prev, [name]: value }));
   };
 
-  const fetchProductById = async () => {};
+  const { mutate, isPending } = useCreateProduct();
 
   const props: UploadProps = {
     name: "file",
     multiple: true,
-    action: "https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload",
-    onChange(info) {
-      const { status } = info.file;
-      if (status !== "uploading") {
-        console.log(info.file, info.fileList);
+    beforeUpload: (file) => {
+      const isImage = file.type.startsWith("image/");
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isImage) {
+        message.error("Chỉ hỗ trợ file hình ảnh!");
+        return Upload.LIST_IGNORE;
       }
-      if (status === "done") {
-        message.success(`${info.file.name} file uploaded successfully.`);
-      } else if (status === "error") {
-        message.error(`${info.file.name} file upload failed.`);
+      if (!isLt2M) {
+        message.error("File quá lớn! (Tối đa 2MB)");
+        return Upload.LIST_IGNORE;
       }
+      return true;
     },
-    onDrop(e) {
-      console.log("Dropped files", e.dataTransfer.files);
+    onChange: (info) => {
+      setFileList(info.fileList);
     },
   };
-  // const props: UploadProps = {
-  //   name: "file",
-  //   multiple: true,
-  //   action: "https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload",
-  //   fileList,
-  //   onChange(info) {
-  //     setFileList(info.fileList); // Update the fileList
-  //     const { status } = info.file;
-  //     if (status !== "uploading") {
-  //       console.log(info.file, info.fileList);
-  //     }
-  //     if (status === "done") {
-  //       message.success(`${info.file.name} file uploaded successfully.`);
-  //     } else if (status === "error") {
-  //       message.error(`${info.file.name} file upload failed.`);
-  //     }
-  //   },
-  //   onPreview: async (file) => {
-  //     if (!file.url && !file.preview) {
-  //       file.preview = await new Promise<string>((resolve, reject) => {
-  //         const reader = new FileReader();
-  //         reader.readAsDataURL(file.originFileObj as Blob);
-  //         reader.onload = () => resolve(reader.result as string);
-  //         reader.onerror = (error) => reject(error);
-  //       });
-  //     }
 
-  //     setPreviewImage(file.url || (file.preview as string));
-  //     setPreviewTitle(
-  //       file.name || file.url!.substring(file.url!.lastIndexOf("/") + 1)
-  //     );
-  //     setPreviewOpen(true);
-  //   },
-  //   onDrop(e) {
-  //     console.log("Dropped files", e.dataTransfer.files);
-  //   },
-  // };
+  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setProduct((prev) => ({ ...prev, color: e.target.value }));
+  };
+
+  const handleGenderChange = (value: string) => {
+    setProduct((prev) => ({ ...prev, gender: value }));
+  };
+
+  const handleSubmit = async () => {
+    if (
+      !product.name ||
+      !product.description ||
+      product.category.length === 0
+    ) {
+      message.error("Vui lòng điền đầy đủ thông tin.");
+      return;
+    }
+
+    const originalPrice = parseFloat(product.originalPrice);
+    const sellingPrice = parseFloat(product.sellingPrice);
+    if (isNaN(originalPrice) || isNaN(sellingPrice)) {
+      message.error("Giá gốc và giá bán phải là số.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const imageUrls: string[] = [];
+      for (const file of fileList) {
+        if (file.originFileObj) {
+          const downloadUrl = await uploadFile(file.originFileObj as File);
+          imageUrls.push(downloadUrl);
+        }
+      }
+
+      mutate(
+        {
+          ...product,
+          originalPrice,
+          sellingPrice,
+          imageUrls,
+        },
+
+        {
+          onSuccess: () => {
+            message.success("Thêm sản phẩm thành công!");
+            // Reset form fields after successful submission
+            setProduct({
+              name: "",
+              description: "",
+              category: [],
+              brand: [],
+              condition: "",
+              size: "",
+              color: "#000000",
+              gender: "Unisex",
+              originalPrice: "",
+              sellingPrice: "",
+              productStatus: "AVAILABLE",
+              tags: [],
+              imageUrls: [],
+              consignorId: userByPhone?.id,
+            });
+            setFileList([]); // Clear file list after success
+          },
+          onError: (error) => {
+            message.error("Có lỗi xảy ra khi thêm sản phẩm.");
+            console.error(error); // Optionally log the error for debugging
+          },
+        }
+      );
+    } catch (error) {
+      message.error("Có lỗi xảy ra khi thêm sản phẩm.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="product-detail">
-      <form action="" className="product-detail__form">
-        <div className="product-detail__form-left">
-          <div className="form-item">
-            <label htmlFor="" className="block ">
-              <b>Tên sản phẩm</b>
-            </label>
-            <input
-              type="text"
-              placeholder="..."
-              className="w-full px-3 py-2 border border-gray-700 rounded"
-            />
-          </div>
-
-          <div className="form-item">
-            <label htmlFor="" className="block ">
-              <b>Mô tả</b>
-            </label>
-            <textarea
-              name=""
-              id=""
-              className="w-full px-3 py-2 border border-gray-700 rounded"
-              placeholder="..."
-              rows={5}
-            ></textarea>
-          </div>
-
-          <div className="form-item">
-            <label htmlFor="" className="block ">
-              <b>Danh mục</b>
-            </label>
-            <input
-              type="text"
-              placeholder="Sneaker"
-              className="w-full px-3 py-2 border border-gray-700 rounded"
-            />
-          </div>
-
-          <div className="form-item">
-            <label htmlFor="" className="block ">
-              <b>Brand</b>
-            </label>
-            <input
-              type="text"
-              placeholder="Adidas"
-              className="w-full px-3 py-2 border border-gray-700 rounded"
-            />
-          </div>
-
-          <div className="flex gap-4">
-            <div className="w-1/2 form-item">
-              <label htmlFor="" className="block ">
-                <b>Tình trạng</b>
-              </label>
-              <input
-                type="text"
-                placeholder="Very good"
-                className="w-full px-3 py-2 border border-gray-700 rounded"
-              />
-            </div>
-
-            <div className="w-1/2 form-item">
-              <label htmlFor="" className="block ">
-                <b>Kích cỡ</b>
-              </label>
-              <input
-                type="text"
-                placeholder="35"
-                className="w-full px-3 py-2 border border-gray-700 rounded"
-              />
-            </div>
-          </div>
-
-          <div className="flex gap-4">
-            <div className="w-1/2 form-item">
-              <label htmlFor="" className="block ">
-                <b>Giá gốc</b>
-              </label>
-              <input
-                type="text"
-                placeholder="100"
-                className="w-full px-3 py-2 border border-gray-700 rounded"
-              />
-            </div>
-
-            <div className="w-1/2 form-item">
-              <label htmlFor="" className="block ">
-                <b>Giá bán</b>
-              </label>
-              <input
-                type="text"
-                placeholder="10000000"
-                className="w-full px-3 py-2 border border-gray-700 rounded"
-              />
-            </div>
-          </div>
-
-          <div className="form-item">
-            <label className="block font-bold mb-2">Tag</label>
-            <div className="border border-gray-300 rounded p-3 flex flex-wrap gap-2">
-              {tags.map((tag, index) => (
-                <div
-                  key={index}
-                  className="flex items-center bg-gray-800 text-white text-sm px-3 py-1 rounded-full"
-                >
-                  {tag}
-                  <button
-                    type="button"
-                    className="ml-2 text-white"
-                    onClick={() => removeTag(index)}
-                  >
-                    &times;
-                  </button>
-                </div>
-              ))}
-              <input
-                type="text"
-                placeholder="Add tag"
-                onKeyDown={addTag}
-                className="flex-grow outline-none text-sm"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="product-detail__form-right">
-          <div className="w-full h-1/3 bg-gray-300 rounded mb-6">
-            <div className=""></div>
-          </div>
-
-          <div className="form-item">
-            <label htmlFor="">
-              <b>Thư viện ảnh</b>
-            </label>
-            <Upload
-              action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-              listType="picture"
-              defaultFileList={fileList}
-            >
-              <Button icon={<UploadOutlined />} className="upload-btn">
-                Upload product's image
-              </Button>
-            </Upload>
-          </div>
-
-          <div className="flex gap-4 mt-24">
-            <ButtonComponent
-              color="white"
-              children="Cập nhật"
-              bgColor="#D99041"
-              className="w-1/3 h-[50px]"
-            />
-            <ButtonComponent
-              color="white"
-              children="Xóa"
-              bgColor="#626A3F"
-              className="w-1/3 h-[50px]"
-            />
-
-            <ButtonComponent
-              color="#D99041"
-              children="Hủy"
-              className="w-1/3 h-[50px]"
-            />
-          </div>
-        </div>
-      </form>
-      {previewImage && (
-        <Image
-          wrapperStyle={{ display: "none" }}
-          preview={{
-            visible: previewOpen,
-            onVisibleChange: (visible) => setPreviewOpen(visible),
-            afterOpenChange: (visible) => !visible && setPreviewImage(""),
-          }}
-          src={previewImage}
-        />
+    <div className="">
+      {loading && (
+        <Modal footer={false} open={true}>
+          <LoadingUI />
+        </Modal>
       )}
+      <div className="w-[1200px]">
+        <div>
+          <h1 style={{ fontWeight: "600", fontSize: "24px" }}>
+            Thêm sản phẩm mới
+          </h1>
+          <h3>
+            <Link to="/">Trang chủ</Link>
+            {" > "}
+            <Link to={`${currentPath}`}>{toTitle(currentPath)}</Link>
+            {currentSubPath ? (
+              <>
+                {" > "}
+                <Link to={`categories/${currentSubPath}`}>
+                  {toTitle(currentSubPath)}
+                </Link>
+              </>
+            ) : (
+              ""
+            )}
+          </h3>
+        </div>
+        <div className="product-detail">
+          <form action="" className="product-detail__form">
+            <div className="product-detail__form-left">
+              {/* Form fields remain the same */}
+              <div className="form-item">
+                <label htmlFor="" className="block ">
+                  <b>Tên sản phẩm</b>
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={product.name}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-700 rounded"
+                />
+              </div>
+
+              <div className="form-item">
+                <label htmlFor="" className="block ">
+                  <b>Mô tả</b>
+                </label>
+                <textarea
+                  name="description"
+                  value={product.description}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-700 rounded"
+                  placeholder="..."
+                  rows={5}
+                ></textarea>
+              </div>
+
+              <div className="form-item">
+                <label htmlFor="category" className="block">
+                  <b>Danh mục</b>
+                </label>
+                <Select
+                  mode="multiple"
+                  style={{ width: "100%" }}
+                  placeholder="Chọn danh mục"
+                  value={product.category}
+                  onChange={(value) => handleSelectChange(value, "category")}
+                >
+                  {getCategory.data?.map((option) => (
+                    <Option key={option.id} value={option.id}>
+                      {option.name}
+                    </Option>
+                  ))}
+                </Select>
+              </div>
+
+              <div className="form-item">
+                <label htmlFor="brand" className="block">
+                  <b>Brand</b>
+                </label>
+                <Select
+                  mode="multiple"
+                  style={{ width: "100%" }}
+                  placeholder="Chọn thương hiệu"
+                  value={product.brand}
+                  onChange={(value) => handleSelectChange(value, "brand")}
+                >
+                  {getBrand?.data?.map((option) => (
+                    <Option key={option.id} value={option.id}>
+                      {option.name}
+                    </Option>
+                  ))}
+                </Select>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-1/2 form-item">
+                  <label htmlFor="" className="block ">
+                    <b>Tình trạng</b>
+                  </label>
+                  <input
+                    type="text"
+                    name="condition"
+                    value={product.condition}
+                    onChange={handleInputChange}
+                    placeholder="Very good"
+                    className="w-full px-3 py-2 border border-gray-700 rounded"
+                  />
+                </div>
+
+                <div className="w-1/2 form-item">
+                  <div className="form-item rounded-lg">
+                    <label htmlFor="color" className="block">
+                      <b>Màu sắc</b>
+                    </label>
+                    <Input
+                      type="color"
+                      name="color"
+                      value={product.color}
+                      onChange={handleColorChange}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-1/2 form-item">
+                  <label htmlFor="" className="block ">
+                    <b>Giá gốc</b>
+                  </label>
+                  <input
+                    type="text"
+                    name="originalPrice"
+                    value={product.originalPrice}
+                    onChange={handleInputChange}
+                    placeholder="100"
+                    className="w-full px-3 py-2 border border-gray-700 rounded"
+                  />
+                </div>
+
+                <div className="w-1/2 form-item">
+                  <label htmlFor="" className="block ">
+                    <b>Giá bán</b>
+                  </label>
+                  <input
+                    type="text"
+                    name="sellingPrice"
+                    value={product.sellingPrice}
+                    onChange={handleInputChange}
+                    placeholder="10000000"
+                    className="w-full px-3 py-2 border border-gray-700 rounded"
+                  />
+                </div>
+              </div>
+
+              <div className="form-item">
+                <div className="flex items-center gap-4">
+                  <div className="w-1/2">
+                    <div className="form-item">
+                      <label htmlFor="size" className="block">
+                        <b>Kích cỡ</b>
+                      </label>
+                      <Select
+                        style={{ width: "100%" }}
+                        placeholder="Chọn kích cỡ"
+                        value={product.size}
+                        onChange={(value) => handleSelectChange(value, "size")}
+                      >
+                        <Option value="XS">XS</Option>
+                        <Option value="S">S</Option>
+                        <Option value="M">M</Option>
+                        <Option value="L">L</Option>
+                        <Option value="XL">XL</Option>
+                        <Option value="XXL">XXL</Option>
+                        <Option value="XXXL">XXXL</Option>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="w-1/2">
+                    <div className="form-item">
+                      <label htmlFor="gender" className="block ">
+                        <b>Giới tính</b>
+                      </label>
+                      <Select
+                        style={{ width: "100%" }}
+                        placeholder="Chọn giới tính"
+                        value={product.gender}
+                        onChange={handleGenderChange}
+                      >
+                        <Option value="MALE">Male</Option>
+                        <Option value="FEMALE">Female</Option>
+                        <Option value="UNISEX">Unisex</Option>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="w-full">
+                <div className="form-item">
+                  <label htmlFor="consignorPhone" className="block">
+                    <b>SDT chủ kí gửi</b>
+                  </label>
+                  <Input
+                    type="text"
+                    name="consignorPhone"
+                    value={phoneNumber}
+                    onChange={(e: any) => setPhoneNumber(e.target.value)}
+                    placeholder="Nhập số điện thoại"
+                  />
+                </div>
+
+                {userByPhone && (
+                  <div className="customer-info mt-4">
+                    <div>
+                      <b>Tên khách hàng:</b> {userByPhone.name}
+                    </div>
+                    <div>
+                      <b>Email:</b> {userByPhone.email || "Chưa có email"}
+                    </div>
+                    <div>
+                      <b>Địa chỉ:</b> {userByPhone.address || "Chưa có địa chỉ"}
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="w-full ">
+                <label className="block font-bold mb-2">Tag</label>
+                <TagInput
+                  initialTags={product.tags}
+                  onChange={(newTags) =>
+                    setProduct((prev) => ({ ...prev, tags: newTags }))
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="product-detail__form-right overflow-hidden">
+              <ProductSwiper fileList={fileList} />
+
+              <div className="form-item">
+                <label htmlFor="">
+                  <b>Thư viện ảnh</b>
+                </label>
+                <Upload {...props} listType="picture" fileList={fileList}>
+                  <Button icon={<UploadOutlined />} className="upload-btn">
+                    Upload product's image
+                  </Button>
+                </Upload>
+              </div>
+
+              <div className="flex gap-4 mt-24 justify-center ">
+                {id != null ? (
+                  <ButtonComponent
+                    color="white"
+                    children="Cập nhật"
+                    bgColor="#D99041"
+                    className="w-1/3 h-[50px]"
+                  />
+                ) : (
+                  <ButtonComponent
+                    onClick={handleSubmit}
+                    color="white"
+                    children="Thêm"
+                    bgColor="#626a3f"
+                    className="w-1/3 h-[50px]"
+                  />
+                )}
+
+                <ButtonComponent
+                  color="#D99041"
+                  children="Hủy"
+                  className="w-1/3 h-[50px] text-black border border-black"
+                />
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }

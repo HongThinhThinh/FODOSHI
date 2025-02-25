@@ -15,16 +15,20 @@ function SideBarHeader({ name, className, ...rest }: SideBarHeaderProps) {
   return (
     <nav className={`sidebar_header ${className}`} {...rest}>
       <ul className="sidebar_header-container">
-        <li className="sidebar_header__item">Ký gửi</li>
+        <li className="sidebar_header__item sidebar_header__item--text ">
+          Ký gửi
+        </li>
         {name ? (
-          <li className="sidebar_header__item">
+          <li className="sidebar_header__item sidebar_header__item--text ">
             <span>Chào, {name}</span> <FaRegUser />
           </li>
         ) : (
-          <li className="sidebar_header__item">Đăng nhập</li>
+          <li className="sidebar_header__item sidebar_header__item--text ">
+            Đăng nhập
+          </li>
         )}
         <li className="sidebar_header__item">
-          <Badge count={cart.products.length}>
+          <Badge count={cart?.products?.length}>
             <FiShoppingCart
               style={{ cursor: "pointer" }}
               onClick={() => {
