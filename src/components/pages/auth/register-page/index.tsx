@@ -16,9 +16,7 @@ function RegisterPage() {
       <div className="container register-container">
         <img src={logo} alt="" className="inline-block w-[40%] mb-8" />
         <div className="register-form">
-          <h1 className="register-title">
-            Giờ thì trở thành thành viên của Fodoshi thôi nào!
-          </h1>
+          <h1 className="register-title">Giờ thì trở thành thành viên của Fodoshi thôi nào!</h1>
           <div className="btn-wrapper--change">
             Fodoshi đã gửi mã xác nhận đến
             <p>{email}</p>
@@ -27,9 +25,7 @@ function RegisterPage() {
             <Form.Item
               className="register-item"
               name="confirmationCode"
-              rules={[
-                { required: true, message: "Làm ơn hãy nhập mã xác nhận!" },
-              ]}
+              rules={[{ required: true, message: "Làm ơn hãy nhập mã xác nhận!" }]}
             >
               <InputComponent height="55px" placeholder="Mã xác nhận*" />
             </Form.Item>
@@ -38,9 +34,7 @@ function RegisterPage() {
                 <Form.Item
                   className="register-item"
                   name="surname"
-                  rules={[
-                    { required: true, message: "Làm ơn hãy nhập Họ của bạn!" },
-                  ]}
+                  rules={[{ required: true, message: "Làm ơn hãy nhập Họ của bạn!" }]}
                 >
                   <InputComponent height="55px" placeholder="Họ*" />
                 </Form.Item>
@@ -49,9 +43,7 @@ function RegisterPage() {
                 <Form.Item
                   className="register-item"
                   name="name"
-                  rules={[
-                    { required: true, message: "Làm ơn hãy nhập tên của bạn!" },
-                  ]}
+                  rules={[{ required: true, message: "Làm ơn hãy nhập tên của bạn!" }]}
                 >
                   <InputComponent height="55px" placeholder="Tên*" />
                 </Form.Item>
@@ -59,8 +51,7 @@ function RegisterPage() {
             </Row>
 
             <p>
-              <LiaBirthdayCakeSolid className="inline-block mr-1" size={20} />{" "}
-              Sinh nhật của bạn
+              <LiaBirthdayCakeSolid className="inline-block mr-1" size={20} /> Sinh nhật của bạn
             </p>
             <Row gutter={20}>
               <Col span={7}>
@@ -127,17 +118,13 @@ function RegisterPage() {
                   validator: (_, value) =>
                     value
                       ? Promise.resolve()
-                      : Promise.reject(
-                          new Error(
-                            "Làm ơn hãy đồng ý nhận tin tức từ Fodoshi!"
-                          )
-                        ),
+                      : Promise.reject(new Error("Làm ơn hãy đồng ý nhận tin tức từ Fodoshi!")),
                 },
               ]}
             >
               <Checkbox>
-                Đăng ký email để nhận tin tức từ Fodoshi về sản phẩm, ưu đã và
-                đặc quyền dành cho thành viên bạn nhé!
+                Đăng ký email để nhận tin tức từ Fodoshi về sản phẩm, ưu đã và đặc quyền dành cho
+                thành viên bạn nhé!
               </Checkbox>
             </Form.Item>
 
@@ -150,16 +137,13 @@ function RegisterPage() {
                     value
                       ? Promise.resolve()
                       : Promise.reject(
-                          new Error(
-                            "Làm ơn hãy đồng ý với Chính sách và Điều khoản của Fodoshi!"
-                          )
+                          new Error("Làm ơn hãy đồng ý với Chính sách và Điều khoản của Fodoshi!")
                         ),
                 },
               ]}
             >
               <Checkbox>
-                Tôi đồng ý với Chính sách Quyền riêng tư và Điều khoản của
-                Fodoshi
+                Tôi đồng ý với Chính sách Quyền riêng tư và Điều khoản của Fodoshi
               </Checkbox>
             </Form.Item>
             <Form.Item className="register-item register-item--btn">

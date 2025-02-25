@@ -1,9 +1,10 @@
 import { combineReducers } from "@reduxjs/toolkit";
-import userSlice from "./features/userSlice";
+
 import { cartSlice } from "./features/cartSlice";
+import { userSlice } from "./features/userSlice";
 
 const rootReducer = combineReducers({
-  user: userSlice,
+  user: userSlice.reducer,
   cart: cartSlice.reducer,
 });
 
