@@ -3,7 +3,7 @@ import { refreshAuthToken } from "../utils/authUtils";
 
 const api = axios.create({
   // baseURL: "http://14.225.198.143:8080/api/",
-  baseURL: "http://localhost:8081/api/",
+  baseURL: "http://localhost:8080/api/",
 });
 
 api.interceptors.request.use(
