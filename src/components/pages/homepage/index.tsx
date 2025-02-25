@@ -1,10 +1,5 @@
 import { Navigation, Pagination } from "swiper/modules";
-import {
-  bannerHomepage,
-  category,
-  reasonCard,
-  socialCard,
-} from "../../../assets/contant";
+import { bannerHomepage, category, reasonCard, socialCard } from "../../../assets/contant";
 import ButtonComponent from "../../atoms/button";
 import Carousel from "../../atoms/carousel";
 import "./styles.scss";
@@ -60,11 +55,7 @@ function HomePage() {
         <div className="homepage-category__wrapper">
           {category.map((item, index) => (
             <div key={index} className="homepage-category__item">
-              <img
-                className="homepage-category__item--img"
-                src={item.image}
-                alt=""
-              />
+              <img className="homepage-category__item--img" src={item.image} alt="" />
               <p className="homepage-category__item--title">{item.title}</p>
             </div>
           ))}
@@ -85,11 +76,15 @@ function HomePage() {
             }}
             modules={[Navigation]}
           >
-            {products?.map((item) => (
-              <Carousel.Item className="homepage-outfitOfDay__carousel-item">
-                <ShowCard key={item.id} card={item} />
-              </Carousel.Item>
-            ))}
+            {Array.isArray(products) ? (
+              products.map((item) => (
+                <Carousel.Item key={item.id}>
+                  <ShowCard card={item} />
+                </Carousel.Item>
+              ))
+            ) : (
+              <p>Không có dữ liệu sản phẩm</p>
+            )}
 
             <IoIosArrowForward className="swiper-button-next" />
 

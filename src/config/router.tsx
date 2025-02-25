@@ -1,11 +1,10 @@
 import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
-import LoginPage from "../components/pages/auth/login-page";
+
 import Dashboard from "../components/pages/admin/manage-overview";
 import ProductDetail from "../components/pages/admin/product-detail";
 
 import Authentication from "../components/pages/auth/authentication";
-import RegisterPage from "../components/pages/auth/register-page";
 import ForgetPassword from "../components/pages/auth/forget-password";
 import ConfirmPassword from "../components/pages/auth/confirm-password";
 import SuccessAuth from "../components/pages/auth/success-auth";
@@ -23,16 +22,16 @@ import InfomationLayout from "../layouts/InfomationLayout";
 import InfoPersonal from "../components/pages/infomation-page/info-personal";
 import InfomationTabLayout from "../layouts/InfomationTabLayout";
 import AdminLayoutCustom from "../layouts/admin/AdminLayout";
-import {
-  mockAdminCategoryRouteData,
-  mockAdminRouteData,
-} from "../dummy-data/mockAdminRouteData";
+import { mockAdminCategoryRouteData, mockAdminRouteData } from "../dummy-data/mockAdminRouteData";
 
 import CategoryAdminLayout from "../layouts/admin/admin-category";
 import DeliveryAddress from "../components/pages/infomation-page/delivery-address";
 import PaymentMethod from "../components/pages/infomation-page/payment-method";
 import DepositPolicy from "../components/pages/infomation-page/deposit/policy";
 import ProductDetails from "../components/pages/customer/product-details";
+import AuthenticationLayout from "../layouts/auth/AuthenticationLayout";
+import RegisterPage from "../components/pages/auth/register-page/RegisterPage";
+import LoginPage from "../components/pages/auth/login-page/LoginPage";
 
 export const router = createBrowserRouter([
   {
@@ -220,9 +219,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "categories",
-        element: (
-          <CategoryAdminLayout categoriesPath={mockAdminCategoryRouteData} />
-        ),
+        element: <CategoryAdminLayout categoriesPath={mockAdminCategoryRouteData} />,
         children: [
           {
             path: "clothing",
@@ -263,11 +260,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <LoginPage />,
+    // element: <LoginPage />,
   },
   {
     path: "/register",
-    element: <RegisterPage />,
+    // element: <RegisterPage />,
   },
   {
     path: "/forget-password",
@@ -280,5 +277,19 @@ export const router = createBrowserRouter([
   {
     path: "/success-auth",
     element: <SuccessAuth />,
+  },
+  {
+    path: "/test-auth",
+    element: <AuthenticationLayout />,
+    children: [
+      {
+        path: "register",
+        element: <RegisterPage />,
+      },
+      {
+        path: "login",
+        element: <LoginPage />,
+      },
+    ],
   },
 ]);
