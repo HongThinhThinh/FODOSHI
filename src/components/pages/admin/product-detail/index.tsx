@@ -30,10 +30,16 @@ const uploadFile = async (file: File) => {
 };
 
 interface ProductDetailProps {
-  product_id: string;
+  product_id?: string;
+  isHidding?: boolean;
+  isConsigment?: boolean;
 }
 
-export default function ProductDetail({ product_id }: ProductDetailProps) {
+export default function ProductDetail({
+  product_id,
+  isHidding = false,
+  isConsigment = false,
+}: ProductDetailProps) {
   const params = useGetParams();
   const id = params("id");
   const getCategory = useGetCategory("");
@@ -192,26 +198,28 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
         </Modal>
       )}
       <div className="w-[1200px]">
-        <div>
-          <h1 style={{ fontWeight: "600", fontSize: "24px" }}>
-            Thêm sản phẩm mới
-          </h1>
-          <h3>
-            <Link to="/">Trang chủ</Link>
-            {" > "}
-            <Link to={`${currentPath}`}>{toTitle(currentPath)}</Link>
-            {currentSubPath ? (
-              <>
-                {" > "}
-                <Link to={`categories/${currentSubPath}`}>
-                  {toTitle(currentSubPath)}
-                </Link>
-              </>
-            ) : (
-              ""
-            )}
-          </h3>
-        </div>
+        {!isHidding && (
+          <div>
+            <h1 style={{ fontWeight: "600", fontSize: "24px" }}>
+              Thêm sản phẩm mới
+            </h1>
+            <h3>
+              <Link to="/">Trang chủ</Link>
+              {" > "}
+              <Link to={`${currentPath}`}>{toTitle(currentPath)}</Link>
+              {currentSubPath ? (
+                <>
+                  {" > "}
+                  <Link to={`categories/${currentSubPath}`}>
+                    {toTitle(currentSubPath)}
+                  </Link>
+                </>
+              ) : (
+                ""
+              )}
+            </h3>
+          </div>
+        )}
         <div className="product-detail">
           <form action="" className="product-detail__form">
             <div className="product-detail__form-left">
@@ -384,34 +392,37 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
                   </div>
                 </div>
               </div>
-              <div className="w-full">
-                <div className="form-item">
-                  <label htmlFor="consignorPhone" className="block">
-                    <b>SDT chủ kí gửi</b>
-                  </label>
-                  <Input
-                    type="text"
-                    name="consignorPhone"
-                    value={phoneNumber}
-                    onChange={(e: any) => setPhoneNumber(e.target.value)}
-                    placeholder="Nhập số điện thoại"
-                  />
-                </div>
-
-                {userByPhone && (
-                  <div className="customer-info mt-4">
-                    <div>
-                      <b>Tên khách hàng:</b> {userByPhone.name}
-                    </div>
-                    <div>
-                      <b>Email:</b> {userByPhone.email || "Chưa có email"}
-                    </div>
-                    <div>
-                      <b>Địa chỉ:</b> {userByPhone.address || "Chưa có địa chỉ"}
-                    </div>
+              {!isConsigment && (
+                <div className="w-full">
+                  <div className="form-item">
+                    <label htmlFor="consignorPhone" className="block">
+                      <b>SDT chủ kí gửi</b>
+                    </label>
+                    <Input
+                      type="text"
+                      name="consignorPhone"
+                      value={phoneNumber}
+                      onChange={(e: any) => setPhoneNumber(e.target.value)}
+                      placeholder="Nhập số điện thoại"
+                    />
                   </div>
-                )}
-              </div>
+
+                  {userByPhone && (
+                    <div className="customer-info mt-4">
+                      <div>
+                        <b>Tên khách hàng:</b> {userByPhone.name}
+                      </div>
+                      <div>
+                        <b>Email:</b> {userByPhone.email || "Chưa có email"}
+                      </div>
+                      <div>
+                        <b>Địa chỉ:</b>{" "}
+                        {userByPhone.address || "Chưa có địa chỉ"}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="w-full ">
                 <label className="block font-bold mb-2">Tag</label>
                 <TagInput

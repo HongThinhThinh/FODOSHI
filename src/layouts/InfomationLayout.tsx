@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import Header from "../components/organisms/header";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import Footer from "../components/organisms/footer";
-import { Col, Row } from "antd";
+import { Col, message, Row } from "antd";
 import { DataTabType, linkInfomation } from "../assets/contant";
+import { useDispatch } from "react-redux";
+import { logout } from "../redux/features/userSlice";
 
 function InfomationLayout() {
   const [tabs, setTabs] = useState<{
@@ -14,6 +16,11 @@ function InfomationLayout() {
     data: [],
   });
   const location = useLocation();
+  const dispatch = useDispatch();
+  const handleLogout = () => {
+    dispatch(logout());
+    message.success("Đã đăng xuất thành công");
+  };
   return (
     <>
       <Header />
@@ -36,6 +43,9 @@ function InfomationLayout() {
                   </Link>
                 </li>
               ))}
+              <Link to="/" className="uppercase" onClick={handleLogout}>
+                Đăng xuất
+              </Link>
             </ul>
           </Col>
           <Col span={17} className={` ${!tabs.isTab && "py-[40px]"}`}>

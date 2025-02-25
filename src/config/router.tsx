@@ -32,6 +32,7 @@ import ProductDetails from "../components/pages/customer/product-details";
 import AuthenticationLayout from "../layouts/auth/AuthenticationLayout";
 import RegisterPage from "../components/pages/auth/register-page/RegisterPage";
 import LoginPage from "../components/pages/auth/login-page/LoginPage";
+import ConsignmentPage from "../components/pages/consignment";
 
 export const router = createBrowserRouter([
   {
@@ -42,6 +43,7 @@ export const router = createBrowserRouter([
     path: "/product-details",
     element: <ProductDetails />,
   },
+
   {
     path: "",
     element: <MainLayout />,
@@ -49,6 +51,10 @@ export const router = createBrowserRouter([
       {
         path: "",
         element: <HomePage />,
+      },
+      {
+        path: "/consignment",
+        element: <ConsignmentPage />,
       },
       {
         path: "/newProduct",
@@ -80,6 +86,11 @@ export const router = createBrowserRouter([
     path: "infomation",
     element: <InfomationLayout />,
     children: [
+      {
+        path: "consignment",
+        element: <ConsignmentPage />,
+      },
+
       {
         path: "orderStatus",
         element: (
@@ -169,8 +180,8 @@ export const router = createBrowserRouter([
         element: (
           <InfomationTabLayout
             data={[
-              { path: "tracking", name: "Theo dõi đơn hàng" },
               { path: "registration", name: "Đăng ký ký gửi" },
+              { path: "tracking", name: "Theo dõi đơn hàng" },
               { path: "instruction", name: "Hướng dẫn ký gửi" },
               { path: "policy", name: "Chính sách ký gửi" },
             ]}
@@ -183,7 +194,11 @@ export const router = createBrowserRouter([
           },
           {
             path: "registration",
-            element: <>hello youtube</>,
+            element: (
+              <>
+                <ConsignmentPage />
+              </>
+            ),
           },
           {
             path: "instruction",

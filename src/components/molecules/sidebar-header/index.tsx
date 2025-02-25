@@ -5,7 +5,7 @@ interface SideBarHeaderProps {
   className: string;
 }
 import "./styles.scss";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Badge } from "antd";
 import { RootState } from "../../../redux/store";
 import { useSelector } from "react-redux";
@@ -18,9 +18,12 @@ function SideBarHeader({ className, ...rest }: SideBarHeaderProps) {
   return (
     <nav className={`sidebar_header ${className}`} {...rest}>
       <ul className="sidebar_header-container">
-        <li className="sidebar_header__item sidebar_header__item--text ">
+        <Link
+          to={"/consignment"}
+          className="sidebar_header__item sidebar_header__item--text "
+        >
           Ký gửi
-        </li>
+        </Link>
         {user ? (
           <li
             onClick={() => navigate("/infomation/infomationPersonal")}
@@ -29,9 +32,12 @@ function SideBarHeader({ className, ...rest }: SideBarHeaderProps) {
             <span>Chào, {user?.name}</span> <FaRegUser />
           </li>
         ) : (
-          <li className="sidebar_header__item sidebar_header__item--text ">
+          <Link
+            to="/login"
+            className="sidebar_header__item sidebar_header__item--text "
+          >
             Đăng nhập
-          </li>
+          </Link>
         )}
         <li className="sidebar_header__item">
           <Badge count={state.cart?.products?.length}>

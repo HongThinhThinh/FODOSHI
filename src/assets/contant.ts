@@ -126,7 +126,7 @@ export const linkInfomation = [
     name: "Phương thức thanh toán",
   },
   {
-    path: "deposit",
+    path: "deposit/registration",
     name: "Ký gửi quần áo",
   },
   {
@@ -136,10 +136,6 @@ export const linkInfomation = [
   {
     path: "",
     name: "Mã giảm giá",
-  },
-  {
-    path: "",
-    name: "Đăng xuất",
   },
 ];
 
