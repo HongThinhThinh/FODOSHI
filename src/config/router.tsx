@@ -1,7 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import LoginPage from "../components/pages/auth/login-page";
-import AdminLayout from "../components/layouts/admin-layout";
 import Dashboard from "../components/pages/admin/manage-overview";
 import ProductDetail from "../components/pages/admin/product-detail";
 
@@ -25,7 +24,8 @@ import InfoPersonal from "../components/pages/infomation-page/info-personal";
 import InfomationTabLayout from "../layouts/InfomationTabLayout";
 import AdminLayoutCustom from "../layouts/admin/AdminLayout";
 import { mockAdminCategoryRouteData, mockAdminRouteData } from "../dummy-data/mockAdminRouteData";
-import CategoryAdminLayout from "../layouts/admin/admin-category";import DeliveryAddress from "../components/pages/infomation-page/delivery-address";
+import CategoryAdminLayout from "../layouts/admin/admin-category";
+import DeliveryAddress from "../components/pages/infomation-page/delivery-address";
 import PaymentMethod from "../components/pages/infomation-page/payment-method";
 import DepositPolicy from "../components/pages/infomation-page/deposit/policy";
 
@@ -34,7 +34,6 @@ export const router = createBrowserRouter([
     path: "/test",
     element: <div className="text-3xl font-bold underline bg-black">Hi</div>,
   },
-
   {
     path: "",
     element: <MainLayout />,

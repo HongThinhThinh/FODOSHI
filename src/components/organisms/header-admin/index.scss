@@ -33,9 +33,11 @@
           border: 1px solid #ccc;
           position: fixed;
           transition: all 0.5s;
+          display: none;
           &--active {
-            top: 10%;
+            top: 16%;
             opacity: 1;
+            display: block;
           }
           &__title {
             font-size: 18px;
