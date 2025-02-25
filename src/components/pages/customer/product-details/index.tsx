@@ -12,8 +12,12 @@ import "react-image-gallery/styles/css/image-gallery.css";
 import { FaCaretRight } from "react-icons/fa";
 import { formatMoney } from "../../../../utils/formatMoney";
 import ButtonComponent from "../../../atoms/button";
-import { useGetProductAvailable, useGetProductDetail } from "../../../../services/productService";
-import { ColorPicker } from "antd";
+import {
+  useGetProductAvailable,
+  useGetProductDetail,
+} from "../../../../services/productService";
+import { ColorPicker, message } from "antd";
+import { useCreateCart } from "../../../../services/cartService";
 type Product = {
   id: number;
   name: string;
@@ -76,7 +80,24 @@ const ProductDetails = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
+  const { mutate } = useCreateCart();
+  const handleAddToCart = async () => {
+    try {
+      mutate(
+        { productId: id },
+        {
+          onSuccess: () => {
+            message.success("Thêm giỏ hàng thành công");
+          },
+          onError: (error) => {
+            message.error(error?.response?.data);
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Unexpected error:", error);
+    }
+  };
   const { data } = useGetProductAvailable("AVAILABLE");
 
   console.log(data);
@@ -151,7 +172,7 @@ const ProductDetails = () => {
                   size="large"
                   bgColor="#d99041"
                   color="white"
-                  onClick={() => console.log()}
+                  onClick={handleAddToCart}
                 >
                   Thêm vào giỏ hàng
                 </ButtonComponent>
