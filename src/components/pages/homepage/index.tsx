@@ -8,15 +8,29 @@ import {
 import ButtonComponent from "../../atoms/button";
 import Carousel from "../../atoms/carousel";
 import "./styles.scss";
-import { showCardModel } from "../../../assets/model";
 import ShowCard from "../../atoms/show-card";
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import ReasonCard from "../../atoms/reason-card";
 import SocialCard from "../../atoms/social-card";
 import { useGetProduct } from "../../../services/productService";
+import { useEffect } from "react";
 function HomePage() {
-  const { data: products } = useGetProduct();
-  console.log(products);
+  const {
+    data: products,
+    isLoading,
+    isError,
+    refetch,
+  } = useGetProduct({
+    staleTime: 0, // Dữ liệu luôn được coi là cũ và cần gọi lại
+    cacheTime: 0, // Không lưu dữ liệu vào cache
+    refetchOnWindowFocus: true, // Khi trang được mở lại (F5), gọi lại API
+    enabled: false, // Tắt tự động fetch khi component mount
+  });
+
+  useEffect(() => {
+    refetch(); // Gọi lại API khi trang được load lại
+  }, [refetch]);
+
   return (
     <>
       {/* -------------Banner------------- */}
@@ -40,6 +54,7 @@ function HomePage() {
           </ButtonComponent>
         </div>
       </section>
+
       {/* -------------Reason------------- */}
       <section className="homepage-reason__container">
         <h1 className="homepage-reason__title">Tại sao nên chọn FODOSHI</h1>
@@ -49,11 +64,12 @@ function HomePage() {
               key={index}
               content={item.content}
               image={item.image}
-              reverse={index % 2 === 0 ? true : false}
+              reverse={index % 2 === 0}
             />
           ))}
         </div>
       </section>
+
       {/* ------------Category------------ */}
       <section className="homepage-category__container">
         <h2 className="homepage-category__title">Shop theo danh mục</h2>
@@ -70,8 +86,8 @@ function HomePage() {
           ))}
         </div>
       </section>
-      {/* ----------------OutfitOfDay----------- */}
 
+      {/* ----------------OutfitOfDay----------- */}
       <section className="homepage-outfitOfDay__container">
         <h2 className="homepage-outfitOfDay__title">Outfit của ngày</h2>
         <div className="homepage-outfitOfDay__wrapper">
@@ -85,14 +101,17 @@ function HomePage() {
             }}
             modules={[Navigation]}
           >
-            {products?.map((item) => (
-              <Carousel.Item className="homepage-outfitOfDay__carousel-item">
-                <ShowCard key={item.id} card={item} />
-              </Carousel.Item>
-            ))}
-
+            {Array.isArray(products) && products.length > 0
+              ? products.map((item) => (
+                  <Carousel.Item
+                    className="homepage-outfitOfDay__carousel-item"
+                    key={item.id}
+                  >
+                    <ShowCard card={item} />
+                  </Carousel.Item>
+                ))
+              : ""}
             <IoIosArrowForward className="swiper-button-next" />
-
             <IoIosArrowBack className="swiper-button-prev" />
           </Carousel>
         </div>

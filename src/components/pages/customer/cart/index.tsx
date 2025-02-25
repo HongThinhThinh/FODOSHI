@@ -16,6 +16,7 @@ import ButtonComponent from "../../../atoms/button";
 import { Link, useNavigate } from "react-router-dom";
 import { formatMoney } from "../../../../utils/formatMoney";
 import Checkout from "../check-out";
+import { useGetCart } from "../../../../services/cartService";
 
 export default function Cart() {
   const cart = useSelector((state: RootState) => state.cart);
@@ -25,6 +26,9 @@ export default function Cart() {
   const [openCheckout, setOpenCheckout] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const getParams = useGetCart();
+  console.log(getParams?.data?.data?.cartItems);
+
   const handleIncrement = (product: Product) => {
     dispatch(
       changeQuantity({
@@ -67,7 +71,6 @@ export default function Cart() {
         <div className="cart__items__header">
           <span>Item</span>
           <span>Price</span>
-          <span>Quantity</span>
           <span>Total</span>
         </div>
         {cart?.products?.length === 0 ? (
@@ -108,11 +111,7 @@ export default function Cart() {
               <div className="cart__items__item__price">
                 {formatMoney(product.price)}
               </div>
-              <div className="cart__items__item__quantity">
-                <DownCircleOutlined onClick={() => handleDecrement(product)} />
-                <span>{product.quantity}</span>
-                <UpCircleOutlined onClick={() => handleIncrement(product)} />
-              </div>
+
               <div className="cart__items__item__total">
                 {formatMoney(product.quantity * product.price)}
               </div>

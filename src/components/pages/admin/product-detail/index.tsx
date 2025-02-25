@@ -53,13 +53,24 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
     productStatus: "AVAILABLE",
     tags: [] as string[], // Use tags array from state
     imageUrls: [] as string[],
-    consignorId: "e717d28f-bc86-4df2-a847-134f0ca54d88",
+    consignorId: "",
   });
   const [loading, setLoading] = useState(false);
   const currentPath = location.pathname.split("/")[2];
   const currentSubPath = location.pathname.split("/")[3];
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const { data: userByPhone } = useGetUserByPhone(phoneNumber);
+
+  const { data: userByPhone, refetch } = useGetUserByPhone(phoneNumber);
+
+  useEffect(() => {
+    if (phoneNumber) {
+      refetch();
+    }
+  }, [phoneNumber, refetch]);
+
+  console.log(userByPhone?.id);
+  const { mutate, isPending } = useCreateProduct();
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -70,8 +81,6 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
   const handleSelectChange = (value: string[], name: "category" | "brand") => {
     setProduct((prev) => ({ ...prev, [name]: value }));
   };
-
-  const { mutate, isPending } = useCreateProduct();
 
   const props: UploadProps = {
     name: "file",
@@ -136,6 +145,7 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
           originalPrice,
           sellingPrice,
           imageUrls,
+          consignorId: userByPhone?.id,
         },
 
         {
@@ -156,9 +166,10 @@ export default function ProductDetail({ product_id }: ProductDetailProps) {
               productStatus: "AVAILABLE",
               tags: [],
               imageUrls: [],
-              consignorId: userByPhone?.id,
+              consignorId: "",
             });
             setFileList([]); // Clear file list after success
+            setPhoneNumber("");
           },
           onError: (error) => {
             message.error("Có lỗi xảy ra khi thêm sản phẩm.");
