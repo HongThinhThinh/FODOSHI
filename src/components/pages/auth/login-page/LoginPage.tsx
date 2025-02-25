@@ -21,6 +21,7 @@ export default function LoginPage() {
     try {
       const response = await callApi("post", "login", payload);
       localStorage.setItem("token", response.data.token);
+      localStorage.setItem("refreshToken", response.data.refreshToken);
       console.log("Login successful", response);
       dispatch(login(response.data));
       navigate("/", { replace: true });
@@ -37,11 +38,18 @@ export default function LoginPage() {
         <h1 className="text-center text-2xl mb-4">Sign in</h1>
 
         {/* Form Ant Design */}
-        <Form form={form} layout="vertical" onFinish={onFinish} className="space-y-3">
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={onFinish}
+          className="space-y-3"
+        >
           <Form.Item
             label="Email or mobile phone number"
             name="username"
-            rules={[{ required: true, message: "Please enter your email or phone" }]}
+            rules={[
+              { required: true, message: "Please enter your email or phone" },
+            ]}
           >
             <Input />
           </Form.Item>
@@ -106,7 +114,7 @@ export default function LoginPage() {
       {/* Nút Create an account */}
       <div className="w-full max-w-md text-center">
         <Link
-          to="/test-auth/register"
+          to="/register"
           className="inline-block border border-black rounded-full px-6 py-2 text-sm hover:bg-gray-50 w-full"
         >
           Create an account

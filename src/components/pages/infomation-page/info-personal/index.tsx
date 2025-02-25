@@ -2,10 +2,11 @@ import { Col, Form, Row } from "antd";
 import "./styles.scss";
 import InputComponent from "../../../atoms/input";
 import ButtonComponent from "../../../atoms/button";
-import { useOutletContext } from "react-router-dom";
-import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../redux/store";
 
 function InfoPersonal() {
+  const { user } = useSelector((state: RootState) => state);
   return (
     <section>
       <div className="form-infomation-container form-infomation-person-wrapper">
@@ -13,13 +14,11 @@ function InfoPersonal() {
         <Form>
           <Form.Item>
             <InputComponent
-              placeholder="Tran Thi"
+              value={user?.name}
+              placeholder="Yen Thi"
               shape="square"
               size="large"
             />
-          </Form.Item>
-          <Form.Item>
-            <InputComponent placeholder="Yen Thi" shape="square" size="large" />
           </Form.Item>
           <Form.Item>
             <ButtonComponent
@@ -37,6 +36,7 @@ function InfoPersonal() {
         <Form>
           <Form.Item>
             <InputComponent
+              value={user?.email}
               placeholder="thittuss170304@fpt.efu.vn"
               shape="square"
               size="large"
@@ -47,7 +47,8 @@ function InfoPersonal() {
           </Form.Item>
           <Form.Item>
             <InputComponent
-              placeholder="xxxxxxxxxxx"
+              value={"************"}
+              placeholder="*********"
               shape="square"
               size="large"
               suffix={
@@ -64,6 +65,7 @@ function InfoPersonal() {
             <Col span={10}>
               <Form.Item>
                 <InputComponent
+                  value={user?.phoneNumber}
                   placeholder="Nhập số điện thoại*"
                   shape="square"
                   size="large"

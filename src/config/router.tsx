@@ -3,12 +3,9 @@ import MainLayout from "../layouts/MainLayout";
 
 import Dashboard from "../components/pages/admin/manage-overview";
 import ProductDetail from "../components/pages/admin/product-detail";
-
-import Authentication from "../components/pages/auth/authentication";
 import ForgetPassword from "../components/pages/auth/forget-password";
 import ConfirmPassword from "../components/pages/auth/confirm-password";
 import SuccessAuth from "../components/pages/auth/success-auth";
-
 import ProductsPage from "../components/pages/admin/products";
 import OrderManagement from "../components/pages/admin/manage-orders";
 import OrderDetails from "../components/pages/admin/order-details";
@@ -22,7 +19,10 @@ import InfomationLayout from "../layouts/InfomationLayout";
 import InfoPersonal from "../components/pages/infomation-page/info-personal";
 import InfomationTabLayout from "../layouts/InfomationTabLayout";
 import AdminLayoutCustom from "../layouts/admin/AdminLayout";
-import { mockAdminCategoryRouteData, mockAdminRouteData } from "../dummy-data/mockAdminRouteData";
+import {
+  mockAdminCategoryRouteData,
+  mockAdminRouteData,
+} from "../dummy-data/mockAdminRouteData";
 
 import CategoryAdminLayout from "../layouts/admin/admin-category";
 import DeliveryAddress from "../components/pages/infomation-page/delivery-address";
@@ -219,7 +219,9 @@ export const router = createBrowserRouter([
       },
       {
         path: "categories",
-        element: <CategoryAdminLayout categoriesPath={mockAdminCategoryRouteData} />,
+        element: (
+          <CategoryAdminLayout categoriesPath={mockAdminCategoryRouteData} />
+        ),
         children: [
           {
             path: "clothing",
@@ -254,18 +256,15 @@ export const router = createBrowserRouter([
     ],
   },
 
-  {
-    path: "/auth",
-    element: <Authentication />,
-  },
-  {
-    path: "/login",
-    // element: <LoginPage />,
-  },
-  {
-    path: "/register",
-    // element: <RegisterPage />,
-  },
+  // {
+  //   path: "/auth",
+  //   element: <Authentication />,
+  // },
+  // {
+  //   path: "/login",
+  //   element: <LoginPage />,
+  // },
+
   {
     path: "/forget-password",
     element: <ForgetPassword />,
@@ -279,7 +278,7 @@ export const router = createBrowserRouter([
     element: <SuccessAuth />,
   },
   {
-    path: "/test-auth",
+    path: "",
     element: <AuthenticationLayout />,
     children: [
       {
