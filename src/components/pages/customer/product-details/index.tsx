@@ -12,7 +12,7 @@ import "react-image-gallery/styles/css/image-gallery.css";
 import { FaCaretRight } from "react-icons/fa";
 import { formatMoney } from "../../../../utils/formatMoney";
 import ButtonComponent from "../../../atoms/button";
-import { useGetProductDetail } from "../../../../services/productService";
+import { useGetProductAvailable, useGetProductDetail } from "../../../../services/productService";
 import { ColorPicker } from "antd";
 type Product = {
   id: number;
@@ -77,6 +77,9 @@ const ProductDetails = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  const { data } = useGetProductAvailable("AVAILABLE");
+
+  console.log(data);
   console.log(product);
   return (
     <main className="min-h-screen my-[80px]">
