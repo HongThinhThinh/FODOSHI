@@ -14,6 +14,10 @@ export const logoWhite = fodoshi_white;
 
 export const navbar = [
   {
+    path: "about",
+    name: "Giới thiệu",
+  },
+  {
     path: "newProduct",
     name: "Hàng nhập mới",
   },
@@ -30,16 +34,12 @@ export const navbar = [
     name: "Nam",
   },
   {
-    path: "accessory",
-    name: "Phụ kiện",
+    path: "shoeSize",
+    name: "Bảng size giày",
   },
   {
     path: "blog",
     name: "Blog",
-  },
-  {
-    path: "present",
-    name: "Giới thiệu",
   },
 ];
 type categoryType = {
