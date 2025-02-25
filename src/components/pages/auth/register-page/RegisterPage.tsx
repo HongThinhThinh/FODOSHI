@@ -134,7 +134,6 @@ export default function RegisterPage() {
                   />
                 </Checkbox>
               </Form.Item>
-                a
               {/* Nút Sign Up & Link chuyển sang đăng nhập */}
               <Form.Item style={{ marginBottom: 0 }}>
                 <Button type="primary" htmlType="submit" className="rounded-full" loading={loading}>
