@@ -34,8 +34,13 @@ import RegisterPage from "../components/pages/auth/register-page/RegisterPage";
 import LoginPage from "../components/pages/auth/login-page/LoginPage";
 import ConsignmentPage from "../components/pages/consignment";
 import MalePage from "../components/pages/male-page";
+import Error404 from "../components/pages/404";
 
 export const router = createBrowserRouter([
+  {
+    path: "*",
+    element: <Error404 />,
+  },
   {
     path: "/test",
     element: <div className="text-3xl font-bold underline bg-black">Hi</div>,

@@ -5,7 +5,6 @@ import { useForm } from "antd/es/form/Form";
 import { Form } from "antd";
 import InputComponent from "../../../atoms/input";
 import ButtonComponent from "../../../atoms/button";
-import LoginPage from "../login-page";
 import { useNavigate } from "react-router-dom";
 
 function Authentication() {

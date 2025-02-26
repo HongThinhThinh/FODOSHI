@@ -1,6 +1,5 @@
-import { Form, Input, Button, Checkbox, Row, Col } from "antd";
 import { logo } from "../../assets/contant";
-import { Link, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 function AuthenticationLayout() {
   return (

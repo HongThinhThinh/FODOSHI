@@ -1,4 +1,3 @@
-import React from "react";
 import { Form, Input, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import ButtonComponent from "../../../atoms/button";
@@ -46,7 +45,9 @@ export default function LoginPage() {
           <Form.Item
             label="Email or mobile phone number"
             name="username"
-            rules={[{ required: true, message: "Please enter your email or phone" }]}
+            rules={[
+              { required: true, message: "Please enter your email or phone" },
+            ]}
           >
             <Input />
           </Form.Item>

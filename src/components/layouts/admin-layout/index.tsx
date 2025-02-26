@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import type { MenuProps } from "antd";
 import { Layout, Menu, theme } from "antd";
 import { Link, Outlet, useNavigate } from "react-router-dom";
-const { Header, Content, Footer, Sider } = Layout;
-import { MdOutlineTopic } from "react-icons/md";
+const { Content, Sider } = Layout;
 import { SlCalender } from "react-icons/sl";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
@@ -40,7 +39,7 @@ const AdminLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKey, setSelectedKey] = useState<string>("dashboard");
   const {
-    token: { colorBgContainer, borderRadiusLG },
+    token: { borderRadiusLG },
   } = theme.useToken();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -96,7 +95,9 @@ const AdminLayout: React.FC = () => {
               borderRadius: borderRadiusLG,
             }}
           >
-            <h1 style={{ fontWeight: "600", fontSize: "24px" }}>{toTitle(selectedKey)}</h1>
+            <h1 style={{ fontWeight: "600", fontSize: "24px" }}>
+              {toTitle(selectedKey)}
+            </h1>
             <h3>
               <Link to="/">Trang chủ</Link>
               {" > "}

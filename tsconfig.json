@@ -6,7 +6,7 @@
   ],
   "compilerOptions": {
     "noEmitOnError": false,
-    "strict": true,
+    "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "target": "ES6",

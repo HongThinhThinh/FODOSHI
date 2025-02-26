@@ -1,4 +1,3 @@
-import React from "react";
 import GenericTable, { ColumnType } from "../../atoms/table";
 
 export default function MockTablePage() {
