@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Carousel from "../../../atoms/carousel";
 import { Navigation } from "swiper/modules";
-import { showCardModel } from "../../../../assets/model";
+import { showCardModel, showCardModel1 } from "../../../../assets/model";
 import ShowCard from "../../../atoms/show-card";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import "./styles.scss";
@@ -224,7 +224,7 @@ const ProductDetails = () => {
             }}
             modules={[Navigation]}
           >
-            {showCardModel?.map((item) => (
+            {showCardModel1?.map((item) => (
               <Carousel.Item className="homepage-mayLike__carousel-item">
                 <ShowCard key={item.id} card={item} />
               </Carousel.Item>
