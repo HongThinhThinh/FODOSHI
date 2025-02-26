@@ -33,12 +33,14 @@ interface ProductDetailProps {
   product_id?: string;
   isHidding?: boolean;
   isConsigment?: boolean;
+  isCustomWidth?: boolean; // Thêm prop này
 }
 
 export default function ProductDetail({
   product_id,
   isHidding = false,
   isConsigment = false,
+  isCustomWidth = false, // Thêm prop này
 }: ProductDetailProps) {
   const params = useGetParams();
   const id = params("id");
@@ -204,7 +206,7 @@ export default function ProductDetail({
           <LoadingUI />
         </Modal>
       )}
-      <div className="w-[1200px]">
+      <div className={`w-[1200px] ${isCustomWidth ? "w-[1000px]" : ""}`}>
         {!isHidding && (
           <div>
             <h1 style={{ fontWeight: "600", fontSize: "24px" }}>
@@ -383,7 +385,7 @@ export default function ProductDetail({
                   <div className="w-1/2">
                     <div className="form-item">
                       <label htmlFor="gender" className="block ">
-                        <b>Giới tính</b>
+                        <b>Dành cho</b>
                       </label>
                       <Select
                         style={{ width: "100%" }}

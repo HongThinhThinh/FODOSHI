@@ -9,9 +9,9 @@ export default function RegisterPage() {
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
   const onFinish = async (values: any) => {
-    const { firstName, lastName, email, phone, password } = values;
+    const { fullname, email, phone, password } = values;
     const payload = {
-      name: `${firstName} ${lastName}`,
+      name: fullname,
       email,
       phoneNumber: phone,
       password,
@@ -24,7 +24,7 @@ export default function RegisterPage() {
       navigate("/login");
     } catch (error) {
       console.error("Registration failed", error);
-      messageApi.error("Registration failed");
+      messageApi.error("Duplicate phone or email address");
     }
   };
 
@@ -32,7 +32,9 @@ export default function RegisterPage() {
     <div className="container mx-auto px-4 pb-5 flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8">
       {/* Left Side */}
       <div className="md:w-1/2 mt-8">
-        <h1 className="text-4xl font-bold text-[#7d2f2f] mb-6">Design with us</h1>
+        <h1 className="text-4xl font-bold text-[#7d2f2f] mb-6">
+          Design with us
+        </h1>
         <p className="text-xl text-[#7d2f2f]">Access to thousands of design</p>
         <p className="text-xl text-[#7d2f2f]">resources and templates</p>
       </div>
@@ -46,21 +48,16 @@ export default function RegisterPage() {
             <Form layout="vertical" onFinish={onFinish}>
               {/* Họ và Tên */}
               <Row gutter={16}>
-                <Col span={12}>
+                <Col span={24}>
                   <Form.Item
-                    label="First Name"
-                    name="firstName"
-                    rules={[{ required: true, message: "Please enter your first name" }]}
-                    style={{ marginBottom: 8 }}
-                  >
-                    <Input />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    label="Last Name"
-                    name="lastName"
-                    rules={[{ required: true, message: "Please enter your last name" }]}
+                    label="Full name"
+                    name="fullname"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter your full name",
+                      },
+                    ]}
                     style={{ marginBottom: 8 }}
                   >
                     <Input />
@@ -72,7 +69,12 @@ export default function RegisterPage() {
               <Form.Item
                 label="Email Address"
                 name="email"
-                rules={[{ required: true, message: "Please enter your email address" }]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter your email address",
+                  },
+                ]}
                 style={{ marginBottom: 8 }}
               >
                 <Input type="email" />
@@ -82,7 +84,9 @@ export default function RegisterPage() {
               <Form.Item
                 label="Phone Number"
                 name="phone"
-                rules={[{ required: true, message: "Please enter your phone number" }]}
+                rules={[
+                  { required: true, message: "Please enter your phone number" },
+                ]}
                 style={{ marginBottom: 8 }}
               >
                 <Input type="tel" />
@@ -92,7 +96,9 @@ export default function RegisterPage() {
               <Form.Item
                 label="Password"
                 name="password"
-                rules={[{ required: true, message: "Please enter your password" }]}
+                rules={[
+                  { required: true, message: "Please enter your password" },
+                ]}
                 style={{ marginBottom: 8 }}
               >
                 <Input.Password />
@@ -101,7 +107,8 @@ export default function RegisterPage() {
               {/* Chú thích cho password */}
               <Form.Item style={{ marginBottom: 8 }}>
                 <p className="text-xs text-gray-500">
-                  Use 8 or more characters with a mix of letters, numbers &amp; symbols
+                  Use 8 or more characters with a mix of letters, numbers &amp;
+                  symbols
                 </p>
               </Form.Item>
 
@@ -126,7 +133,11 @@ export default function RegisterPage() {
                   />
                 </Checkbox>
               </Form.Item>
-              <Form.Item name="marketing" valuePropName="checked" style={{ marginBottom: 8 }}>
+              <Form.Item
+                name="marketing"
+                valuePropName="checked"
+                style={{ marginBottom: 8 }}
+              >
                 <Checkbox>
                   <ExpandableText
                     text="By creating an account, I also consent to receive SMS messages and emails, including product updates, events, and marketing promotions."
@@ -136,7 +147,12 @@ export default function RegisterPage() {
               </Form.Item>
               {/* Nút Sign Up & Link chuyển sang đăng nhập */}
               <Form.Item style={{ marginBottom: 0 }}>
-                <Button type="primary" htmlType="submit" className="rounded-full" loading={loading}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className="rounded-full"
+                  loading={loading}
+                >
                   Sign up
                 </Button>
                 <span className="ml-4">
