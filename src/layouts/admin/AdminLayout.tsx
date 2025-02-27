@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Col, Row } from "antd";
-import React, { useState } from "react";
+import { useState } from "react";
 import HeaderAdmin from "../../components/organisms/header-admin";
-import { category, logo } from "../../assets/contant";
+import { logo } from "../../assets/contant";
 import "./index.scss";
 import {
   fashionCategoryRoutesData,
@@ -133,7 +134,7 @@ export default function AdminLayoutCustom({ routes }: AdminLayoutCustomProps) {
           >
             <Outlet
               context={{
-                activateCategoryLayout: (categories: RouteType[]) => {
+                activateCategoryLayout: (categories: any) => {
                   setSection({
                     isSectionActive: categories.length === 0 ? false : true,
                     categoriesPath: categories,

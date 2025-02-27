@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Carousel from "../../../atoms/carousel";
@@ -89,7 +90,7 @@ const ProductDetails = () => {
           onSuccess: () => {
             message.success("Thêm giỏ hàng thành công");
           },
-          onError: (error) => {
+          onError: (error: any) => {
             message.error(error?.response?.data);
           },
         }

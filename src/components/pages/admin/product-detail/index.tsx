@@ -424,10 +424,10 @@ export default function ProductDetail({
                       <div>
                         <b>Email:</b> {userByPhone.email || "Chưa có email"}
                       </div>
-                      <div>
-                        <b>Địa chỉ:</b>{" "}
-                        {userByPhone.address || "Chưa có địa chỉ"}
-                      </div>
+                      {/* <div>
+                          <b>Địa chỉ:</b>{" "}
+                          {userByPhone.address || "Chưa có địa chỉ"}
+                        </div> */}
                     </div>
                   )}
                 </div>

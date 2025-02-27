@@ -15,14 +15,20 @@ export interface CheckoutProps {
   grandTotalBeforeShipping: number;
 }
 
-export default function Checkout({ grandTotalBeforeShipping, open, setOpen }: CheckoutProps) {
+export default function Checkout({
+  grandTotalBeforeShipping,
+  open,
+  setOpen,
+}: CheckoutProps) {
   const [selectedShipping, setSelectedShipping] = useState<string | null>(null);
   const [selectedPayment, setSelectedPayment] = useState<string>("");
-  const [selectedVoucher, setSelectedVoucher] = useState<ShippingVoucher | null>(null);
-  const [voucherCode, setVoucherCode] = useState<string>("");
+  const [selectedVoucher, setSelectedVoucher] =
+    useState<ShippingVoucher | null>(null);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [shippingCost, setShippingCost] = useState<number>(0);
-  const [grandTotal, setGrandTotal] = useState<number>(grandTotalBeforeShipping);
+  const [grandTotal, setGrandTotal] = useState<number>(
+    grandTotalBeforeShipping
+  );
   const [openConfirmModal, setOpenConfirmModal] = useState<boolean>(false);
   const closeCheckout = () => {
     setOpen(false);
@@ -100,7 +106,9 @@ export default function Checkout({ grandTotalBeforeShipping, open, setOpen }: Ch
   return (
     <>
       <div
-        className={`checkout__overlay${open ? " checkout__overlay--visible" : ""}`}
+        className={`checkout__overlay${
+          open ? " checkout__overlay--visible" : ""
+        }`}
         onClick={() => {
           closeCheckout();
           setOpenConfirmModal(false);
@@ -120,14 +128,21 @@ export default function Checkout({ grandTotalBeforeShipping, open, setOpen }: Ch
             <div className="checkout__address__items">
               <div className="checkout__address__items__item">Address 1</div>
               <div className="checkout__address__items__item">Address 2</div>
-              <div className="checkout__address__items__item">Thêm địa chỉ ....</div>
+              <div className="checkout__address__items__item">
+                Thêm địa chỉ ....
+              </div>
             </div>
           </div>
           <div className="checkout__payment">
-            <div className="checkout__payment__title">Phương thức thanh toán</div>
+            <div className="checkout__payment__title">
+              Phương thức thanh toán
+            </div>
             <div className="checkout__payment__items">
               {paymentMethods.map((pMethod) => (
-                <div key={pMethod.id} className="checkout__payment__items__icon">
+                <div
+                  key={pMethod.id}
+                  className="checkout__payment__items__icon"
+                >
                   <div className="checkout__payment__items__icon__upper">
                     <label htmlFor={pMethod.id}>{pMethod.label}</label>
                     <input
@@ -147,10 +162,15 @@ export default function Checkout({ grandTotalBeforeShipping, open, setOpen }: Ch
             </div>
           </div>
           <div className="checkout__shipping">
-            <div className="checkout__shipping__title">Phương thức vận chuyển</div>
+            <div className="checkout__shipping__title">
+              Phương thức vận chuyển
+            </div>
             <div className="checkout__shipping__items">
               {shippingMethods.map((method) => (
-                <div key={method.id} className="checkout__shipping__items__icon">
+                <div
+                  key={method.id}
+                  className="checkout__shipping__items__icon"
+                >
                   <div className="checkout__shipping__items__icon__upper">
                     <label htmlFor={method.id}> {method.label}</label>
                     <input
@@ -180,7 +200,9 @@ export default function Checkout({ grandTotalBeforeShipping, open, setOpen }: Ch
                   case "Giao hàng tận nơi":
                     return (
                       <>
-                        <ButtonComponent onClick={openModal}>Chọn mã giảm giá</ButtonComponent>
+                        <ButtonComponent onClick={openModal}>
+                          Chọn mã giảm giá
+                        </ButtonComponent>
                         {selectedVoucher && (
                           <div className="checkout__shipping-voucher__info">
                             <strong>Đã chọn:</strong> {selectedVoucher.code} -{" "}
@@ -201,6 +223,9 @@ export default function Checkout({ grandTotalBeforeShipping, open, setOpen }: Ch
               })()}
             </div>
             <Modal
+              style={{
+                backgroundColor: "white",
+              }}
               title="Chọn mã giảm giá"
               visible={isModalVisible}
               onCancel={closeModal}
@@ -235,30 +260,43 @@ export default function Checkout({ grandTotalBeforeShipping, open, setOpen }: Ch
           <div className="checkout__bills">
             <div className="checkout__bills__content">
               <div className="checkout__bills__content__item">
-                <span className="checkout__bills__content__item__title">Sub total</span>
+                <span className="checkout__bills__content__item__title">
+                  Sub total
+                </span>
                 <span>{formatMoney(grandTotalBeforeShipping)}</span>
               </div>
               <div className="checkout__bills__content__item">
-                <span className="checkout__bills__content__item__title">Phí vận chuyển</span>
+                <span className="checkout__bills__content__item__title">
+                  Phí vận chuyển
+                </span>
                 <span>{formatMoney(shippingCost)}</span>
               </div>
               <div className="checkout__bills__content__item">
-                <span className="checkout__bills__content__item__title">Giảm giá</span>
+                <span className="checkout__bills__content__item__title">
+                  Giảm giá
+                </span>
                 <span>
                   {selectedVoucher
-                    ? formatMoney((shippingCost * selectedVoucher.discount) / 100)
+                    ? formatMoney(
+                        (shippingCost * selectedVoucher.discount) / 100
+                      )
                     : formatMoney(0)}
                 </span>
               </div>
               <div className="checkout__bills__content__item">
-                <span className="checkout__bills__content__item__title">Tổng cộng</span>
+                <span className="checkout__bills__content__item__title">
+                  Tổng cộng
+                </span>
                 <span id="grand-total-checkout">{formatMoney(grandTotal)}</span>
               </div>
             </div>
           </div>
           <div className="checkout__confirm">
             {selectedPayment && selectedShipping && (
-              <ButtonComponent onClick={() => setOpenConfirmModal(true)} isActive>
+              <ButtonComponent
+                onClick={() => setOpenConfirmModal(true)}
+                isActive
+              >
                 Thanh toán
               </ButtonComponent>
             )}

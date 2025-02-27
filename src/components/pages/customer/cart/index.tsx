@@ -1,17 +1,8 @@
 import React, { useEffect, useState, useCallback } from "react";
 import "./index.scss";
-import { PlusOutlined, MinusOutlined, DeleteOutlined } from "@ant-design/icons";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  add,
-  changeQuantity,
-  getAll,
-  remove,
-  reset,
-} from "../../../../redux/features/cartSlice";
-import { Product, ProductCategory } from "../../../../model/product";
+import { DeleteOutlined } from "@ant-design/icons";
+import { useDispatch } from "react-redux";
 
-import { RootState } from "../../../../redux/store";
 import ButtonComponent from "../../../atoms/button";
 import { Link, useNavigate } from "react-router-dom";
 import { formatMoney } from "../../../../utils/formatMoney";
@@ -50,11 +41,11 @@ export default function Cart() {
     setGrandTotal(calculatedSubtotal + shippingFee - discount);
   }, [cartData, selectedItems, shippingFee, discount]);
 
-  useEffect(() => {
-    if (cartData && cartData.length > 0) {
-      dispatch(getAll(cartData));
-    }
-  }, [dispatch, getParams?.data]);
+  // useEffect(() => {
+  //   if (cartData && cartData.length > 0) {
+  //     dispatch(getAll(cartData));
+  //   }
+  // }, [dispatch, getParams?.data]);
 
   useEffect(() => {
     calculateTotals();
@@ -86,10 +77,10 @@ export default function Cart() {
         // Tính toán lại tổng giá trị giỏ hàng nếu cần
         calculateTotals(); // Gọi hàm tính toán lại tổng giỏ hàng nếu cần
       } else {
-        message.error("Có lỗi xảy ra khi xóa sản phẩm.");
+        //message.error("Có lỗi xảy ra khi xóa sản phẩm.");
       }
     } catch (error) {
-      message.error("Có lỗi xảy ra khi xóa sản phẩm.");
+      //message.error("Có lỗi xảy ra khi xóa sản phẩm.");
     }
   };
 
