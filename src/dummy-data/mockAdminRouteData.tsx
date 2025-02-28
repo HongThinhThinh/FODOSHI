@@ -1,6 +1,8 @@
 import { FaChartPie } from "react-icons/fa";
 import { FcDataConfiguration } from "react-icons/fc";
 import { SlCalender } from "react-icons/sl";
+import { MdCategory } from "react-icons/md";
+
 export interface RouteType {
   path: string;
   name: string;
@@ -21,6 +23,11 @@ export const mockAdminRouteData: RouteType[] = [
     path: "orders",
     name: "Orders",
     icon: <SlCalender />,
+  },
+  {
+    path: "category",
+    name: "Category",
+    icon: <MdCategory />,
   },
 ];
 

@@ -18,6 +18,7 @@ import ProductSwiper from "./productSwiper";
 import TagInput from "./TagInput"; // Import the TagInput component
 import { useGetUserByPhone } from "../../../../services/useUserService";
 import LoadingUI from "../../../atoms/loading";
+import { useSelector } from "react-redux";
 
 const { Option } = Select;
 
@@ -40,13 +41,14 @@ export default function ProductDetail({
   product_id,
   isHidding = false,
   isConsigment = false,
-  isCustomWidth = false, // Thêm prop này
+  isCustomWidth = false,
 }: ProductDetailProps) {
   const params = useGetParams();
   const id = params("id");
   const getCategory = useGetCategory("");
   const getBrand = useGetBrand("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const user = useSelector((store) => store?.user);
   const [product, setProduct] = useState({
     name: "",
     description: "",
@@ -160,7 +162,8 @@ export default function ProductDetail({
           sellingPrice,
           imageUrls,
           mainImage: imageUrls[selectedMainImage],
-          consignorId: userByPhone?.id,
+          productStatus: isConsigment ? "PENDING" : "AVAILABLE",
+          consignorId: isConsigment ? user?.id : userByPhone?.id,
         },
 
         {
@@ -200,13 +203,13 @@ export default function ProductDetail({
   };
 
   return (
-    <div className="">
+    <div className="productDetailPage">
       {loading && (
-        <Modal footer={false} open={true}>
+        <Modal className="customModal" footer={false} open={true}>
           <LoadingUI />
         </Modal>
       )}
-      <div className={`w-[1200px] ${isCustomWidth ? "w-[1000px]" : ""}`}>
+      <div className={`${isCustomWidth ? "w-[1000px]" : "w-[1200px]"}`}>
         {!isHidding && (
           <div>
             <h1 style={{ fontWeight: "600", fontSize: "24px" }}>

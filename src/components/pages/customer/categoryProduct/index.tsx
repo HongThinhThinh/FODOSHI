@@ -135,7 +135,7 @@ const ProductCategory = () => {
           {/* Products Grid */}
           <div className="w-full md:w-3/4">
             {filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="w-full md:w-3/4 flex flex-wrap gap-8">
                 {filteredProducts.map((product) => (
                   <ShowCard card={product} />
                 ))}

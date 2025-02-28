@@ -65,21 +65,40 @@ function HomePage() {
       {/* ------------Category------------ */}
       <section className="homepage-category__container">
         <h2 className="homepage-category__title">Shop theo danh mục</h2>
-        <div className="cursor-pointer homepage-category__wrapper">
-          {categories?.map((item, index) => (
-            <div
-              onClick={() => navigate(`/productByCategory/${item?.id}`)}
-              key={index}
-              className="homepage-category__item"
-            >
-              <img
-                className="homepage-category__item--img"
-                src={item?.image}
-                alt=""
-              />
-              <p className="homepage-category__item--title">{item?.name}</p>
-            </div>
-          ))}
+        <div className="homepage-category__wrapper">
+          <Carousel
+            className="homepage-category__carousel"
+            slidesPerView={4}
+            spaceBetween={3}
+            navigation={{
+              nextEl: ".swiper-button-next-category",
+              prevEl: ".swiper-button-prev-category",
+            }}
+            modules={[Navigation]}
+          >
+            {Array.isArray(categories) && categories.length > 0
+              ? categories.map((item, index) => (
+                  <Carousel.Item
+                    className="homepage-category__carousel-item"
+                    key={index}
+                  >
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => navigate(`/productByCategory/${item?.id}`)}
+                    >
+                      <img
+                        className="homepage-category__item--img"
+                        src={item?.image}
+                        alt=""
+                      />
+                      <p className="homepage-category__item--title">
+                        {item?.name}
+                      </p>
+                    </div>
+                  </Carousel.Item>
+                ))
+              : ""}
+          </Carousel>
         </div>
       </section>
 
