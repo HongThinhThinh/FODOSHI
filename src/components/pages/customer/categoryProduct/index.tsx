@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { FiX } from "react-icons/fi";
 import Slider from "react-slider";
 import { useGetProductByCategory } from "../../../../services/productService";
+import { useGetBrandActive } from "../../../../services/categoryService";
 import { useParams } from "react-router-dom";
+import ShowCard from "../../../atoms/show-card";
 
 const ProductCategory = () => {
   const { id } = useParams();
@@ -10,21 +12,41 @@ const ProductCategory = () => {
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const { data: products } = useGetProductByCategory(id);
+  const { data: brands } = useGetBrandActive(id);
+  const [selectedPriceFilter, setSelectedPriceFilter] = useState(null);
 
   useEffect(() => {
     if (products) {
       const filtered = products.filter((product) => {
         const sellingPrice = product.sellingPrice || product.originalPrice;
-        const priceMatch =
+        let priceMatch =
           sellingPrice >= priceRange[0] && sellingPrice <= priceRange[1];
+
+        if (selectedPriceFilter === "below100k") {
+          priceMatch = sellingPrice < 100000;
+        } else if (selectedPriceFilter === "100k-200k") {
+          priceMatch = sellingPrice >= 100000 && sellingPrice <= 200000;
+        } else if (selectedPriceFilter === "200k-300k") {
+          priceMatch = sellingPrice >= 200000 && sellingPrice <= 300000;
+        } else if (selectedPriceFilter === "300k-500k") {
+          priceMatch = sellingPrice >= 300000 && sellingPrice <= 500000;
+        } else if (selectedPriceFilter === "above500k") {
+          priceMatch = sellingPrice > 500000;
+        }
+
         const brandMatch =
           selectedBrands.length === 0 ||
           product.brands.some((brand) => selectedBrands.includes(brand.name));
+
         return priceMatch && brandMatch;
       });
       setFilteredProducts(filtered);
     }
-  }, [products, priceRange, selectedBrands]);
+  }, [products, priceRange, selectedBrands, selectedPriceFilter]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleBrandToggle = (brand) => {
     setSelectedBrands((prev) =>
@@ -32,13 +54,10 @@ const ProductCategory = () => {
     );
   };
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
   const resetFilters = () => {
     setPriceRange([0, 1000000]);
     setSelectedBrands([]);
+    setSelectedPriceFilter(null);
   };
 
   return (
@@ -49,52 +68,64 @@ const ProductCategory = () => {
           <div className="w-full md:w-1/4">
             <div className="bg-white p-6 rounded-lg shadow-md">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold">Filters</h2>
+                <h2 className="text-xl font-semibold">Bộ lọc</h2>
                 <button
                   onClick={resetFilters}
                   className="text-sm text-blue-600 hover:text-blue-800"
                 >
-                  Reset All
+                  Đặt lại
                 </button>
               </div>
-              {/* Price Filter */}
-              <div className="mb-8">
-                <h3 className="text-lg font-medium mb-4">Price Range</h3>
-                <Slider
-                  className="w-full h-2 bg-gray-200 rounded-md"
-                  thumbClassName="w-4 h-4 bg-blue-600 rounded-full"
-                  trackClassName="h-2 bg-blue-600 rounded-md"
-                  value={priceRange}
-                  onChange={setPriceRange}
-                  min={0}
-                  max={1000000}
-                />
-                <div className="flex justify-between mt-2">
-                  <span>{priceRange[0]} VND</span>
-                  <span>{priceRange[1]} VND</span>
+              {/* Price Presets */}
+              <div className="mb-4">
+                <h3 className="text-lg font-medium mb-2">Lọc giá</h3>
+                <div className="space-y-2">
+                  {[
+                    "below100k",
+                    "100k-200k",
+                    "200k-300k",
+                    "300k-500k",
+                    "above500k",
+                  ].map((filter) => (
+                    <button
+                      key={filter}
+                      onClick={() => setSelectedPriceFilter(filter)}
+                      className={`p-2 w-full text-left rounded ${
+                        selectedPriceFilter === filter
+                          ? "bg-blue-200"
+                          : "bg-gray-100"
+                      }`}
+                    >
+                      {filter === "below100k"
+                        ? "Giá dưới 100.000đ"
+                        : filter === "100k-200k"
+                        ? "100.000đ - 200.000đ"
+                        : filter === "200k-300k"
+                        ? "200.000đ - 300.000đ"
+                        : filter === "300k-500k"
+                        ? "300.000đ - 500.000đ"
+                        : "Giá trên 500.000đ"}
+                    </button>
+                  ))}
                 </div>
               </div>
               {/* Brand Filter */}
               <div>
-                <h3 className="text-lg font-medium mb-4">Brands</h3>
+                <h3 className="text-lg font-medium mb-4">Thương hiệu</h3>
                 <div className="space-y-2">
-                  {products &&
-                    [
-                      ...new Set(
-                        products.flatMap((p) => p.brands.map((b) => b.name))
-                      ),
-                    ].map((brand) => (
+                  {brands &&
+                    brands.map((brand) => (
                       <label
-                        key={brand}
+                        key={brand.id}
                         className="flex items-center space-x-3 cursor-pointer"
                       >
                         <input
                           type="checkbox"
-                          checked={selectedBrands.includes(brand)}
-                          onChange={() => handleBrandToggle(brand)}
+                          checked={selectedBrands.includes(brand.name)}
+                          onChange={() => handleBrandToggle(brand.name)}
                           className="h-4 w-4 text-blue-600 border-gray-300 rounded"
                         />
-                        <span>{brand}</span>
+                        <span>{brand.name}</span>
                       </label>
                     ))}
                 </div>
@@ -102,32 +133,16 @@ const ProductCategory = () => {
             </div>
           </div>
           {/* Products Grid */}
-          <div className="cursor-pointer w-full md:w-3/4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="bg-white rounded-lg shadow-md overflow-hidden hover:scale-105"
-                >
-                  <img
-                    src={product.mainImage}
-                    alt={product.name}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold mb-2">
-                      {product.name}
-                    </h3>
-                    <p className="text-gray-600 mb-2">
-                      {product.brands.map((b) => b.name).join(", ")}
-                    </p>
-                    <p className="text-blue-600 font-bold">
-                      {product.sellingPrice.toLocaleString()} VND
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="w-full md:w-3/4">
+            {filteredProducts.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {filteredProducts.map((product) => (
+                  <ShowCard card={product} />
+                ))}
+              </div>
+            ) : (
+              <p className="text-center text-gray-500">Không có sản phẩm nào</p>
+            )}
           </div>
         </div>
       </div>
