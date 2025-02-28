@@ -1,7 +1,6 @@
-import { Navigation, Pagination } from "swiper/modules";
+import { Navigation } from "swiper/modules";
 import {
   bannerHomepage,
-  category,
   reasonCard,
   socialCard,
 } from "../../../assets/contant";
@@ -12,21 +11,14 @@ import ShowCard from "../../atoms/show-card";
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import ReasonCard from "../../atoms/reason-card";
 import SocialCard from "../../atoms/social-card";
-import { useGetProduct } from "../../../services/productService";
+import { useGetProductAvailable } from "../../../services/productService";
 import { useEffect } from "react";
+import { useGetCategory } from "../../../services/adminService";
+import { useNavigate } from "react-router-dom";
 function HomePage() {
-  const {
-    data: products,
-    isLoading,
-    isError,
-    refetch,
-  } = useGetProduct({
-    staleTime: 0, // Dữ liệu luôn được coi là cũ và cần gọi lại
-    cacheTime: 0, // Không lưu dữ liệu vào cache
-    refetchOnWindowFocus: true, // Khi trang được mở lại (F5), gọi lại API
-    enabled: false, // Tắt tự động fetch khi component mount
-  });
-
+  const { data: products, refetch } = useGetProductAvailable("AVAILABLE");
+  const { data: categories } = useGetCategory();
+  const navigate = useNavigate();
   useEffect(() => {
     refetch(); // Gọi lại API khi trang được load lại
   }, [refetch]);
@@ -73,15 +65,19 @@ function HomePage() {
       {/* ------------Category------------ */}
       <section className="homepage-category__container">
         <h2 className="homepage-category__title">Shop theo danh mục</h2>
-        <div className="homepage-category__wrapper">
-          {category.map((item, index) => (
-            <div key={index} className="homepage-category__item">
+        <div className="cursor-pointer homepage-category__wrapper">
+          {categories?.map((item, index) => (
+            <div
+              onClick={() => navigate(`/productByCategory/${item?.id}`)}
+              key={index}
+              className="homepage-category__item"
+            >
               <img
                 className="homepage-category__item--img"
-                src={item.image}
+                src={item?.image}
                 alt=""
               />
-              <p className="homepage-category__item--title">{item.title}</p>
+              <p className="homepage-category__item--title">{item?.name}</p>
             </div>
           ))}
         </div>

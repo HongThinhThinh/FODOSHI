@@ -35,6 +35,8 @@ import LoginPage from "../components/pages/auth/login-page/LoginPage";
 import ConsignmentPage from "../components/pages/consignment";
 import MalePage from "../components/pages/male-page";
 import Error404 from "../components/pages/404";
+import ProductByCategory from "../components/pages/customer/categoryProduct";
+import CamOnAnhBaoNhieuNha from "../components/pages/customer/camOnAnhBao";
 
 export const router = createBrowserRouter([
   {
@@ -51,12 +53,21 @@ export const router = createBrowserRouter([
   },
 
   {
+    path: "/camOnAnhBao",
+    element: <CamOnAnhBaoNhieuNha />,
+  },
+
+  {
     path: "",
     element: <MainLayout />,
     children: [
       {
         path: "",
         element: <HomePage />,
+      },
+      {
+        path: "/productByCategory/:id",
+        element: <ProductByCategory />,
       },
       {
         path: "/consignment",

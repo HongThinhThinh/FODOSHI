@@ -1,0 +1,62 @@
+/* CSS */
+.homepage-outfitOfDaycontainer {
+  padding: 40px 20px; /* Thêm khoảng cách trên dưới và trái phải */
+  background-color: #f8f8f8; /* Màu nền nhẹ */
+}
+
+.homepage-outfitOfDaytitle {
+  font-size: 2.5rem; /* Cỡ chữ lớn hơn */
+  font-weight: bold; /* In đậm */
+  text-align: center; /* Căn giữa */
+  margin-bottom: 30px; /* Khoảng cách với carousel */
+  color: #333; /* Màu xám đậm */
+}
+
+.homepage-outfitOfDaywrapper {
+  position: relative; /* Để các nút điều hướng có thể position absolute */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.homepage-outfitOfDaycarousel {
+  width: 100%; /* Chiếm toàn bộ chiều ngang */
+  /* Các style khác cho Carousel (nếu cần) */
+}
+.homepage-outfitOfDay__carousel-item {
+  padding: 2px;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  font-size: 2rem; /* Icon lớn hơn */
+  color: #555; /* Màu xám */
+  position: absolute;
+  top: 50%; /* Căn giữa theo chiều dọc */
+  transform: translateY(-50%); /* Căn giữa theo chiều dọc */
+  z-index: 10; /* Đảm bảo nút nằm trên carousel */
+  cursor: pointer; /* Con trỏ chuột hình bàn tay */
+  transition: color 0.2s ease;
+  padding: 20px;
+}
+.swiper-button-next {
+  right: 0px;
+}
+.swiper-button-prev {
+  left: 0px;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  color: #000; /* Đổi màu khi hover */
+}
+.show-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.show-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
