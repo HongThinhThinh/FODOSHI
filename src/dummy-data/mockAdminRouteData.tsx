@@ -2,7 +2,7 @@ import { FaChartPie } from "react-icons/fa";
 import { FcDataConfiguration } from "react-icons/fc";
 import { SlCalender } from "react-icons/sl";
 import { MdCategory } from "react-icons/md";
-
+import { TbBrandAirtable } from "react-icons/tb";
 export interface RouteType {
   path: string;
   name: string;
@@ -28,6 +28,11 @@ export const mockAdminRouteData: RouteType[] = [
     path: "category",
     name: "Category",
     icon: <MdCategory />,
+  },
+  {
+    path: "brand",
+    name: "Brand",
+    icon: <TbBrandAirtable />,
   },
 ];
 

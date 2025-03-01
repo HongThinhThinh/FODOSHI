@@ -38,6 +38,7 @@ import Error404 from "../components/pages/404";
 import ProductByCategory from "../components/pages/customer/categoryProduct";
 import CamOnAnhBaoNhieuNha from "../components/pages/customer/camOnAnhBao";
 import ManageCategory from "../components/pages/admin/manage-category";
+import ManageBrand from "../components/pages/admin/manage-brand";
 
 export const router = createBrowserRouter([
   {
@@ -261,6 +262,10 @@ export const router = createBrowserRouter([
       {
         path: "category",
         element: <ManageCategory />,
+      },
+      {
+        path: "brand",
+        element: <ManageBrand />,
       },
       {
         path: "categories",
