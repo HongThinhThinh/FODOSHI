@@ -64,13 +64,12 @@
     }
   }
 }
-.productDetailPage {
-  .customModal {
-    overflow: hidden;
-    background-color: transparent !important;
-    box-shadow: none !important;
-    svg {
-      display: none;
-    }
+.customModal .ant-modal-content {
+  overflow: hidden !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+
+  svg {
+    display: none !important;
   }
 }

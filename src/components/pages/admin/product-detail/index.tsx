@@ -58,6 +58,31 @@ export default function ProductDetail({
       console.log("Product Detail:", productDetail);
     }
   }, [id, productDetail]);
+
+  useEffect(() => {
+    if (id && productDetail) {
+      console.log("Product Detail:", productDetail);
+
+      setProduct({
+        name: productDetail.name || "",
+        description: productDetail.description || "",
+        category: productDetail.category || [],
+        brand: productDetail.brand || [],
+        condition: productDetail.condition || "",
+        size: productDetail.size || "",
+        color: productDetail.color || "#000000",
+        gender: productDetail.gender || "",
+        originalPrice: productDetail.originalPrice?.toString() || "",
+        sellingPrice: productDetail.sellingPrice?.toString() || "",
+        productStatus: productDetail.productStatus || "AVAILABLE",
+        tags: productDetail.tags || [],
+        imageUrls: productDetail.imageUrls || [],
+        consignorId: productDetail.consignorId || "",
+        mainImage: productDetail.mainImage || "",
+      });
+    }
+  }, [id, productDetail]);
+
   const getCategory = useGetCategory("");
   const getBrand = useGetBrand("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -218,7 +243,16 @@ export default function ProductDetail({
   return (
     <div className="productDetailPage">
       {loading && (
-        <Modal className="customModal" footer={false} open={true}>
+        <Modal
+          className="customModal"
+          footer={false}
+          open={true}
+          style={{
+            backgroundColor: "transparent",
+            boxShadow: "none",
+            overflow: "hidden",
+          }}
+        >
           <LoadingUI />
         </Modal>
       )}

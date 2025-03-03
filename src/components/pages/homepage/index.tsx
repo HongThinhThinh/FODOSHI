@@ -49,7 +49,7 @@ function HomePage() {
 
       {/* -------------Reason------------- */}
       <section className="homepage-reason__container">
-        <h1 className="homepage-reason__title">Tại sao nên chọn Blearning</h1>
+        <h1 className="homepage-reason__title">Tại sao nên chọn FODOSHI</h1>
         <div className="homepage-reason__wrapper">
           {reasonCard.map((item, index) => (
             <ReasonCard

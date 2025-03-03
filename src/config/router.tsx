@@ -19,12 +19,8 @@ import InfomationLayout from "../layouts/InfomationLayout";
 import InfoPersonal from "../components/pages/infomation-page/info-personal";
 import InfomationTabLayout from "../layouts/InfomationTabLayout";
 import AdminLayoutCustom from "../layouts/admin/AdminLayout";
-import {
-  mockAdminCategoryRouteData,
-  mockAdminRouteData,
-} from "../dummy-data/mockAdminRouteData";
+import { mockAdminRouteData } from "../dummy-data/mockAdminRouteData";
 
-import CategoryAdminLayout from "../layouts/admin/admin-category";
 import DeliveryAddress from "../components/pages/infomation-page/delivery-address";
 import PaymentMethod from "../components/pages/infomation-page/payment-method";
 import DepositPolicy from "../components/pages/infomation-page/deposit/policy";
@@ -267,38 +263,38 @@ export const router = createBrowserRouter([
         path: "brand",
         element: <ManageBrand />,
       },
-      {
-        path: "categories",
-        element: (
-          <CategoryAdminLayout categoriesPath={mockAdminCategoryRouteData} />
-        ),
-        children: [
-          {
-            path: "clothing",
-            element: "Clothing",
-          },
-          {
-            path: "bags",
-            element: "Túi xách",
-          },
-          {
-            path: "shoes",
-            element: "Giày dép",
-          },
-          {
-            path: "accessories",
-            element: "Phụ kiện",
-          },
-          {
-            path: "jewelry",
-            element: "Trang sức",
-          },
-          {
-            path: "other",
-            element: "Khác",
-          },
-        ],
-      },
+      // {
+      //   path: "categories",
+      //   element: (
+      //     <CategoryAdminLayout categoriesPath={mockAdminCategoryRouteData} />
+      //   ),
+      //   children: [
+      //     {
+      //       path: "clothing",
+      //       element: "Clothing",
+      //     },
+      //     {
+      //       path: "bags",
+      //       element: "Túi xách",
+      //     },
+      //     {
+      //       path: "shoes",
+      //       element: "Giày dép",
+      //     },
+      //     {
+      //       path: "accessories",
+      //       element: "Phụ kiện",
+      //     },
+      //     {
+      //       path: "jewelry",
+      //       element: "Trang sức",
+      //     },
+      //     {
+      //       path: "other",
+      //       element: "Khác",
+      //     },
+      //   ],
+      // },
       {
         path: "products/:id",
         element: <ProductDetail product_id={"123"} />,

@@ -16,12 +16,13 @@ function ProductCard({ product }: ProductCardProps) {
           <div className="product-name">
             <div>
               <p className="font-medium text-lg">{product?.name}</p>
-              <p className="text-gray-500">{product?.category}</p>
+              {product?.categories?.map((item) => (
+                <p className="text-gray-500">{item?.name}</p>
+              ))}
             </div>
-
             <EllipsisOutlined className="more-outlined" />
           </div>
-          <b className="text-lg">{product?.price} VND</b>
+          <b className="text-lg">{product?.sellingPrice} VND</b>
         </div>
       </div>
       <div className="product-card__middle">
