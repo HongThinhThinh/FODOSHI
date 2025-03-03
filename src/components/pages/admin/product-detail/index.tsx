@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useEffect, useState } from "react";
 import "./index.scss";
 import { UploadOutlined } from "@ant-design/icons";
@@ -19,6 +20,7 @@ import TagInput from "./TagInput"; // Import the TagInput component
 import { useGetUserByPhone } from "../../../../services/useUserService";
 import LoadingUI from "../../../atoms/loading";
 import { useSelector } from "react-redux";
+import { useGetProductDetail } from "../../../../services/productService";
 
 const { Option } = Select;
 
@@ -45,6 +47,17 @@ export default function ProductDetail({
 }: ProductDetailProps) {
   const params = useGetParams();
   const id = params("id");
+  const {
+    data: productDetail,
+    isLoading,
+    error,
+  } = useGetProductDetail(id || "");
+
+  useEffect(() => {
+    if (id && productDetail) {
+      console.log("Product Detail:", productDetail);
+    }
+  }, [id, productDetail]);
   const getCategory = useGetCategory("");
   const getBrand = useGetBrand("");
   const [phoneNumber, setPhoneNumber] = useState("");

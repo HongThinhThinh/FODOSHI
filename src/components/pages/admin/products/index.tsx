@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toTitle } from "../../../../utils/formatStr";
 import { Button, Flex } from "antd";
 import { FiPlusCircle } from "react-icons/fi";
+import { useGetProduct } from "../../../../services/productService";
 
 interface ProductCardProps {
   id?: string;
@@ -107,6 +108,8 @@ function ProductsPage() {
     },
   ]);
 
+  const { data: productNe } = useGetProduct();
+  console.log(productNe);
   return (
     <>
       <Flex justify="space-between">
@@ -151,14 +154,14 @@ function ProductsPage() {
       </Flex>
 
       <div className="product-page">
-        {products.map((product) => (
+        {productNe?.map((product) => (
           <div
             style={{
               padding: "15px",
             }}
             onClick={() => navigate(`${product.id}`)}
           >
-            <ProductCard {...product} />
+            <ProductCard product={product} />
           </div>
         ))}
       </div>
