@@ -67,7 +67,10 @@ function HomePage() {
         <h2 className="homepage-category__title">Shop theo danh mục</h2>
         <div className="homepage-category__wrapper">
           <Carousel
-            className="homepage-category__carousel"
+            style={{
+              width: "100%",
+            }}
+            className="homepage-category__carousel w-full"
             slidesPerView={4}
             spaceBetween={3}
             navigation={{

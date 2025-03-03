@@ -47,6 +47,9 @@
     align-items: center;
     justify-content: space-between;
     gap: 10px;
+    .homepage-category__carousel {
+      width: 100% !important;
+    }
   }
   .homepage-category__item {
     &--img {
