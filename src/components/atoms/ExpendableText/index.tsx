@@ -3,9 +3,10 @@ import React, { useState } from "react";
 interface ExpandableTextProps {
   text: string;
   maxLength?: number;
+  className?: string;
 }
 
-const ExpandableText: React.FC<ExpandableTextProps> = ({ text, maxLength = 50 }) => {
+const ExpandableText: React.FC<ExpandableTextProps> = ({ text, maxLength = 50, className }) => {
   const [expanded, setExpanded] = useState(false);
 
   if (text.length <= maxLength) {
@@ -15,7 +16,7 @@ const ExpandableText: React.FC<ExpandableTextProps> = ({ text, maxLength = 50 })
   const displayText = expanded ? text : text.substring(0, maxLength) + "...";
 
   return (
-    <span>
+    <span className={className}>
       {displayText}{" "}
       <a
         href="#"
