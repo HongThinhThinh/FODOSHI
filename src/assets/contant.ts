@@ -163,16 +163,19 @@ export const socialCard = [
   {
     image: social1,
     title: "Tiktok",
+    link: "https://www.tiktok.com/@fodoshi.nee?_t=ZS-8uOe2BetHmx&_r=1",
     content: "Cập nhật những tips hay ho về thời gian bền vững cùng FODOSHI",
   },
   {
     image: social2,
     title: "Instagram",
+    link: "https://www.instagram.com/fodoshi_ne?igsh=MWYya3JyMzlrbmdoeQ==",
     content: "Không bỏ lỡ bất kỳ sản phẩm mới nào",
   },
   {
     image: social3,
     title: "Thread",
+    link: "https://www.threads.net/@fodoshi_ne?igshid=NTc4MTIwNjQ2YQ==",
     content: "Cùng chúng mình chia sẻ những câu chuyện",
   },
 ];

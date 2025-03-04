@@ -136,7 +136,7 @@ function HomePage() {
                   </Carousel.Item>
                 ))
               : ""} */}
-            {showCardModel.map((item) => (
+            {products?.map((item) => (
               <Carousel.Item
                 className="homepage-outfitOfDay__carousel-item"
                 key={item.id}
@@ -158,6 +158,7 @@ function HomePage() {
           <div className="homepage-social__wrapper">
             {socialCard.map((item, index) => (
               <SocialCard
+                link={item.link}
                 key={index}
                 title={item.title}
                 content={item.content}
