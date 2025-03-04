@@ -78,7 +78,7 @@ export const category: categoryType[] = [
 export type ShowCardType = {
   id: number;
   type: string;
-  image: string;
+  mainImage: string;
   name: string;
   size: number;
   price: number;

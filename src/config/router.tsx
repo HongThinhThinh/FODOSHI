@@ -19,12 +19,8 @@ import InfomationLayout from "../layouts/InfomationLayout";
 import InfoPersonal from "../components/pages/infomation-page/info-personal";
 import InfomationTabLayout from "../layouts/InfomationTabLayout";
 import AdminLayoutCustom from "../layouts/admin/AdminLayout";
-import {
-  mockAdminCategoryRouteData,
-  mockAdminRouteData,
-} from "../dummy-data/mockAdminRouteData";
+import { mockAdminRouteData } from "../dummy-data/mockAdminRouteData";
 
-import CategoryAdminLayout from "../layouts/admin/admin-category";
 import DeliveryAddress from "../components/pages/infomation-page/delivery-address";
 import PaymentMethod from "../components/pages/infomation-page/payment-method";
 import DepositPolicy from "../components/pages/infomation-page/deposit/policy";
@@ -34,8 +30,17 @@ import RegisterPage from "../components/pages/auth/register-page/RegisterPage";
 import LoginPage from "../components/pages/auth/login-page/LoginPage";
 import ConsignmentPage from "../components/pages/consignment";
 import MalePage from "../components/pages/male-page";
+import Error404 from "../components/pages/404";
+import ProductByCategory from "../components/pages/customer/categoryProduct";
+import CamOnAnhBaoNhieuNha from "../components/pages/customer/camOnAnhBao";
+import ManageCategory from "../components/pages/admin/manage-category";
+import ManageBrand from "../components/pages/admin/manage-brand";
 
 export const router = createBrowserRouter([
+  {
+    path: "*",
+    element: <Error404 />,
+  },
   {
     path: "/test",
     element: <div className="text-3xl font-bold underline bg-black">Hi</div>,
@@ -46,12 +51,21 @@ export const router = createBrowserRouter([
   },
 
   {
+    path: "/camOnAnhBao",
+    element: <CamOnAnhBaoNhieuNha />,
+  },
+
+  {
     path: "",
     element: <MainLayout />,
     children: [
       {
         path: "",
         element: <HomePage />,
+      },
+      {
+        path: "/productByCategory/:id",
+        element: <ProductByCategory />,
       },
       {
         path: "/consignment",
@@ -242,37 +256,45 @@ export const router = createBrowserRouter([
         element: <OrderDetails />,
       },
       {
-        path: "categories",
-        element: (
-          <CategoryAdminLayout categoriesPath={mockAdminCategoryRouteData} />
-        ),
-        children: [
-          {
-            path: "clothing",
-            element: "Clothing",
-          },
-          {
-            path: "bags",
-            element: "Túi xách",
-          },
-          {
-            path: "shoes",
-            element: "Giày dép",
-          },
-          {
-            path: "accessories",
-            element: "Phụ kiện",
-          },
-          {
-            path: "jewelry",
-            element: "Trang sức",
-          },
-          {
-            path: "other",
-            element: "Khác",
-          },
-        ],
+        path: "category",
+        element: <ManageCategory />,
       },
+      {
+        path: "brand",
+        element: <ManageBrand />,
+      },
+      // {
+      //   path: "categories",
+      //   element: (
+      //     <CategoryAdminLayout categoriesPath={mockAdminCategoryRouteData} />
+      //   ),
+      //   children: [
+      //     {
+      //       path: "clothing",
+      //       element: "Clothing",
+      //     },
+      //     {
+      //       path: "bags",
+      //       element: "Túi xách",
+      //     },
+      //     {
+      //       path: "shoes",
+      //       element: "Giày dép",
+      //     },
+      //     {
+      //       path: "accessories",
+      //       element: "Phụ kiện",
+      //     },
+      //     {
+      //       path: "jewelry",
+      //       element: "Trang sức",
+      //     },
+      //     {
+      //       path: "other",
+      //       element: "Khác",
+      //     },
+      //   ],
+      // },
       {
         path: "products/:id",
         element: <ProductDetail product_id={"123"} />,

@@ -1,17 +1,8 @@
 import React, { useEffect, useState, useCallback } from "react";
 import "./index.scss";
-import { PlusOutlined, MinusOutlined, DeleteOutlined } from "@ant-design/icons";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  add,
-  changeQuantity,
-  getAll,
-  remove,
-  reset,
-} from "../../../../redux/features/cartSlice";
-import { Product, ProductCategory } from "../../../../model/product";
+import { DeleteOutlined } from "@ant-design/icons";
+import { useDispatch } from "react-redux";
 
-import { RootState } from "../../../../redux/store";
 import ButtonComponent from "../../../atoms/button";
 import { Link, useNavigate } from "react-router-dom";
 import { formatMoney } from "../../../../utils/formatMoney";
@@ -32,7 +23,7 @@ export default function Cart() {
   const getParams = useGetCart();
   const deleteCart = useDeleteCart();
   const cartData = getParams?.data?.data?.cartItems || [];
-
+  // const cartData = mockCartData.data.cartItems;
   const calculateTotals = useCallback(() => {
     // Tính toán dựa trên các mặt hàng được chọn
     let calculatedSubtotal = 0;
@@ -50,11 +41,11 @@ export default function Cart() {
     setGrandTotal(calculatedSubtotal + shippingFee - discount);
   }, [cartData, selectedItems, shippingFee, discount]);
 
-  useEffect(() => {
-    if (cartData && cartData.length > 0) {
-      dispatch(getAll(cartData));
-    }
-  }, [dispatch, getParams?.data]);
+  // useEffect(() => {
+  //   if (cartData && cartData.length > 0) {
+  //     dispatch(getAll(cartData));
+  //   }
+  // }, [dispatch, getParams?.data]);
 
   useEffect(() => {
     calculateTotals();
@@ -86,10 +77,10 @@ export default function Cart() {
         // Tính toán lại tổng giá trị giỏ hàng nếu cần
         calculateTotals(); // Gọi hàm tính toán lại tổng giỏ hàng nếu cần
       } else {
-        message.error("Có lỗi xảy ra khi xóa sản phẩm.");
+        //message.error("Có lỗi xảy ra khi xóa sản phẩm.");
       }
     } catch (error) {
-      message.error("Có lỗi xảy ra khi xóa sản phẩm.");
+      //message.error("Có lỗi xảy ra khi xóa sản phẩm.");
     }
   };
 
@@ -123,7 +114,7 @@ export default function Cart() {
             />
           </span>
           <span>Sản phẩm</span>
-          <span>Phân loại</span>
+          <span className="cart__items__header__categoryItems">Phân loại</span>
           <span>Giá sản phẩm</span>
           <span></span>
         </div>
@@ -161,11 +152,20 @@ export default function Cart() {
                       {product?.name || "Không có tên"}
                     </div>
                   </div>
-                  <div>
-                    <div>Phân loại</div>
-                    <div>Size {product?.size || "N/A"}</div>
+                  <div className="cart__items__item__category__details">
+                    <div className="cart__items__item__category__details__container">
+                      <span className="cart__items__item__category__details__title">
+                        Phân loại :{" "}
+                      </span>
+                      <span className="cart__items__item__category__details__size">
+                        Size {product?.size || "N/A"}
+                      </span>
+                    </div>
+
                     <div className="color-display">
-                      <span>Màu</span>
+                      <span className="cart__items__item__category__details__title">
+                        Màu
+                      </span>
                       <div
                         className="color-swatch"
                         style={{
@@ -177,7 +177,7 @@ export default function Cart() {
                   </div>
                 </div>
                 <div className="cart__items__item__price">
-                  {formatMoney(product?.sellingPrice || 0)} VND
+                  {formatMoney(product?.sellingPrice || 0)}
                 </div>
                 <div className="cart__items__item__remove">
                   <button
@@ -186,6 +186,36 @@ export default function Cart() {
                   >
                     <DeleteOutlined />
                   </button>
+                </div>
+                <div className="cart__items__item__category--mobile">
+                  <div className="cart__items__item__product__details">
+                    <div className="cart__items__item__product__details__name">
+                      {product?.name || "Không có tên"}
+                    </div>
+                    <div className="cart__items__item__category__details__size">
+                      Size {product?.size || "N/A"}
+                    </div>
+                  </div>
+                  <div className="cart__items__item__category__details">
+                    <div className="cart__items__item__category__details__container">
+                      <span className="cart__items__item__category__details__title">
+                        Phân loại :{" "}
+                      </span>
+                    </div>
+
+                    <div className="color-display">
+                      <span className="cart__items__item__category__details__title">
+                        Màu
+                      </span>
+                      <div
+                        className="color-swatch"
+                        style={{
+                          backgroundColor: product?.color || "#ccc",
+                        }}
+                        title={product?.color || "Không xác định"} // Tooltip hiển thị tên màu
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             );

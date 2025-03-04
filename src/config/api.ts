@@ -1,9 +1,11 @@
 import axios from "axios";
 import { refreshAuthToken } from "../utils/authUtils";
+// import { refreshAuthToken } from "../utils/authUtils";
 
 const api = axios.create({
-  // baseURL: "http://14.225.198.143:8080/api/",
-  baseURL: "http://localhost:8080/api/",
+  // baseURL: "http://14.225.217.181:8080/api/",
+  // baseURL: "http://localhost:8081/api/",
+  baseURL: "https://fodoshi.shop/api/",
 });
 
 api.interceptors.request.use(

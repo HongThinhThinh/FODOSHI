@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Col, Row } from "antd";
-import React, { useState } from "react";
+import { useState } from "react";
 import HeaderAdmin from "../../components/organisms/header-admin";
-import { category, logo } from "../../assets/contant";
+import { logo } from "../../assets/contant";
 import "./index.scss";
 import {
-  fashionCategoryRoutesData,
   ProductCategoryRoute,
   RouteType,
 } from "../../dummy-data/mockAdminRouteData";
@@ -56,50 +56,7 @@ export default function AdminLayoutCustom({ routes }: AdminLayoutCustomProps) {
               </Link>
             ))}
           </div>
-          <div className="admin-layout-custom__container__sidebar__categories">
-            <Link onClick={handleOnCollapseCategory} to={"categories"}>
-              <div className="admin-layout-custom__container__sidebar__categories__title">
-                <div className="admin-layout-custom__container__sidebar__categories__title__name">
-                  Categories
-                </div>
-                <div className="admin-layout-custom__container__sidebar__categories__title__collapse">
-                  {onCollapseCategory ? (
-                    <CaretDownOutlined />
-                  ) : (
-                    <CaretUpOutlined />
-                  )}
-                </div>
-              </div>
-            </Link>
-            {onCollapseCategory && (
-              <ul>
-                {fashionCategoryRoutesData.map(
-                  (category: ProductCategoryRoute) => (
-                    <li key={category.id}>
-                      <Link to={`categories/${category.path}`}>
-                        <div
-                          className={`admin-layout-custom__container__sidebar__categories__item ${
-                            category.path === currentSubPath
-                              ? "admin-layout-custom__container__sidebar__categories__item--active"
-                              : ""
-                          }`}
-                        >
-                          <div className="admin-layout-custom__container__sidebar__categories__item__name">
-                            {category.name}
-                          </div>
-                          <div className="admin-layout-custom__container__sidebar__categories__item__quantity">
-                            {category.quantity}
-                          </div>
-                        </div>
-                      </Link>
-                    </li>
-                  )
-                )}
-              </ul>
-            )}
 
-            <ul></ul>
-          </div>
           <div className="admin-layout-custom__container__sidebar__collapse"></div>
         </Col>
         <Col span={20} className="admin-layout-custom__container__content">
@@ -133,7 +90,7 @@ export default function AdminLayoutCustom({ routes }: AdminLayoutCustomProps) {
           >
             <Outlet
               context={{
-                activateCategoryLayout: (categories: RouteType[]) => {
+                activateCategoryLayout: (categories: any) => {
                   setSection({
                     isSectionActive: categories.length === 0 ? false : true,
                     categoriesPath: categories,

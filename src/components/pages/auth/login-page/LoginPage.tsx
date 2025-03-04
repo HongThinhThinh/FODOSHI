@@ -1,5 +1,7 @@
+
 import React from "react";
 import { Form, message } from "antd";
+
 import { Link, useNavigate } from "react-router-dom";
 import ButtonComponent from "../../../atoms/button";
 import useApiService from "../../../../hooks/useApi";
@@ -21,7 +23,6 @@ export default function LoginPage() {
       phoneNumber: username,
       password,
     };
-
     try {
       const response = await callApi("post", "login", payload);
       localStorage.setItem("token", response.data.token);
@@ -29,7 +30,11 @@ export default function LoginPage() {
       console.log("Login successful", response);
       messageApi.success("Login successful");
       dispatch(login(response.data));
-      navigate("/", { replace: true });
+      if (response?.data.role === "ADMIN") {
+        navigate("/admin/dashboard", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
     } catch (error) {
       console.error("Login failed", error);
       messageApi.error("Login failed");
@@ -42,12 +47,12 @@ export default function LoginPage() {
       {contextHolder}
       {/* Card đăng nhập */}
       <div className="w-full max-w-md rounded-lg shadow-lg p-6 border">
-        <h1 className="text-center text-2xl mb-4">Sign in</h1>
+        <h1 className="text-center text-2xl mb-4">Đăng nhập</h1>
 
         {/* Form Ant Design */}
         <Form form={form} layout="vertical" onFinish={onFinish} className="">
           <Form.Item
-            label="Email or mobile phone number"
+            label="Số điện thoại"
             name="username"
             rules={[
               { required: true, message: "Please enter your email or phone" },
@@ -57,7 +62,7 @@ export default function LoginPage() {
           </Form.Item>
 
           <Form.Item
-            label="Your password"
+            label="Mật khẩu"
             name="password"
             rules={[{ required: true, message: "Please enter your password" }]}
           >
@@ -75,22 +80,19 @@ export default function LoginPage() {
               className=" w-full p-5 "
               loading={loading}
             >
-              Log in
+              Đăng nhập
             </ButtonComponent>
           </Form.Item>
         </Form>
 
         {/* Điều khoản */}
         <p className="text-center text-xs text-gray-500 mt-2">
-          By continuing you agree to the{" "}
+          Bằng cách tiếp tục, bạn đồng ý với{" "}
           <Link to="#" className="underline">
-            Terms of use
-          </Link>{" "}
-          and{" "}
-          <Link to="#" className="underline">
-            Privacy Policy
+            Chính sách bảo mật của Fodoshi
           </Link>
-          .
+          {"  "}
+          <Link to="#" className="underline"></Link>.
         </p>
 
         {/* Liên kết phụ */}
@@ -100,10 +102,10 @@ export default function LoginPage() {
           }`}
         >
           <Link to="#" className="underline">
-            Other issue with sign in?
+            Vấn đề khác khi đăng nhập ?
           </Link>
-          <Link to="#" className="underline">
-            Forgot your password?
+          <Link to="/forget-password" className="underline">
+            Quên Mật khẩu
           </Link>
         </div>
       </div>
@@ -124,7 +126,7 @@ export default function LoginPage() {
           to="/register"
           className="inline-block border border-black rounded-full px-6 py-2 text-sm hover:bg-gray-50 w-full"
         >
-          Create an account
+          Tạo tài khoản
         </Link>
       </div>
     </div>

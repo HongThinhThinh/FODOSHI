@@ -1,4 +1,4 @@
-import { Button, Col, Collapse, Input, Row } from "antd";
+import { Button, Col, Collapse, Row } from "antd";
 import "./styles.scss";
 import { showCardModel } from "../../../assets/model";
 import ShowCard from "../../atoms/show-card";

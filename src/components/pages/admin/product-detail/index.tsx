@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useEffect, useState } from "react";
 import "./index.scss";
 import { UploadOutlined } from "@ant-design/icons";
@@ -18,6 +19,8 @@ import ProductSwiper from "./productSwiper";
 import TagInput from "./TagInput"; // Import the TagInput component
 import { useGetUserByPhone } from "../../../../services/useUserService";
 import LoadingUI from "../../../atoms/loading";
+import { useSelector } from "react-redux";
+import { useGetProductDetail } from "../../../../services/productService";
 
 const { Option } = Select;
 
@@ -33,18 +36,57 @@ interface ProductDetailProps {
   product_id?: string;
   isHidding?: boolean;
   isConsigment?: boolean;
+  isCustomWidth?: boolean; // Thêm prop này
 }
 
 export default function ProductDetail({
   product_id,
   isHidding = false,
   isConsigment = false,
+  isCustomWidth = false,
 }: ProductDetailProps) {
   const params = useGetParams();
   const id = params("id");
+  const {
+    data: productDetail,
+    isLoading,
+    error,
+  } = useGetProductDetail(id || "");
+
+  useEffect(() => {
+    if (id && productDetail) {
+      console.log("Product Detail:", productDetail);
+    }
+  }, [id, productDetail]);
+
+  useEffect(() => {
+    if (id && productDetail) {
+      console.log("Product Detail:", productDetail);
+
+      setProduct({
+        name: productDetail.name || "",
+        description: productDetail.description || "",
+        category: productDetail.category || [],
+        brand: productDetail.brand || [],
+        condition: productDetail.condition || "",
+        size: productDetail.size || "",
+        color: productDetail.color || "#000000",
+        gender: productDetail.gender || "",
+        originalPrice: productDetail.originalPrice?.toString() || "",
+        sellingPrice: productDetail.sellingPrice?.toString() || "",
+        productStatus: productDetail.productStatus || "AVAILABLE",
+        tags: productDetail.tags || [],
+        imageUrls: productDetail.imageUrls || [],
+        consignorId: productDetail.consignorId || "",
+        mainImage: productDetail.mainImage || "",
+      });
+    }
+  }, [id, productDetail]);
+
   const getCategory = useGetCategory("");
   const getBrand = useGetBrand("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const user = useSelector((store) => store?.user);
   const [product, setProduct] = useState({
     name: "",
     description: "",
@@ -158,7 +200,8 @@ export default function ProductDetail({
           sellingPrice,
           imageUrls,
           mainImage: imageUrls[selectedMainImage],
-          consignorId: userByPhone?.id,
+          productStatus: isConsigment ? "PENDING" : "AVAILABLE",
+          consignorId: isConsigment ? user?.id : userByPhone?.id,
         },
 
         {
@@ -198,13 +241,22 @@ export default function ProductDetail({
   };
 
   return (
-    <div className="">
+    <div className="productDetailPage">
       {loading && (
-        <Modal footer={false} open={true}>
+        <Modal
+          className="customModal"
+          footer={false}
+          open={true}
+          style={{
+            backgroundColor: "transparent",
+            boxShadow: "none",
+            overflow: "hidden",
+          }}
+        >
           <LoadingUI />
         </Modal>
       )}
-      <div className="w-[1200px]">
+      <div className={`${isCustomWidth ? "w-[1000px]" : "w-[1200px]"}`}>
         {!isHidding && (
           <div>
             <h1 style={{ fontWeight: "600", fontSize: "24px" }}>
@@ -383,7 +435,7 @@ export default function ProductDetail({
                   <div className="w-1/2">
                     <div className="form-item">
                       <label htmlFor="gender" className="block ">
-                        <b>Giới tính</b>
+                        <b>Dành cho</b>
                       </label>
                       <Select
                         style={{ width: "100%" }}
@@ -422,10 +474,10 @@ export default function ProductDetail({
                       <div>
                         <b>Email:</b> {userByPhone.email || "Chưa có email"}
                       </div>
-                      <div>
-                        <b>Địa chỉ:</b>{" "}
-                        {userByPhone.address || "Chưa có địa chỉ"}
-                      </div>
+                      {/* <div>
+                          <b>Địa chỉ:</b>{" "}
+                          {userByPhone.address || "Chưa có địa chỉ"}
+                        </div> */}
                     </div>
                   )}
                 </div>

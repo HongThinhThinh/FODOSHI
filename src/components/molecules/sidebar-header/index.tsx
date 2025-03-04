@@ -30,7 +30,13 @@ function SideBarHeader({ className, ...rest }: SideBarHeaderProps) {
             onClick={() => navigate("/infomation/infomationPersonal")}
             className="sidebar_header__item sidebar_header__item--text cursor-pointer"
           >
-            <span>Chào, {user?.name}</span> <FaRegUser />
+            <span>
+              Chào,{" "}
+              {user?.name?.includes(" ")
+                ? user?.name?.split(" ").pop()
+                : user?.name}
+            </span>
+            <FaRegUser />
           </li>
         ) : (
           <Link

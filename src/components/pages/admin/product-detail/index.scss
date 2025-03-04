@@ -64,11 +64,12 @@
     }
   }
 }
-.ant-modal-content {
-  overflow: hidden;
+.customModal .ant-modal-content {
+  overflow: hidden !important;
   background-color: transparent !important;
   box-shadow: none !important;
+
   svg {
-    display: none;
+    display: none !important;
   }
 }

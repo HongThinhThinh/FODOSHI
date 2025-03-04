@@ -1,7 +1,6 @@
 import { Navigation } from "swiper/modules";
 import {
   bannerHomepage,
-  category,
   reasonCard,
   socialCard,
 } from "../../../assets/contant";
@@ -12,23 +11,19 @@ import ShowCard from "../../atoms/show-card";
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import ReasonCard from "../../atoms/reason-card";
 import SocialCard from "../../atoms/social-card";
-import { useGetProduct } from "../../../services/productService";
+import { useGetProductAvailable } from "../../../services/productService";
 import { useEffect } from "react";
+
 import { useMediaQuery } from "react-responsive";
 import { showCardModel } from "../../../assets/model";
-function HomePage() {
-  const {
-    data: products,
-    isLoading,
-    isError,
-    refetch,
-  } = useGetProduct({
-    staleTime: 0, // Dữ liệu luôn được coi là cũ và cần gọi lại
-    cacheTime: 0, // Không lưu dữ liệu vào cache
-    refetchOnWindowFocus: true, // Khi trang được mở lại (F5), gọi lại API
-    enabled: false, // Tắt tự động fetch khi component mount
-  });
 
+import { useGetCategory } from "../../../services/adminService";
+import { useNavigate } from "react-router-dom";
+
+function HomePage() {
+  const { data: products, refetch } = useGetProductAvailable("AVAILABLE");
+  const { data: categories } = useGetCategory();
+  const navigate = useNavigate();
   useEffect(() => {
     refetch(); // Gọi lại API khi trang được load lại
   }, [refetch]);
@@ -78,16 +73,42 @@ function HomePage() {
       <section className="homepage-category__container">
         <h2 className="homepage-category__title">Shop theo danh mục</h2>
         <div className="homepage-category__wrapper">
-          {category.map((item, index) => (
-            <div key={index} className="homepage-category__item">
-              <img
-                className="homepage-category__item--img"
-                src={item.image}
-                alt=""
-              />
-              <p className="homepage-category__item--title">{item.title}</p>
-            </div>
-          ))}
+          <Carousel
+            style={{
+              width: "100%",
+            }}
+            className="homepage-category__carousel w-full"
+            slidesPerView={4}
+            spaceBetween={3}
+            navigation={{
+              nextEl: ".swiper-button-next-category",
+              prevEl: ".swiper-button-prev-category",
+            }}
+            modules={[Navigation]}
+          >
+            {Array.isArray(categories) && categories.length > 0
+              ? categories.map((item, index) => (
+                  <Carousel.Item
+                    className="homepage-category__carousel-item"
+                    key={index}
+                  >
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => navigate(`/productByCategory/${item?.id}`)}
+                    >
+                      <img
+                        className="homepage-category__item--img"
+                        src={item?.image}
+                        alt=""
+                      />
+                      <p className="homepage-category__item--title">
+                        {item?.name}
+                      </p>
+                    </div>
+                  </Carousel.Item>
+                ))
+              : ""}
+          </Carousel>
         </div>
       </section>
 
