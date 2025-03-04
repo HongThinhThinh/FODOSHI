@@ -13,8 +13,13 @@ import ReasonCard from "../../atoms/reason-card";
 import SocialCard from "../../atoms/social-card";
 import { useGetProductAvailable } from "../../../services/productService";
 import { useEffect } from "react";
+
+import { useMediaQuery } from "react-responsive";
+import { showCardModel } from "../../../assets/model";
+
 import { useGetCategory } from "../../../services/adminService";
 import { useNavigate } from "react-router-dom";
+
 function HomePage() {
   const { data: products, refetch } = useGetProductAvailable("AVAILABLE");
   const { data: categories } = useGetCategory();
@@ -22,34 +27,36 @@ function HomePage() {
   useEffect(() => {
     refetch(); // Gọi lại API khi trang được load lại
   }, [refetch]);
-
+  const isBigScreen = useMediaQuery({ query: "(min-width: 1150px)" });
   return (
     <>
       {/* -------------Banner------------- */}
       <section className="homepage-banner__container">
         <img className="homepage-banner__img" src={bannerHomepage} alt="" />
-        <div className="homepage-banner__content">
-          <h1 className="homepage-banner__content--title">
-            <span className="text-[#d99041]">MÙA HẠ</span>’S <br /> COLLECTION
-          </h1>
-          <p className="homepage-banner__content--desc">
-            Thời trang không chỉ "cool" mà còn phải "eco-cool"!
-          </p>
-          <ButtonComponent
-            bgColor="#d99041"
-            color="white"
-            size="large"
-            shape="default"
-            className="homepage-banner__content--btn"
-          >
-            Mua ngay
-          </ButtonComponent>
-        </div>
+        {isBigScreen && (
+          <div className="homepage-banner__content">
+            <h1 className="homepage-banner__content--title">
+              <span className="text-[#d99041]">MÙA HẠ</span>’S <br /> COLLECTION
+            </h1>
+            <p className="homepage-banner__content--desc">
+              Thời trang không chỉ "cool" mà còn phải "eco-cool"!
+            </p>
+            <ButtonComponent
+              bgColor="#d99041"
+              color="white"
+              size="large"
+              shape="default"
+              className="homepage-banner__content--btn"
+            >
+              Mua ngay
+            </ButtonComponent>
+          </div>
+        )}
       </section>
 
       {/* -------------Reason------------- */}
       <section className="homepage-reason__container">
-        <h1 className="homepage-reason__title">Tại sao nên chọn FODOSHI</h1>
+        <h1 className="homepage-reason__title ">Tại sao nên chọn FODOSHI</h1>
         <div className="homepage-reason__wrapper">
           {reasonCard.map((item, index) => (
             <ReasonCard
@@ -111,7 +118,7 @@ function HomePage() {
         <div className="homepage-outfitOfDay__wrapper">
           <Carousel
             className="homepage-outfitOfDay__carousel"
-            slidesPerView={4}
+            slidesPerView={isBigScreen ? 4 : 1}
             spaceBetween={3}
             navigation={{
               nextEl: ".swiper-button-next",
@@ -119,7 +126,7 @@ function HomePage() {
             }}
             modules={[Navigation]}
           >
-            {Array.isArray(products) && products.length > 0
+            {/* {Array.isArray(products) && products.length > 0
               ? products.map((item) => (
                   <Carousel.Item
                     className="homepage-outfitOfDay__carousel-item"
@@ -128,7 +135,15 @@ function HomePage() {
                     <ShowCard card={item} />
                   </Carousel.Item>
                 ))
-              : ""}
+              : ""} */}
+            {showCardModel.map((item) => (
+              <Carousel.Item
+                className="homepage-outfitOfDay__carousel-item"
+                key={item.id}
+              >
+                <ShowCard card={item} />
+              </Carousel.Item>
+            ))}
             <IoIosArrowForward className="swiper-button-next" />
             <IoIosArrowBack className="swiper-button-prev" />
           </Carousel>
@@ -137,7 +152,7 @@ function HomePage() {
 
       {/* ------------------Social------------------ */}
       <section className="homepage-social__container">
-        <div className="backdrop" />
+        {isBigScreen && <div className="backdrop" />}
         <div className="homepage-social__content">
           <h1 className="homepage-social__title">Các kênh social media</h1>
           <div className="homepage-social__wrapper">

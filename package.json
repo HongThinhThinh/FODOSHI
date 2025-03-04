@@ -33,6 +33,7 @@
     "react-image-gallery": "^1.4.0",
     "react-loading-skeleton": "^3.5.0",
     "react-redux": "^9.1.2",
+    "react-responsive": "^10.0.1",
     "react-router": "^7.1.0",
     "react-router-dom": "^6.28.1",
     "react-slider": "^2.0.6",

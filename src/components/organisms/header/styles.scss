@@ -21,3 +21,28 @@
   border-top: 2px solid #852f1f;
   border-bottom: 2px solid #852f1f;
 }
+@media only screen and (max-width: 1150px) {
+  .header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 20px 30px 20px;
+  }
+  .header-input {
+    width: 28%;
+  }
+  .header-logo {
+    width: 44%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .header-sidebar {
+    width: 32%;
+  }
+  .header-hero {
+    padding: 10px 15%;
+    border-top: 2px solid #852f1f;
+    border-bottom: 2px solid #852f1f;
+  }
+}

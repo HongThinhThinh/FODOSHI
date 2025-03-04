@@ -1,10 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Form, Input, message } from "antd";
+
+import React from "react";
+import { Form, message } from "antd";
+
 import { Link, useNavigate } from "react-router-dom";
 import ButtonComponent from "../../../atoms/button";
 import useApiService from "../../../../hooks/useApi";
 import { useDispatch } from "react-redux";
 import { login } from "../../../../redux/features/userSlice";
+import InputComponent from "../../../atoms/input";
+import { useMediaQuery } from "react-responsive";
 
 export default function LoginPage() {
   const [form] = Form.useForm();
@@ -12,6 +16,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [messageApi, contextHolder] = message.useMessage();
+  const isBigScreen = useMediaQuery({ query: "(min-width: 750px)" });
   const onFinish = async (values: any) => {
     const { username, password } = values;
     const payload = {
@@ -53,7 +58,7 @@ export default function LoginPage() {
               { required: true, message: "Please enter your email or phone" },
             ]}
           >
-            <Input />
+            <InputComponent size="large" />
           </Form.Item>
 
           <Form.Item
@@ -61,7 +66,7 @@ export default function LoginPage() {
             name="password"
             rules={[{ required: true, message: "Please enter your password" }]}
           >
-            <Input.Password />
+            <InputComponent.Password size="large" />
           </Form.Item>
 
           {/* Nút Login */}
@@ -71,6 +76,7 @@ export default function LoginPage() {
               color="#fff"
               shape="round"
               htmlType="submit"
+              size="large"
               className=" w-full p-5 "
               loading={loading}
             >
@@ -90,7 +96,11 @@ export default function LoginPage() {
         </p>
 
         {/* Liên kết phụ */}
-        <div className="flex justify-between text-sm mt-4">
+        <div
+          className={`flex items-center gap-5 text-sm mt-4 ${
+            isBigScreen ? "justify-between" : "flex-col justify-center"
+          }`}
+        >
           <Link to="#" className="underline">
             Vấn đề khác khi đăng nhập ?
           </Link>
