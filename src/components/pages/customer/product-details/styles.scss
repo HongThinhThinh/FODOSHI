@@ -122,3 +122,21 @@
     }
   }
 }
+
+@media only screen and (max-width: 1136px) {
+  .product-details-section {
+    .product-details__container {
+      .product-details__wrapper {
+        flex-direction: column;
+        .product-details__image {
+          width: 100%;
+        }
+        .product-details__info {
+          padding: 20px;
+          width: 100%;
+          margin-top: 40px;
+        }
+      }
+    }
+  }
+}
