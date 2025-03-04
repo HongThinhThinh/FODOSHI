@@ -36,6 +36,7 @@
 .homepage-category__container {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 10px;
   .homepage-category__title {
     font-size: 23px;
     font-weight: 550;
@@ -49,9 +50,11 @@
     gap: 10px;
   }
   .homepage-category__item {
+    width: 300px;
     &--img {
-      width: 300px;
+      width: 100%;
       height: 300px;
+
       object-fit: cover;
       object-position: top;
       margin-bottom: 15px;
@@ -67,6 +70,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding-bottom: 30px;
+  padding: 0 10px;
   .homepage-outfitOfDay__title {
     font-size: 23px;
     font-weight: 550;
@@ -87,7 +91,7 @@
 .homepage-reason__container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 30px 0;
+  padding: 30px 10px;
   .homepage-reason__title {
     font-size: 60px;
     text-align: center;
@@ -106,7 +110,7 @@
 }
 
 .homepage-social__container {
-  padding: 30px 0;
+  padding: 30px 10px;
   position: relative;
   .homepage-social__content {
     max-width: 1200px;
@@ -133,5 +137,89 @@
     justify-content: space-between;
     gap: 20px;
     margin-bottom: 30px;
+  }
+}
+@media only screen and (max-width: 1150px) {
+  .homepage-banner__container {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .homepage-banner__img {
+      display: inline-block;
+      width: 100%;
+      height: 500px;
+      object-position: right;
+      object-fit: cover;
+    }
+  }
+  //-------------------------
+  .homepage-reason__container {
+    .homepage-reason__title {
+      font-size: 24px;
+      line-height: normal;
+    }
+    .homepage-reason__wrapper {
+      flex-direction: column;
+    }
+  }
+  //-------------------------
+  .homepage-category__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 10px;
+    .homepage-category__title {
+      font-size: 23px;
+      font-weight: 550;
+      padding: 20px 0;
+      font-family: "Times New Roman", Times, serif;
+    }
+    .homepage-category__wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .homepage-category__item {
+      width: 100%;
+      &--img {
+        width: 100%;
+        height: 300px;
+
+        object-fit: cover;
+        object-position: top;
+        margin-bottom: 15px;
+      }
+      &--title {
+        text-align: center;
+        font-size: 16px;
+        font-weight: 550;
+      }
+    }
+  }
+  //-------------------------
+  .homepage-social__container {
+    padding: 30px 10px;
+    position: relative;
+    .homepage-social__content {
+      max-width: 1200px;
+      position: relative;
+      margin: 0 auto;
+    }
+    .homepage-social__title {
+      font-size: 23px;
+      font-weight: 550;
+      padding: 20px 0;
+      font-family: "Times New Roman", Times, serif;
+    }
+    .homepage-social__wrapper {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-direction: column;
+      margin-bottom: 30px;
+    }
   }
 }
