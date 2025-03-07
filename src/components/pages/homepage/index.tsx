@@ -78,7 +78,8 @@ function HomePage() {
               width: "100%",
             }}
             className="homepage-category__carousel w-full"
-            slidesPerView={4}
+            slidesPerView={isBigScreen ? 4 : 1}
+            centeredSlides
             spaceBetween={3}
             navigation={{
               nextEl: ".swiper-button-next-category",
@@ -108,6 +109,8 @@ function HomePage() {
                   </Carousel.Item>
                 ))
               : ""}
+            <IoIosArrowForward className="swiper-button-next" />
+            <IoIosArrowBack className="swiper-button-prev" />
           </Carousel>
         </div>
       </section>
