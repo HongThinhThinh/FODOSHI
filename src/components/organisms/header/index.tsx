@@ -7,13 +7,30 @@ import "./styles.scss";
 import { HiBars3 } from "react-icons/hi2";
 import { Link, useNavigate } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
-import { Drawer } from "antd";
-import { useState } from "react";
+import { Button, Drawer } from "antd";
+import { useEffect, useState } from "react";
 import { GrClose } from "react-icons/gr";
+import ButtonComponent from "../../atoms/button";
+import { useDispatch } from "react-redux";
+import { logout } from "../../../redux/features/userSlice";
+import { toast } from "react-toastify";
 function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const isBigScreen = useMediaQuery({ query: "(min-width: 1150px)" });
+
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/login");
+    toast.success("Logged out");
+  };
+
+  useEffect(() => {
+    setIsOpen(false);
+  }, [isBigScreen]);
+
   return (
     <>
       <header className="fixed inset-0 z-10 bg-white h-fit">
@@ -67,6 +84,7 @@ function Header() {
           {navbar.map((item, index) => (
             <li className="navbar-item py-4  border-b-2" key={index}>
               <Link
+                onClick={() => setIsOpen(false)}
                 className="w-full inline-block hover:text-[#852f1f]"
                 to={item.path}
               >
@@ -75,6 +93,16 @@ function Header() {
             </li>
           ))}
         </ul>
+        <ButtonComponent
+          className="mt-7 w-full"
+          shape="round"
+          bgColor="#852f1f"
+          color="white"
+          size="large"
+          onClick={() => handleLogout()}
+        >
+          Đăng xuất
+        </ButtonComponent>
       </Drawer>
     </>
   );
