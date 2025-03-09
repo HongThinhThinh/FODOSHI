@@ -4,32 +4,67 @@ import { logo } from "../../../../assets/contant";
 import ButtonComponent from "../../../atoms/button";
 import { ShippingVoucher } from "../../../../model/shippingVoucher";
 import { shippingVouchers } from "../../../../dummy-data/mockShippingVoucherData";
-import { Modal } from "antd";
-import { CloseCircleOutlined, CloseOutlined } from "@ant-design/icons";
+import { Modal, Form, Input, message, Checkbox } from "antd"; // Thêm Form, Input, Checkbox
+import {
+  CloseCircleOutlined,
+  CloseOutlined,
+  PlusOutlined,
+} from "@ant-design/icons"; // Thêm PlusOutlined
 import { formatMoney } from "../../../../utils/formatMoney";
 import ConfirmModal from "../../../molecules/confirm-modal";
+import api from "../../../../config/api";
+
+// Cập nhật interface Address
+interface Address {
+  id: number;
+  address: string;
+  province: string;
+  district: string;
+  commune: string;
+  isDefault?: boolean;
+}
 
 export interface CheckoutProps {
   open?: boolean;
   setOpen: (isOpen: boolean) => void;
   grandTotalBeforeShipping: number;
+  shippingFee: number;
+  discount: number;
+  grandTotal: number;
+  selectedCartItems: string[]; // Thêm prop này
 }
 
 export default function Checkout({
   grandTotalBeforeShipping,
   open,
   setOpen,
+  shippingFee,
+  discount,
+  grandTotal,
+  selectedCartItems, // Nhận prop này
 }: CheckoutProps) {
+  // Thêm state cho địa chỉ
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
+    null
+  );
+  const [isAddressModalVisible, setIsAddressModalVisible] =
+    useState<boolean>(false);
+  const [addressForm] = Form.useForm();
+  const [addressLoading, setAddressLoading] = useState<boolean>(false);
+
+  // Các state đã có
   const [selectedShipping, setSelectedShipping] = useState<string | null>(null);
   const [selectedPayment, setSelectedPayment] = useState<string>("");
   const [selectedVoucher, setSelectedVoucher] =
     useState<ShippingVoucher | null>(null);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [shippingCost, setShippingCost] = useState<number>(0);
-  const [grandTotal, setGrandTotal] = useState<number>(
+  const [grandTotalState, setGrandTotalState] = useState<number>(
     grandTotalBeforeShipping
   );
   const [openConfirmModal, setOpenConfirmModal] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
   const closeCheckout = () => {
     setOpen(false);
   };
@@ -50,22 +85,10 @@ export default function Checkout({
   ];
   const paymentMethods = [
     {
-      id: "momo",
-      label: "Momo Wallet",
-      value: "Momo Wallet",
-      img: "https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png",
-    },
-    {
       id: "credit-card",
-      label: "Credit Card",
+      label: "Thanh toán online",
       value: "Credit Card",
       img: "https://cdn-icons-png.flaticon.com/512/6963/6963703.png",
-    },
-    {
-      id: "vnpay",
-      label: "VNPay",
-      value: "VNPay",
-      img: "https://cdn-new.topcv.vn/unsafe/https://static.topcv.vn/company_logos/cong-ty-cp-giai-phap-thanh-toan-viet-nam-vnpay-6194ba1fa3d66.jpg",
     },
     {
       id: "cod",
@@ -96,12 +119,107 @@ export default function Checkout({
   };
 
   useEffect(() => {
-    setGrandTotal(
+    setGrandTotalState(
       grandTotalBeforeShipping +
         shippingCost -
         (shippingCost * (selectedVoucher?.discount || 0)) / 100
     );
   }, [grandTotalBeforeShipping, shippingCost, selectedVoucher]);
+
+  // Fetch địa chỉ người dùng
+  useEffect(() => {
+    if (open) {
+      fetchUserAddresses();
+    }
+  }, [open]);
+
+  // Hàm lấy danh sách địa chỉ
+  const fetchUserAddresses = async () => {
+    try {
+      // Cập nhật đường dẫn nếu cần
+      const response = await api.get("/address/user");
+      if (response.data && Array.isArray(response.data)) {
+        setAddresses(response.data);
+        // Chọn địa chỉ mặc định nếu có
+        const defaultAddress = response.data.find((addr) => addr.isDefault);
+        if (defaultAddress) {
+          setSelectedAddressId(defaultAddress.id);
+        } else if (response.data.length > 0) {
+          setSelectedAddressId(response.data[0].id);
+        }
+      }
+    } catch (error) {
+      console.error("Không thể lấy danh sách địa chỉ:", error);
+    }
+  };
+
+  // Hàm thêm địa chỉ mới
+  const handleAddAddress = async (values: any) => {
+    setAddressLoading(true);
+    try {
+      // Thay đổi endpoint từ "/address" thành "/api/address/user"
+      const response = await api.post("/address/user", values);
+      if (response.data && response.data.id) {
+        message.success("Thêm địa chỉ thành công!");
+        setAddresses((prev) => [...prev, response.data]);
+        setSelectedAddressId(response.data.id);
+        setIsAddressModalVisible(false);
+        addressForm.resetFields();
+      }
+    } catch (error) {
+      console.error("Lỗi khi thêm địa chỉ:", error);
+      message.error("Không thể thêm địa chỉ. Vui lòng thử lại.");
+    } finally {
+      setAddressLoading(false);
+    }
+  };
+
+  // Cập nhật handleCreateOrder để sử dụng addressId
+  const handleCreateOrder = async () => {
+    console.log("handleCreateOrder được gọi");
+
+    if (!selectedCartItems || selectedCartItems.length === 0) {
+      message.error("Không có sản phẩm nào được chọn");
+      return;
+    }
+
+    if (!selectedAddressId) {
+      message.error("Vui lòng chọn địa chỉ giao hàng");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Cập nhật payload với addressId
+      const payload = {
+        description: `Đơn hàng: ${
+          selectedCartItems.length
+        } sản phẩm - ${formatMoney(grandTotal)} VND`,
+        addressId: selectedAddressId, // Thêm addressId vào payload
+        cartItemIds: selectedCartItems,
+        returnUrl: `${window.location.origin}/payment-success`,
+        cancelUrl: `${window.location.origin}/payment-cancel`,
+      };
+
+      console.log("Gọi API với payload:", payload);
+      const response = await api.post("/payment/create", payload);
+      console.log("Nhận response:", response.data);
+
+      if (response.data && response.data.paymentUrl) {
+        console.log("Chuyển hướng đến:", response.data.paymentUrl);
+        window.location.href = response.data.paymentUrl;
+      } else {
+        message.success("Đặt hàng thành công!");
+        setOpenConfirmModal(false);
+        setOpen(false);
+      }
+    } catch (error) {
+      console.error("Lỗi khi tạo đơn hàng:", error);
+      message.error("Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại sau.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -126,10 +244,43 @@ export default function Checkout({
           <div className="checkout__address">
             <div className="checkout__address__title">Địa chỉ giao hàng</div>
             <div className="checkout__address__items">
-              <div className="checkout__address__items__item">Address 1</div>
-              <div className="checkout__address__items__item">Address 2</div>
-              <div className="checkout__address__items__item">
-                Thêm địa chỉ ....
+              {addresses.length > 0 ? (
+                addresses.map((address) => (
+                  <div
+                    key={address.id}
+                    className={`checkout__address__items__item ${
+                      selectedAddressId === address.id ? "selected" : ""
+                    }`}
+                    onClick={() => setSelectedAddressId(address.id)}
+                  >
+                    <div className="checkout__address__items__item__radio">
+                      <input
+                        type="radio"
+                        checked={selectedAddressId === address.id}
+                        onChange={() => setSelectedAddressId(address.id)}
+                      />
+                    </div>
+                    <div className="checkout__address__items__item__content">
+                      <div className="checkout__address__items__item__content__name">
+                        Địa chỉ {address?.isDefault && " (Mặc định)"}
+                      </div>
+                      <div className="checkout__address__items__item__content__address">
+                        {address?.address}, {address?.commune},{" "}
+                        {address?.district}, {address?.province}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="checkout__address__items__empty">
+                  Chưa có địa chỉ giao hàng
+                </div>
+              )}
+              <div
+                className="checkout__address__items__item checkout__address__items__item--add"
+                onClick={() => setIsAddressModalVisible(true)}
+              >
+                <PlusOutlined /> Thêm địa chỉ mới
               </div>
             </div>
           </div>
@@ -287,7 +438,9 @@ export default function Checkout({
                 <span className="checkout__bills__content__item__title">
                   Tổng cộng
                 </span>
-                <span id="grand-total-checkout">{formatMoney(grandTotal)}</span>
+                <span id="grand-total-checkout">
+                  {formatMoney(grandTotalState)}
+                </span>
               </div>
             </div>
           </div>
@@ -310,7 +463,72 @@ export default function Checkout({
           setOpen={setOpenConfirmModal}
           zIndexProps={1006}
           open={openConfirmModal}
+          onConfirm={handleCreateOrder}
+          isLoading={isLoading}
         />
+        <Modal
+          title="Thêm địa chỉ mới"
+          visible={isAddressModalVisible}
+          onCancel={() => setIsAddressModalVisible(false)}
+          footer={null}
+          zIndex={1005}
+        >
+          <Form
+            form={addressForm}
+            layout="vertical"
+            onFinish={handleAddAddress}
+          >
+            <Form.Item
+              name="province"
+              label="Tỉnh/Thành phố"
+              rules={[
+                { required: true, message: "Vui lòng nhập tỉnh/thành phố" },
+              ]}
+            >
+              <Input placeholder="Nhập tỉnh/thành phố" />
+            </Form.Item>
+
+            <Form.Item
+              name="district"
+              label="Quận/Huyện"
+              rules={[{ required: true, message: "Vui lòng nhập quận/huyện" }]}
+            >
+              <Input placeholder="Nhập quận/huyện" />
+            </Form.Item>
+
+            <Form.Item
+              name="commune"
+              label="Phường/Xã"
+              rules={[{ required: true, message: "Vui lòng nhập phường/xã" }]}
+            >
+              <Input placeholder="Nhập phường/xã" />
+            </Form.Item>
+
+            <Form.Item
+              name="address"
+              label="Địa chỉ chi tiết"
+              rules={[
+                { required: true, message: "Vui lòng nhập địa chỉ chi tiết" },
+              ]}
+            >
+              <Input.TextArea placeholder="Số nhà, tên đường..." rows={3} />
+            </Form.Item>
+
+            <Form.Item name="isDefault" valuePropName="checked">
+              <Checkbox>Đặt làm địa chỉ mặc định</Checkbox>
+            </Form.Item>
+
+            <Form.Item>
+              <ButtonComponent
+                htmlType="submit"
+                isActive
+                disabled={addressLoading}
+              >
+                {addressLoading ? "Đang xử lý..." : "Thêm địa chỉ"}
+              </ButtonComponent>
+            </Form.Item>
+          </Form>
+        </Modal>
       </div>
     </>
   );

@@ -18,6 +18,7 @@ export default function Cart() {
   const [grandTotal, setGrandTotal] = useState(0);
   const [openCheckout, setOpenCheckout] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedCartItems, setSelectedCartItems] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const getParams = useGetCart();
@@ -51,11 +52,27 @@ export default function Cart() {
     calculateTotals();
   }, [calculateTotals]);
 
-  const handleCheckboxChange = (productId) => {
+  const handleCheckboxChange = (productId, cartItemId) => {
     setSelectedItems((prevSelected) => {
       if (prevSelected.includes(productId)) {
+        // Nếu bỏ chọn sản phẩm, cũng xóa khỏi selectedCartItems
+        setSelectedCartItems((prev) =>
+          prev.filter(
+            (id) =>
+              !cartData.find(
+                (item) => item.product?.id === productId && item.id === id
+              )
+          )
+        );
         return prevSelected.filter((id) => id !== productId);
       } else {
+        // Nếu chọn sản phẩm, thêm cartItemId vào selectedCartItems
+        const cartItem = cartData.find(
+          (item) => item.product?.id === productId
+        );
+        if (cartItem) {
+          setSelectedCartItems((prev) => [...prev, cartItem.id]);
+        }
         return [...prevSelected, productId];
       }
     });
@@ -87,11 +104,16 @@ export default function Cart() {
   const handleSelectAll = () => {
     if (selectedItems.length === cartData.length) {
       setSelectedItems([]);
+      setSelectedCartItems([]);
     } else {
-      const allIds = cartData
+      const allProductIds = cartData
         .filter((item) => item.product && item.product.id)
         .map((item) => item.product.id);
-      setSelectedItems(allIds);
+      const allCartItemIds = cartData
+        .filter((item) => item.id)
+        .map((item) => item.id);
+      setSelectedItems(allProductIds);
+      setSelectedCartItems(allCartItemIds);
     }
   };
 
@@ -133,12 +155,14 @@ export default function Cart() {
                   <input
                     type="checkbox"
                     checked={selectedItems.includes(product?.id)}
-                    onChange={() => handleCheckboxChange(product?.id)}
+                    onChange={() =>
+                      handleCheckboxChange(product?.id, cartItem.id)
+                    }
                   />
                 </div>
                 <div className="cart__items__item__product">
                   <div className="cart__items__item__product__image">
-                    {product?.imageUrls && product?.imageUrls[0] && (
+                    {product?.imageUrls && product?.mainImage && (
                       <img
                         src={product?.mainImage || product?.imageUrls[0]?.image}
                         alt={product.name || "Sản phẩm"}
@@ -222,7 +246,6 @@ export default function Cart() {
           })
         )}
       </div>
-
       <div className="cart__summary">
         <div className="cart__summary__content">
           <div className="cart__summary__row">
@@ -263,6 +286,7 @@ export default function Cart() {
         discount={discount}
         grandTotal={grandTotal}
         selectedItems={selectedItems}
+        selectedCartItems={selectedCartItems}
       />
     </div>
   );

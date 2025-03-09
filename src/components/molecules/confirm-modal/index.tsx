@@ -11,6 +11,8 @@ export interface ConfirmModalProps {
   message?: string;
   confirmText?: string;
   cancelText?: string;
+  onConfirm?: () => void; // Thêm prop onConfirm
+  isLoading?: boolean; // Thêm prop isLoading
 }
 
 export default function ConfirmModal({
@@ -21,15 +23,27 @@ export default function ConfirmModal({
   message = "Message",
   confirmText = "Confirm",
   cancelText = "Cancel",
+  onConfirm, // Nhận prop
+  isLoading, // Nhận prop
 }: ConfirmModalProps) {
   const handleClose = () => {
     setOpen(false);
   };
+
+  // Thêm hàm xử lý khi nhấn nút confirm
+  const handleConfirm = () => {
+    if (onConfirm) {
+      onConfirm();
+    }
+  };
+
   return (
     <div>
       <div
         onClick={handleClose}
-        className={`confirm-modal__overlay${open ? " confirm-modal__overlay--visible" : ""}`}
+        className={`confirm-modal__overlay${
+          open ? " confirm-modal__overlay--visible" : ""
+        }`}
       ></div>
       <div
         className={`confirm-modal${open ? " confirm-modal--open" : ""}`}
@@ -54,7 +68,13 @@ export default function ConfirmModal({
               <p>{message}</p>
             </div>
             <div className="confirm-modal__content__body__actions">
-              <ButtonComponent status="success">{confirmText}</ButtonComponent>
+              <ButtonComponent
+                status="success"
+                onClick={handleConfirm}
+                disabled={isLoading}
+              >
+                {isLoading ? "Đang xử lý..." : confirmText}
+              </ButtonComponent>
               <ButtonComponent onClick={handleClose} status="danger">
                 {cancelText}
               </ButtonComponent>

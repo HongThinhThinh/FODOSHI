@@ -1,12 +1,12 @@
 import { Button, ButtonProps } from "antd";
 import "./styles.scss";
-import { ButtonShape } from "antd/es/button";
 interface ButtonComponentProps extends ButtonProps {
   className?: string;
   color?: string;
   bgColor?: string;
   children?: React.ReactNode;
   isActive?: boolean;
+  isSubmit?: boolean;
   status?: "default" | "danger" | "success" | "warning" | "info" | "disabled";
 }
 function ButtonComponent({
@@ -14,13 +14,14 @@ function ButtonComponent({
   bgColor,
   color,
   children,
+  isSubmit,
   isActive,
-
   status = "default",
   ...rest
 }: ButtonComponentProps) {
   return (
     <Button
+      htmlType={isSubmit ? "submit" : "button"}
       className={`button-fodoshi ${className} ${
         isActive ? "active" : ""
       } btn-sign-status-${status}`}
