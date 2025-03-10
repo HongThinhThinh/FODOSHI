@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./index.scss";
-import { message, Spin } from "antd";
+import { message, Spin, Tag } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
 import { Order, OrderStatus } from "../../../../model/order";
 import { useNavigate } from "react-router-dom";
@@ -65,6 +65,8 @@ function OrderManagement() {
         return OrderStatus.Completed;
       case "CANCELLED":
         return OrderStatus.Cancelled;
+      case "PAID":
+        return OrderStatus.Paid;
       default:
         return OrderStatus.Processing;
     }
@@ -117,17 +119,23 @@ function OrderManagement() {
       render: (
         status:
           | OrderStatus.Pending
-          | OrderStatus.Processing
           | OrderStatus.Completed
           | OrderStatus.Cancelled
+          | OrderStatus.Paid
       ) => {
         const statusColor = {
           Pending: "orange",
           Processing: "blue",
           Completed: "green",
+          Paid: "green",
           Cancelled: "red",
         };
-        return <span style={{ color: statusColor[status] }}>{status}</span>;
+        console.log(status);
+        return (
+          <Tag color="green" style={{ color: statusColor[status] }}>
+            {status}
+          </Tag>
+        );
       },
     },
     {

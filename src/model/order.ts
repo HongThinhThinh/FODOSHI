@@ -1,8 +1,9 @@
 export enum OrderStatus {
   Pending = "Pending",
-  Processing = "Processing",
+  Processing = "Đamg xử lí",
   Completed = "Completed",
   Cancelled = "Cancelled",
+  Paid = "Đã thanh toán",
 }
 
 export interface Order {
