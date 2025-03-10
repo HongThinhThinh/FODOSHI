@@ -69,6 +69,10 @@ export default function Checkout({
     setOpen(false);
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const shippingMethods = [
     {
       id: "GiaoHangTanNoi",
@@ -174,7 +178,7 @@ export default function Checkout({
     }
   };
 
-  // Cập nhật handleCreateOrder để sử dụng addressId
+  // Update the handleCreateOrder function to use the correct response structure
   const handleCreateOrder = async () => {
     console.log("handleCreateOrder được gọi");
 
@@ -192,9 +196,7 @@ export default function Checkout({
     try {
       // Cập nhật payload với addressId
       const payload = {
-        description: `Đơn hàng: ${
-          selectedCartItems.length
-        } sản phẩm - ${formatMoney(grandTotal)} VND`,
+        description: `FODOSH xin cam on`,
         addressId: selectedAddressId, // Thêm addressId vào payload
         cartItemIds: selectedCartItems,
         returnUrl: `${window.location.origin}/payment-success`,
@@ -205,9 +207,14 @@ export default function Checkout({
       const response = await api.post("/payment/create", payload);
       console.log("Nhận response:", response.data);
 
-      if (response.data && response.data.paymentUrl) {
-        console.log("Chuyển hướng đến:", response.data.paymentUrl);
-        window.location.href = response.data.paymentUrl;
+      // Update to use the correct response structure with data.checkoutUrl
+      if (
+        response.data &&
+        response.data.data &&
+        response.data.data.checkoutUrl
+      ) {
+        console.log("Chuyển hướng đến:", response.data.data.checkoutUrl);
+        window.location.href = response.data.data.checkoutUrl;
       } else {
         message.success("Đặt hàng thành công!");
         setOpenConfirmModal(false);

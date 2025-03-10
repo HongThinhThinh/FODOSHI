@@ -35,6 +35,7 @@ import ProductByCategory from "../components/pages/customer/categoryProduct";
 import CamOnAnhBaoNhieuNha from "../components/pages/customer/camOnAnhBao";
 import ManageCategory from "../components/pages/admin/manage-category";
 import ManageBrand from "../components/pages/admin/manage-brand";
+import PaymentSuccess from "../components/pages/customer/payment-success";
 
 export const router = createBrowserRouter([
   {
@@ -49,7 +50,10 @@ export const router = createBrowserRouter([
     path: "/product-details",
     element: <ProductDetails />,
   },
-
+  {
+    path: "/payment-success",
+    element: <PaymentSuccess />,
+  },
   {
     path: "/camOnAnhBao",
     element: <CamOnAnhBaoNhieuNha />,

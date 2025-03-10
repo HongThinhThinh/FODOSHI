@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Form, message } from "antd";
 
@@ -9,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { login } from "../../../../redux/features/userSlice";
 import InputComponent from "../../../atoms/input";
 import { useMediaQuery } from "react-responsive";
+import { toast } from "react-toastify";
 
 export default function LoginPage() {
   const [form] = Form.useForm();
@@ -27,8 +27,7 @@ export default function LoginPage() {
       const response = await callApi("post", "login", payload);
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("refreshToken", response.data.refreshToken);
-      console.log("Login successful", response);
-      messageApi.success("Login successful");
+      toast.success("Login successful");
       dispatch(login(response.data));
       if (response?.data.role === "ADMIN") {
         navigate("/admin/dashboard", { replace: true });
