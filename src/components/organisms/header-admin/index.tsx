@@ -50,13 +50,17 @@ export default function HeaderAdmin() {
           </div>
 
           <div className="header-admin__right__item__user">
-            <UserOutlined onClick={handleChangeUserDropdown} />
-            <div
+            {/* <UserOutlined onClick={handleChangeUserDropdown} /> */}
+            {/* <div
               className={`header-admin__right__item__user__dropdown ${
-                isUserDrop ? "header-admin__right__item__user__dropdown--active" : ""
+                isUserDrop
+                  ? "header-admin__right__item__user__dropdown--active"
+                  : ""
               } `}
             >
-              <div className="header-admin__right__item__user__dropdown__title">Admin</div>
+              <div className="header-admin__right__item__user__dropdown__title">
+                Admin
+              </div>
               <div className="header-admin__right__item__user__dropdown__items">
                 {dropdownData.map((item, index) => (
                   <Link key={index} to={`${currentPath}/${item.path}`}>
@@ -70,8 +74,8 @@ export default function HeaderAdmin() {
                     </div>
                   </Link>
                 ))}
-              </div>
-            </div>
+              </div> */}
+            {/* </div> */}
           </div>
         </div>
       </div>

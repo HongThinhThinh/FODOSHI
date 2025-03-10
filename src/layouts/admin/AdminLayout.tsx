@@ -4,12 +4,13 @@ import { useState } from "react";
 import HeaderAdmin from "../../components/organisms/header-admin";
 import { logo } from "../../assets/contant";
 import "./index.scss";
-import {
-  ProductCategoryRoute,
-  RouteType,
-} from "../../dummy-data/mockAdminRouteData";
+import { RouteType } from "../../dummy-data/mockAdminRouteData";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { CaretDownOutlined, CaretUpOutlined } from "@ant-design/icons";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../../redux/features/userSlice";
+import { LogoutOutlined } from "@ant-design/icons";
+import { toast } from "react-toastify";
 
 export interface AdminLayoutCustomProps {
   routes: RouteType[];
@@ -29,6 +30,17 @@ export default function AdminLayoutCustom({ routes }: AdminLayoutCustomProps) {
     setOnCollapseCategory(!onCollapseCategory);
   };
 
+  // Add these hooks at the top of your component
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // Add the handleLogout function
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/login");
+    toast.success("Logged out");
+  };
+
   return (
     <div className="admin-layout-custom">
       <Row className="admin-layout-custom__container" gutter={0}>
@@ -37,24 +49,40 @@ export default function AdminLayoutCustom({ routes }: AdminLayoutCustomProps) {
             <img src={logo} />
           </div>
           <div className="admin-layout-custom__container__sidebar__navigate">
-            {routes.map((route, index) => (
-              <Link key={index} to={route.path}>
-                <div
-                  className={`admin-layout-custom__container__sidebar__navigate__item ${
-                    currentPath === route.path
-                      ? "admin-layout-custom__container__sidebar__navigate__item--active"
-                      : ""
-                  } `}
+            <>
+              {routes.map((route, index) => (
+                <Link key={index} to={route.path}>
+                  <div
+                    className={`admin-layout-custom__container__sidebar__navigate__item ${
+                      currentPath === route.path
+                        ? "admin-layout-custom__container__sidebar__navigate__item--active"
+                        : ""
+                    } `}
+                  >
+                    <div className="admin-layout-custom__container__sidebar__navigate__item__icon">
+                      {route.icon}
+                    </div>
+                    <div className="admin-layout-custom__container__sidebar__navigate__item__name">
+                      {route.name}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </>
+            <div className="admin-layout-custom__container__sidebar__navigate__item">
+              <div className="admin-layout-custom__container__sidebar__navigate__item__icon">
+                <button
+                  onClick={handleLogout}
+                  className="admin-layout-custom__container__sidebar__logout-btn flex"
                 >
-                  <div className="admin-layout-custom__container__sidebar__navigate__item__icon">
-                    {route.icon}
-                  </div>
-                  <div className="admin-layout-custom__container__sidebar__navigate__item__name">
-                    {route.name}
-                  </div>
-                </div>
-              </Link>
-            ))}
+                  {" "}
+                  <LogoutOutlined />
+                </button>
+              </div>
+              <div className="admin-layout-custom__container__sidebar__navigate__item__name">
+                <span>Logout</span>
+              </div>
+            </div>
           </div>
 
           <div className="admin-layout-custom__container__sidebar__collapse"></div>

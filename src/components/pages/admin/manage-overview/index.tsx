@@ -22,6 +22,7 @@ import { recentOrdersDummyData } from "../../../../dummy-data/recent-order-data"
 import { Order, OrderStatus } from "../../../../model/order";
 import GenericTable, { ColumnType } from "../../../atoms/table";
 import { useNavigate } from "react-router-dom";
+import OrderManagement from "../manage-orders";
 function Dashboard() {
   // const [data, setData] = useState([]);
   const [activeButton, setActiveButton] = useState<string>("WEEK");
@@ -101,7 +102,12 @@ function Dashboard() {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      render: (status: OrderStatus.Pending | OrderStatus.Completed | OrderStatus.Cancelled) => {
+      render: (
+        status:
+          | OrderStatus.Pending
+          | OrderStatus.Completed
+          | OrderStatus.Cancelled
+      ) => {
         const statusColor = {
           Pending: "orange",
           Completed: "green",
@@ -123,7 +129,11 @@ function Dashboard() {
 
   return (
     <div className="dashboard">
-      <Row gutter={[16, 16]} justify="space-between" className="dashboard__card">
+      <Row
+        gutter={[16, 16]}
+        justify="space-between"
+        className="dashboard__card"
+      >
         {[
           { title: "Tổng đơn hàng", value: 0 },
           { title: "Đơn hàng đang hoạt động", value: 0 },
@@ -131,7 +141,11 @@ function Dashboard() {
           { title: "Đơn hàng hoàn trả", value: 0 },
         ].map((item, index) => (
           <Col key={index} flex="1 1 0" style={{ maxWidth: "300px" }}>
-            <CustomizedCard width={"100%"} height={"140px"} borderRadious={"10px"}>
+            <CustomizedCard
+              width={"100%"}
+              height={"140px"}
+              borderRadious={"10px"}
+            >
               <div className="dashboard__card__top">
                 <div className="dashboard__card__top__left">{item.title}</div>
                 <div className="dashboard__card__top__right">
@@ -210,7 +224,10 @@ function Dashboard() {
           </div>
           <div className="dashboard__chart__right__mid">
             {topBrands.map((brand) => (
-              <div className="dashboard__chart__right__mid__item" key={brand.id}>
+              <div
+                className="dashboard__chart__right__mid__item"
+                key={brand.id}
+              >
                 <div className="dashboard__chart__right__mid__item__left">
                   <div
                     className="dashboard__chart__right__mid__item__left__image"
@@ -258,21 +275,14 @@ function Dashboard() {
               <MoreOutlined />
             </div>
           </div>
-          <div className="dashboard__table__container__body">
+          <div className="dashboard__table__container__body p-0">
             {/* <Table
               columns={columns}
               dataSource={recentOrdersDummyData}
               pagination={{ pageSize: 5 }}
               scroll={{ x: "max-content" }}
             /> */}
-            <GenericTable
-              pageSize={2}
-              columns={columns}
-              data={recentOrdersDummyData}
-              onRow={(record) => {
-                navigate(`${record.orderId}`);
-              }}
-            />
+            <OrderManagement />
           </div>
         </div>
       </div>

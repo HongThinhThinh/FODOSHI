@@ -140,16 +140,8 @@ function OrderManagement() {
   return (
     <div className="orders">
       <div className="orders__table">
-        <div className="orders__table__container">
-          <div className="orders__table__container__header">
-            <div className="orders__table__container__header__left">
-              <span>Những đơn hàng gần đây</span>
-            </div>
-            <div className="orders__table__container__header__right">
-              <MoreOutlined />
-            </div>
-          </div>
-          <div className="orders__table__container__body">
+        <div className="orders__table__container p-0">
+          <div className="orders__table__container__body p-0">
             {loading ? (
               <div className="loading-container">
                 <Spin tip="Carregando..." size="large" />
@@ -160,7 +152,7 @@ function OrderManagement() {
                 data={orders}
                 onRow={(record) => {
                   // Navegar para a página de detalhes do pedido com o ID real
-                  navigate(`${record.orderId}`);
+                  navigate(`/admin/orders/${record.orderId}`);
                 }}
               />
             )}

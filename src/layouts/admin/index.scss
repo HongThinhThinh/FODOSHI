@@ -1,6 +1,9 @@
 .admin-layout-custom {
   height: fit-content;
   background: #fafafa;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
   &__container {
     width: inherit;
     height: inherit;
@@ -117,5 +120,9 @@
         }
       }
     }
+  }
+  .ant-row {
+    flex-wrap: nowrap !important;
+    display: flex !important;
   }
 }
