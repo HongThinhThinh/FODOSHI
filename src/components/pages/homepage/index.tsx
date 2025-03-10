@@ -19,6 +19,7 @@ import { showCardModel } from "../../../assets/model";
 
 import { useGetCategory } from "../../../services/adminService";
 import { useNavigate } from "react-router-dom";
+import ProductCard from "../../atoms/product-ht";
 
 function HomePage() {
   const { data: products, refetch } = useGetProductAvailable("AVAILABLE");
@@ -144,7 +145,7 @@ function HomePage() {
                 className="homepage-outfitOfDay__carousel-item"
                 key={item.id}
               >
-                <ShowCard card={item} />
+                <ProductCard product={item} />
               </Carousel.Item>
             ))}
             <IoIosArrowForward className="swiper-button-next" />

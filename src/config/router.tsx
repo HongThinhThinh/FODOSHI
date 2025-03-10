@@ -36,6 +36,7 @@ import CamOnAnhBaoNhieuNha from "../components/pages/customer/camOnAnhBao";
 import ManageCategory from "../components/pages/admin/manage-category";
 import ManageBrand from "../components/pages/admin/manage-brand";
 import PaymentSuccess from "../components/pages/customer/payment-success";
+import PaymentCancel from "../components/pages/customer/payment-cancel";
 
 export const router = createBrowserRouter([
   {
@@ -53,6 +54,10 @@ export const router = createBrowserRouter([
   {
     path: "/payment-success",
     element: <PaymentSuccess />,
+  },
+  {
+    path: "/payment-cancel",
+    element: <PaymentCancel />,
   },
   {
     path: "/camOnAnhBao",

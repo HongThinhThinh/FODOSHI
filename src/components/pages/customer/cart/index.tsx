@@ -52,6 +52,10 @@ export default function Cart() {
     calculateTotals();
   }, [calculateTotals]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const handleCheckboxChange = (productId, cartItemId) => {
     setSelectedItems((prevSelected) => {
       if (prevSelected.includes(productId)) {

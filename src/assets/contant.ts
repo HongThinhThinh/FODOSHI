@@ -23,18 +23,7 @@ export const navbar = [
     path: "newProduct",
     name: "Hàng nhập mới",
   },
-  {
-    path: "brand",
-    name: "Brand",
-  },
-  {
-    path: "female",
-    name: "Nữ",
-  },
-  {
-    path: "male",
-    name: "Nam",
-  },
+
   {
     path: "shoeSize",
     name: "Bảng size giày",
