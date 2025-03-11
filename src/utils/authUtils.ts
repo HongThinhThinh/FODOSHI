@@ -8,10 +8,8 @@ export const refreshAuthToken = async () => {
     });
 
     const newAccessToken = response.data.data.token;
-    console.log(response);
+    console.log(newAccessToken);
     localStorage.setItem("token", newAccessToken);
-    // store.dispatch(loginRedux(response.data));
-
     return newAccessToken;
   }
   throw new Error("Refresh token not available");

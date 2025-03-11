@@ -31,6 +31,7 @@ api.interceptors.response.use(
 
       try {
         const newToken = await refreshAuthToken();
+        console.log(newToken);
         axios.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return api(originalRequest);

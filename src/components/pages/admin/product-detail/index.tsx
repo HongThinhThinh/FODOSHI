@@ -6,12 +6,13 @@ import type { UploadProps, UploadFile } from "antd";
 import { message, Upload, Button, Select, Input, Modal } from "antd";
 import ButtonComponent from "../../../atoms/button";
 import useGetParams from "../../../../hooks/useGetParams";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { toTitle } from "../../../../utils/formatStr";
 import {
   useCreateProduct,
   useGetBrand,
   useGetCategory,
+  useUpdateProduct,
 } from "../../../../services/adminService";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../../../config/firebase";
@@ -45,41 +46,104 @@ export default function ProductDetail({
   isConsigment = false,
   isCustomWidth = false,
 }: ProductDetailProps) {
-  const params = useGetParams();
-  const id = params("id");
+  // Add navigate for "Back" button functionality
+  const navigate = useNavigate();
+
+  // Add the update product mutation
+  const { mutate: updateProduct, isPending: isUpdating } = useUpdateProduct();
+
+  // Keep your existing code
+  const { id } = useParams();
+  // Fix the API call by ensuring we have a valid ID and making the call conditionally
   const {
     data: productDetail,
-    isLoading,
-    error,
-  } = useGetProductDetail(id || "");
+    isLoading: isDetailLoading,
+    error: detailError,
+    refetch: refetchDetail,
+  } = useGetProductDetail(id || "", {
+    // Only fetch if we have an ID
+    enabled: !!id,
+    // Don't throw errors automatically
+    retry: 1,
+    // Add a refetch interval for stability
+    refetchOnWindowFocus: false,
+  });
 
+  // Log for debugging
   useEffect(() => {
-    if (id && productDetail) {
-      console.log("Product Detail:", productDetail);
+    console.log(id);
+    if (detailError) {
+      console.error("Error fetching product detail:", detailError);
     }
-  }, [id, productDetail]);
+  }, [id, detailError]);
 
+  // If we have an ID, but no detail yet, try refetching
+  useEffect(() => {
+    if (id && !productDetail && !isDetailLoading) {
+      refetchDetail();
+    }
+  }, [id, productDetail, isDetailLoading, refetchDetail]);
+
+  // Enhanced useEffect to set form data when product loads
   useEffect(() => {
     if (id && productDetail) {
       console.log("Product Detail:", productDetail);
+
+      // Convert category and brand IDs from objects to string array
+      const categoryIds = productDetail.categories?.map((cat) => cat.id) || [];
+      const brandIds = productDetail.brands?.map((brand) => brand.id) || [];
+
+      // Extract tags - log first to check structure
+      console.log("Tags from API:", productDetail.tags);
+
+      // Extract tag names properly
+      const tagNames = productDetail.tags?.map((tag) => tag.tagName) || [];
+      console.log("Extracted tag names:", tagNames);
 
       setProduct({
         name: productDetail.name || "",
         description: productDetail.description || "",
-        category: productDetail.category || [],
-        brand: productDetail.brand || [],
-        condition: productDetail.condition || "",
+        category: categoryIds,
+        brand: brandIds,
+        condition: productDetail.productCondition || "",
         size: productDetail.size || "",
         color: productDetail.color || "#000000",
         gender: productDetail.gender || "",
         originalPrice: productDetail.originalPrice?.toString() || "",
         sellingPrice: productDetail.sellingPrice?.toString() || "",
-        productStatus: productDetail.productStatus || "AVAILABLE",
-        tags: productDetail.tags || [],
-        imageUrls: productDetail.imageUrls || [],
-        consignorId: productDetail.consignorId || "",
+        productStatus: productDetail.status || "AVAILABLE",
+        tags: tagNames, // Make sure this is correctly passed as an array of strings
+        imageUrls: productDetail.imageUrls?.map((img) => img.image) || [],
+        consignorId: productDetail.consignor?.id || "",
         mainImage: productDetail.mainImage || "",
       });
+
+      // Load existing images into the fileList for the Upload component
+      if (productDetail.imageUrls && productDetail.imageUrls.length > 0) {
+        const uploadFiles = productDetail.imageUrls.map((img, index) => ({
+          uid: `-${index}`,
+          name: `image-${index}`,
+          status: "done",
+          url: img.image,
+          thumbUrl: img.image,
+        }));
+        setFileList(uploadFiles);
+
+        // Set the main image selection
+        if (productDetail.mainImage) {
+          const mainImageIndex = productDetail.imageUrls.findIndex(
+            (img) => img.image === productDetail.mainImage
+          );
+          if (mainImageIndex >= 0) {
+            setSelectedMainImage(mainImageIndex);
+          }
+        }
+      }
+
+      // Set consignor phone number if available
+      if (productDetail.consignor?.phoneNumber) {
+        setPhoneNumber(productDetail.consignor.phoneNumber);
+      }
     }
   }, [id, productDetail]);
 
@@ -163,7 +227,9 @@ export default function ProductDetail({
     setProduct((prev) => ({ ...prev, gender: value }));
   };
 
+  // Modified handleSubmit to handle both create and update
   const handleSubmit = async () => {
+    // Validation checks remain the same
     if (
       !product.name ||
       !product.description ||
@@ -172,10 +238,12 @@ export default function ProductDetail({
       message.error("Vui lòng điền đầy đủ thông tin.");
       return;
     }
+
     if (fileList.length === 0) {
       message.error("Vui lòng tải lên ít nhất một ảnh.");
       return;
     }
+
     const originalPrice = parseFloat(product.originalPrice);
     const sellingPrice = parseFloat(product.sellingPrice);
     if (isNaN(originalPrice) || isNaN(sellingPrice)) {
@@ -185,60 +253,111 @@ export default function ProductDetail({
 
     try {
       setLoading(true);
+      // Process images - only upload new ones
       const imageUrls: string[] = [];
       for (const file of fileList) {
         if (file.originFileObj) {
+          // This is a new file that needs to be uploaded
           const downloadUrl = await uploadFile(file.originFileObj as File);
           imageUrls.push(downloadUrl);
+        } else if (file.url) {
+          // This is an existing image
+          imageUrls.push(file.url);
         }
       }
 
-      mutate(
-        {
-          ...product,
-          originalPrice,
-          sellingPrice,
-          imageUrls,
-          mainImage: imageUrls[selectedMainImage],
-          productStatus: isConsigment ? "PENDING" : "AVAILABLE",
-          consignorId: isConsigment ? user?.id : userByPhone?.id,
-        },
+      const productData = {
+        ...product,
+        originalPrice,
+        sellingPrice,
+        imageUrls,
+        mainImage: imageUrls[selectedMainImage],
+        productStatus: isConsigment ? "PENDING" : "AVAILABLE",
+        consignorId: isConsigment ? user?.id : userByPhone?.id,
+        // Send tags as simple strings
+        tags: product.tags, // Already an array of strings
+      };
 
-        {
+      if (id) {
+        setLoading(true);
+        updateProduct(
+          {
+            id: id, // ID for URL path parameter
+            data: productData, // Pass product data as a separate 'data' field
+          },
+          {
+            onSuccess: () => {
+              message.success("Cập nhật sản phẩm thành công!");
+              // Consider navigating back or refreshing data after update
+              // navigate(-1);
+            },
+            onError: (error) => {
+              message.error("Có lỗi xảy ra khi cập nhật sản phẩm.");
+              console.error(error);
+            },
+          }
+        );
+      } else {
+        // Create new product
+        mutate(productData, {
           onSuccess: () => {
             message.success("Thêm sản phẩm thành công!");
-            // Reset form fields after successful submission
-            setProduct({
-              name: "",
-              description: "",
-              category: [],
-              brand: [],
-              condition: "",
-              size: "",
-              color: "#000000",
-              gender: "UNISEX",
-              originalPrice: "",
-              sellingPrice: "",
-              productStatus: "AVAILABLE",
-              tags: [],
-              imageUrls: [],
-              consignorId: "",
-            });
-            setFileList([]); // Clear file list after success
-            setPhoneNumber("");
+            // Reset form only for create, not for update
+            resetForm();
           },
           onError: (error) => {
             message.error("Có lỗi xảy ra khi thêm sản phẩm.");
-            console.error(error); // Optionally log the error for debugging
+            console.error(error);
           },
-        }
-      );
+        });
+      }
     } catch (error) {
-      message.error("Có lỗi xảy ra khi thêm sản phẩm.");
+      message.error(
+        id
+          ? "Có lỗi xảy ra khi cập nhật sản phẩm."
+          : "Có lỗi xảy ra khi thêm sản phẩm."
+      );
     } finally {
       setLoading(false);
     }
   };
+
+  // Add a reset form function
+  const resetForm = () => {
+    setProduct({
+      name: "",
+      description: "",
+      category: [],
+      brand: [],
+      condition: "",
+      size: "",
+      color: "#000000",
+      gender: "UNISEX",
+      originalPrice: "",
+      sellingPrice: "",
+      productStatus: "AVAILABLE",
+      tags: [],
+      imageUrls: [],
+      consignorId: "",
+      mainImage: "",
+    });
+    setFileList([]);
+    setPhoneNumber("");
+  };
+
+  // Add this at the top of your component to track what's happening
+  useEffect(() => {
+    console.log("Current product state:", product);
+    console.log("Current tags:", product.tags);
+  }, [product]);
+
+  // Add this to your API debugging
+  useEffect(() => {
+    if (productDetail) {
+      console.log("Raw product detail from API:", productDetail);
+      console.log("Raw tags from API:", productDetail.tags);
+    }
+  }, [productDetail]);
 
   return (
     <div className="productDetailPage">
@@ -485,7 +604,8 @@ export default function ProductDetail({
               <div className="w-full ">
                 <label className="block font-bold mb-2">Tag</label>
                 <TagInput
-                  initialTags={product.tags}
+                  key={`tag-input-${product.tags.length}`} // Force re-render when tags change
+                  initialTags={product.tags || []}
                   onChange={(newTags) =>
                     setProduct((prev) => ({ ...prev, tags: newTags }))
                   }
@@ -512,26 +632,19 @@ export default function ProductDetail({
               </div>
 
               <div className="flex gap-4 mt-24 justify-center ">
-                {id != null ? (
-                  <ButtonComponent
-                    color="white"
-                    children="Cập nhật"
-                    bgColor="#D99041"
-                    className="w-1/3 h-[50px]"
-                  />
-                ) : (
-                  <ButtonComponent
-                    onClick={handleSubmit}
-                    color="white"
-                    children="Thêm"
-                    bgColor="#626a3f"
-                    className="w-1/3 h-[50px]"
-                  />
-                )}
+                <ButtonComponent
+                  onClick={handleSubmit}
+                  color="white"
+                  children={id !== "products" ? "Cập nhật" : "Thêm"}
+                  bgColor={id ? "#D99041" : "#626a3f"}
+                  className="w-1/3 h-[50px]"
+                  loading={isPending || isUpdating}
+                />
 
                 <ButtonComponent
+                  onClick={id ? () => navigate(-1) : resetForm}
                   color="#D99041"
-                  children="Hủy"
+                  children={id ? "Quay lại" : "Hủy"}
                   className="w-1/3 h-[50px] text-black border border-black"
                 />
               </div>
