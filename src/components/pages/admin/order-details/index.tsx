@@ -74,6 +74,23 @@ interface ApiOrder {
   totalPrice: number;
   createdAt: string;
   status: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    phoneNumber: string;
+    addresses: Array<{
+      id: number;
+      address: string;
+      province: string;
+      district: string;
+      commune: string;
+      isDefault?: boolean;
+    }>;
+    role: string;
+    createdAt: string;
+    username: string;
+  };
   orderItems: ApiOrderItem[];
   shippingAddress?: {
     address: string;
@@ -106,9 +123,9 @@ export default function OrderDetails() {
   const [orderInfoModalVisible, setOrderInfoModalVisible] =
     useState<boolean>(false);
 
-  // Store consignor information
-  const [consignorInfo, setConsignorInfo] = useState<any>(null);
-  const [consignorAddress, setConsignorAddress] = useState<any>(null);
+  // Store customer information
+  const [customerInfo, setCustomerInfo] = useState<any>(null);
+  const [customerAddress, setCustomerAddress] = useState<any>(null);
 
   // Add these debug functions near the top of your component
   const handleCustomerDetailClick = () => {
@@ -136,36 +153,30 @@ export default function OrderDetails() {
         if (response.data.statusCode === 200) {
           setOrderData(response.data.data);
 
-          // Get consignor info from first order item
-          if (
-            response.data.data.orderItems &&
-            response.data.data.orderItems.length > 0
-          ) {
-            const firstItem = response.data.data.orderItems[0];
-            if (firstItem.product && firstItem.product.consignor) {
-              setConsignorInfo(firstItem.product.consignor);
+          // Use the user data from the order instead of consignor
+          if (response.data.data.user) {
+            // Set customer info from order.user
+            setCustomerInfo(response.data.data.user);
 
-              // Get default address if available
-              if (
-                firstItem.product.consignor.addresses &&
-                firstItem.product.consignor.addresses.length > 0
-              ) {
-                const defaultAddress =
-                  firstItem.product.consignor.addresses.find(
-                    (addr) => addr.isDefault
-                  );
-                setConsignorAddress(
-                  defaultAddress || firstItem.product.consignor.addresses[0]
-                );
-              }
+            // Get address from user's addresses
+            if (
+              response.data.data.user.addresses &&
+              response.data.data.user.addresses.length > 0
+            ) {
+              const defaultAddress = response.data.data.user.addresses.find(
+                (addr) => addr.isDefault
+              );
+              setCustomerAddress(
+                defaultAddress || response.data.data.user.addresses[0]
+              );
             }
           }
 
-          // Map API order items to OrderDetails format
+          // Rest of your code for mapping order items remains the same
           const mappedItems = response.data.data.orderItems.map((item) => ({
             id: parseInt(item.id.substring(0, 8), 16),
             productName: item.product.name,
-            quantity: 1, // Assuming quantity is always 1 since it's not in the API
+            quantity: 1,
             price: item.price,
             imageUrl:
               item.product.imageUrls && item.product.imageUrls.length > 0
@@ -273,22 +284,22 @@ export default function OrderDetails() {
   const CustomerModalContent = () => (
     <Descriptions bordered column={1}>
       <Descriptions.Item label="Name">
-        {consignorInfo?.name || "N/A"}
+        {customerInfo?.name || "N/A"}
       </Descriptions.Item>
       <Descriptions.Item label="Email">
-        {consignorInfo?.email || "N/A"}
+        {customerInfo?.email || "N/A"}
       </Descriptions.Item>
       <Descriptions.Item label="Phone">
-        {consignorInfo?.phoneNumber || "N/A"}
+        {customerInfo?.phoneNumber || "N/A"}
       </Descriptions.Item>
       <Descriptions.Item label="Username">
-        {consignorInfo?.username || "N/A"}
+        {customerInfo?.username || "N/A"}
       </Descriptions.Item>
       <Descriptions.Item label="Role">
-        {consignorInfo?.role || "N/A"}
+        {customerInfo?.role || "N/A"}
       </Descriptions.Item>
       <Descriptions.Item label="Registered On">
-        {consignorInfo?.createdAt || "N/A"}
+        {customerInfo?.createdAt || "N/A"}
       </Descriptions.Item>
     </Descriptions>
   );
@@ -296,18 +307,18 @@ export default function OrderDetails() {
   const AddressModalContent = () => (
     <Descriptions bordered column={1}>
       <Descriptions.Item label="Address">
-        {consignorAddress?.address || "N/A"}
+        {customerAddress?.address || "N/A"}
       </Descriptions.Item>
       <Descriptions.Item label="Commune">
-        {consignorAddress?.commune || "N/A"}
+        {customerAddress?.commune || "N/A"}
       </Descriptions.Item>
       <Descriptions.Item label="District">
-        {consignorAddress?.district || "N/A"}
+        {customerAddress?.district || "N/A"}
       </Descriptions.Item>
       <Descriptions.Item label="Province">
-        {consignorAddress?.province || "N/A"}
+        {customerAddress?.province || "N/A"}
       </Descriptions.Item>
-      {consignorAddress?.isDefault && (
+      {customerAddress?.isDefault && (
         <Descriptions.Item label="Default">Yes</Descriptions.Item>
       )}
     </Descriptions>
@@ -398,16 +409,16 @@ export default function OrderDetails() {
                 icon: <UserOutlined />,
                 details: (
                   <div>
-                    {consignorInfo ? (
+                    {customerInfo ? (
                       <>
                         <div>
-                          <UserOutlined /> {consignorInfo.name || "N/A"}
+                          <UserOutlined /> {customerInfo.name || "N/A"}
                         </div>
                         <div>
-                          <MailOutlined /> {consignorInfo.email || "N/A"}
+                          <MailOutlined /> {customerInfo.email || "N/A"}
                         </div>
                         <div>
-                          <PhoneOutlined /> {consignorInfo.phoneNumber || "N/A"}
+                          <PhoneOutlined /> {customerInfo.phoneNumber || "N/A"}
                         </div>
                       </>
                     ) : (
@@ -441,10 +452,10 @@ export default function OrderDetails() {
                 icon: <HomeOutlined />,
                 details: (
                   <div>
-                    {consignorAddress ? (
+                    {customerAddress ? (
                       <span>
-                        {consignorAddress.address}, {consignorAddress.commune},{" "}
-                        {consignorAddress.district}, {consignorAddress.province}
+                        {customerAddress.address}, {customerAddress.commune},{" "}
+                        {customerAddress.district}, {customerAddress.province}
                       </span>
                     ) : (
                       <span>Address information not available</span>
