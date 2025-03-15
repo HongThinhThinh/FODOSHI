@@ -78,7 +78,7 @@
       padding: 20px 0;
       &__item {
         padding: 5px 20px;
-        background-color: #ffa52f;
+        background-color: rgba(139, 46, 19, 0.05);
         border-radius: 10px;
         cursor: pointer;
       }
@@ -196,6 +196,7 @@
       display: flex;
       gap: 10px;
       transition: all 0.2s;
+      position: relative; // For positioning the edit button
 
       &:hover {
         border-color: #8b2e13;
@@ -203,7 +204,7 @@
 
       &.selected {
         border-color: #8b2e13;
-        background-color: rgba(139, 46, 19, 0.05);
+        background-color: #ffa52f;
       }
 
       &--add {
@@ -240,6 +241,39 @@
 
         &__address {
           line-height: 1.4;
+        }
+
+        &__contact {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin: 4px 0;
+          font-size: 13px;
+          color: #555;
+
+          &__name,
+          &__phone {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+
+            .anticon {
+              color: #888;
+              font-size: 12px;
+            }
+          }
+        }
+      }
+
+      &__edit {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        opacity: 0.5;
+        transition: opacity 0.2s;
+
+        &:hover {
+          opacity: 1;
         }
       }
     }

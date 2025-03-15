@@ -1,49 +1,64 @@
-// import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-// import { Product } from "../../model/product";
-// import { mockClothingProducts } from "../../dummy-data/mockClothingData";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// const initialState = {
-//   // products: [] as Product[],
-//   products: mockClothingProducts,
-// };
+// Define cart item type
+interface CartItem {
+  id: string | number;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  image: string;
+  quantity: number;
+}
 
-// export const cartSlice = createSlice({
-//   name: "cart",
-//   initialState: initialState,
-//   reducers: {
-//     add: (state, action: PayloadAction<Product>) => {
-//       const index = state.products.findIndex(
-//         (product) => product.productId === action.payload.productId
-//       );
-//       if (index == -1) {
-//         state.products.push({ ...action.payload, quantity: 1 });
-//       } else {
-//         state.products[index].quantity++;
-//       }
-//     },
-//     reset: (state) => {
-//       state.products = initialState.products;
-//     },
-//     remove: (state, action: PayloadAction<number>) => {
-//       state.products = state.products.filter(
-//         (product) => product.productId !== action.payload
-//       );
-//     },
-//     changeQuantity: (
-//       state,
-//       action: PayloadAction<{ productId: number; quantity: number }>
-//     ) => {
-//       const index = state.products.findIndex(
-//         (product) => product.productId === action.payload.productId
-//       );
-//       if (index !== -1) {
-//         state.products[index].quantity = action.payload.quantity;
-//       }
-//     },
-//     getAll: (state, action: PayloadAction<Product>) => {
-//       state.products = [...state.products, action.payload];
-//     },
-//   },
-// });
-// export const { add, reset, remove, changeQuantity, getAll } = cartSlice.actions;
-// export default cartSlice.reducer;
+interface CartState {
+  items: CartItem[];
+}
+
+const initialState: CartState = {
+  items: []
+};
+
+export const cartSlice = createSlice({
+  name: "cart",
+  initialState,
+  reducers: {
+    add: (state, action: PayloadAction<CartItem>) => {
+      const index = state.items.findIndex(
+        (item) => item.id === action.payload.id
+      );
+      if (index === -1) {
+        // Item doesn't exist in cart, add it
+        state.items.push(action.payload);
+      } else {
+        // Item already exists, increment quantity
+        state.items[index].quantity += 1;
+      }
+    },
+    remove: (state, action: PayloadAction<string | number>) => {
+      state.items = state.items.filter(
+        (item) => item.id !== action.payload
+      );
+    },
+    changeQuantity: (
+      state,
+      action: PayloadAction<{ id: string | number; quantity: number }>
+    ) => {
+      const index = state.items.findIndex(
+        (item) => item.id === action.payload.id
+      );
+      if (index !== -1) {
+        state.items[index].quantity = action.payload.quantity;
+      }
+    },
+    reset: (state) => {
+      state.items = [];
+    },
+    // Add a merge action to handle login scenario
+    mergeWithServerCart: (state, action: PayloadAction<CartItem[]>) => {
+      state.items = action.payload;
+    }
+  },
+});
+
+export const { add, remove, changeQuantity, reset, mergeWithServerCart } = cartSlice.actions;
+export default cartSlice.reducer;

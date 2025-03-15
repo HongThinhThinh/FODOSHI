@@ -1,5 +1,5 @@
 import "./index.scss";
-import BlogCard, { BlogCardProps } from "../../atoms/blog-card";
+import  { BlogCardProps } from "../../atoms/blog-card";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -57,7 +57,7 @@ function Blog() {
         <div className="bold">Danh sách</div>
         <div className="blog-list">
           {blogs.map((blog) => (
-            <BlogCard
+            <Blog
               id={blog.id}
               category={blog.category}
               author={blog.author}
@@ -68,7 +68,7 @@ function Blog() {
           ))}
         </div>
       </div>
-    </div>
+    </div>  
   );
 }
 

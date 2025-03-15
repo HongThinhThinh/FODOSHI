@@ -7,7 +7,12 @@ export const userSlice = createSlice({
   initialState, //initialState : initialState, : viết tắt khi tên field và tên biến trùng nhau
   reducers: {
     login: (state, action) => (state = action.payload),
-    logout: () => initialState,
+    logout: () => {
+      // Clear localStorage when logging out
+      localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
+      return initialState;
+    },
   },
 });
 export const { login, logout } = userSlice.actions;

@@ -10,12 +10,24 @@ import { Badge } from "antd";
 import { RootState } from "../../../redux/store";
 import { useSelector } from "react-redux";
 import { useGetCart } from "../../../services/cartService";
+
 function SideBarHeader({ className, ...rest }: SideBarHeaderProps) {
   const state = useSelector((state: RootState) => state);
   const { user } = state;
+  const cartRedux = useSelector((state: RootState) => state.cart?.items || []);
   const navigate = useNavigate();
-  const getParams = useGetCart();
-  const cartData = getParams?.data?.data?.cartItems || [];
+
+  // Only fetch cart data from API if user is logged in
+  const getParams = useGetCart({
+    enabled: !!user, // Only enable the query when user exists
+  });
+
+  // Use API data for logged in users, Redux data for guests
+  const cartData = user ? getParams?.data?.data?.cartItems || [] : cartRedux;
+
+  // Get final cart count based on authentication status
+  const cartCount = user ? cartData.length : cartRedux.length;
+
   return (
     <nav className={`sidebar_header ${className}`} {...rest}>
       <ul className="sidebar_header-container">
@@ -47,7 +59,7 @@ function SideBarHeader({ className, ...rest }: SideBarHeaderProps) {
           </Link>
         )}
         <li className="sidebar_header__item">
-          <Badge count={cartData.length}>
+          <Badge count={cartCount}>
             <FiShoppingCart
               style={{ cursor: "pointer" }}
               onClick={() => {

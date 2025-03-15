@@ -54,20 +54,23 @@ export default function ProductDetail({
 
   // Keep your existing code
   const { id } = useParams();
-  // Fix the API call by ensuring we have a valid ID and making the call conditionally
+  // Check if we have a valid product ID that should trigger an API call
+  const isValidProductId = id && !["products", "new", "undefined"].includes(id);
+
   const {
     data: productDetail,
     isLoading: isDetailLoading,
     error: detailError,
     refetch: refetchDetail,
   } = useGetProductDetail(id || "", {
-    // Only fetch if we have an ID
-    enabled: !!id,
-    // Don't throw errors automatically
+    // Only enable the query when we have a valid product ID
+    enabled: isValidProductId,
     retry: 1,
-    // Add a refetch interval for stability
     refetchOnWindowFocus: false,
   });
+
+  // Reuse the same logic for determining if we're in update mode
+  const isUpdateMode = isValidProductId && !!productDetail;
 
   // Log for debugging
   useEffect(() => {
@@ -278,7 +281,7 @@ export default function ProductDetail({
         tags: product.tags, // Already an array of strings
       };
 
-      if (id) {
+      if (id !== "products") {
         setLoading(true);
         updateProduct(
           {
@@ -358,6 +361,16 @@ export default function ProductDetail({
       console.log("Raw tags from API:", productDetail.tags);
     }
   }, [productDetail]);
+
+  // Add a useEffect to log the routing and mode information
+  useEffect(() => {
+    console.log({
+      pathId: id,
+      productDetail: !!productDetail,
+      isUpdateMode,
+      fullPath: window.location.pathname,
+    });
+  }, [id, productDetail, isUpdateMode]);
 
   return (
     <div className="productDetailPage">
@@ -548,6 +561,7 @@ export default function ProductDetail({
                         <Option value="XL">XL</Option>
                         <Option value="XXL">XXL</Option>
                         <Option value="XXXL">XXXL</Option>
+                        <Option value="XXXL">Free Size</Option>
                       </Select>
                     </div>
                   </div>
@@ -635,16 +649,16 @@ export default function ProductDetail({
                 <ButtonComponent
                   onClick={handleSubmit}
                   color="white"
-                  children={id !== "products" ? "Cập nhật" : "Thêm"}
-                  bgColor={id ? "#D99041" : "#626a3f"}
+                  children={isUpdateMode ? "Cập nhật" : "Thêm"}
+                  bgColor={isUpdateMode ? "#D99041" : "#626a3f"}
                   className="w-1/3 h-[50px]"
                   loading={isPending || isUpdating}
                 />
 
                 <ButtonComponent
-                  onClick={id ? () => navigate(-1) : resetForm}
+                  onClick={isUpdateMode ? () => navigate(-1) : resetForm}
                   color="#D99041"
-                  children={id ? "Quay lại" : "Hủy"}
+                  children={isUpdateMode ? "Quay lại" : "Hủy"}
                   className="w-1/3 h-[50px] text-black border border-black"
                 />
               </div>

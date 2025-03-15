@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useCreateCart } from "../../../services/cartService";
 import { message } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../../redux/store";
 
 interface ProductCardProps {
   product: any;
@@ -12,6 +14,8 @@ interface ProductCardProps {
 function ProductCard({ product }: ProductCardProps) {
   const navigate = useNavigate();
   const { mutate } = useCreateCart();
+  const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.user);
 
   const handleProductClick = () => {
     navigate(`/product-detail/${product.id}`);
@@ -20,20 +24,43 @@ function ProductCard({ product }: ProductCardProps) {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
 
-    try {
-      mutate(
-        { productId: product.id },
-        {
-          onSuccess: () => {
-            message.success("Thêm giỏ hàng thành công");
+    if (user) {
+      // User is logged in, use API
+      try {
+        mutate(
+          { productId: product.id },
+          {
+            onSuccess: () => {
+              message.success("Thêm giỏ hàng thành công");
+            },
+            onError: (error) => {
+              message.error(error?.response?.data);
+            },
+          }
+        );
+      } catch (error) {
+        console.error("Unexpected error:", error);
+      }
+    } else {
+      // User is not logged in, use Redux
+      try {
+        // Add to cart via Redux
+        dispatch({
+          type: "cart/add",
+          payload: {
+            id: product.id,
+            name: product.name,
+            price: product.sellingPrice,
+            image: product.mainImage || product.imageUrls?.[0]?.image || "",
+            quantity: 1,
+            originalPrice: product.originalPrice,
           },
-          onError: (error) => {
-            message.error(error?.response?.data);
-          },
-        }
-      );
-    } catch (error) {
-      console.error("Unexpected error:", error);
+        });
+        message.success("Thêm giỏ hàng thành công");
+      } catch (error) {
+        console.error("Error adding to local cart:", error);
+        message.error("Có lỗi xảy ra khi thêm vào giỏ hàng");
+      }
     }
   };
 

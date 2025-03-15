@@ -4,24 +4,35 @@ import { logo } from "../../../../assets/contant";
 import ButtonComponent from "../../../atoms/button";
 import { ShippingVoucher } from "../../../../model/shippingVoucher";
 import { shippingVouchers } from "../../../../dummy-data/mockShippingVoucherData";
-import { Modal, Form, Input, message, Checkbox } from "antd"; // Thêm Form, Input, Checkbox
+import { Modal, Form, Input, message, Checkbox, Button } from "antd";
 import {
   CloseCircleOutlined,
   CloseOutlined,
   PlusOutlined,
-} from "@ant-design/icons"; // Thêm PlusOutlined
+  UserOutlined,
+  PhoneOutlined,
+  EditOutlined,
+} from "@ant-design/icons";
 import { formatMoney } from "../../../../utils/formatMoney";
 import ConfirmModal from "../../../molecules/confirm-modal";
 import api from "../../../../config/api";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../redux/store";
+
+// Add a utility function to generate unique IDs for local addresses
+const generateLocalAddressId = () =>
+  `local-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
 
 // Cập nhật interface Address
 interface Address {
-  id: number;
+  id: number | string;
   address: string;
   province: string;
   district: string;
   commune: string;
   isDefault?: boolean;
+  guestName?: string; // Add this
+  guestPhone?: string; // Add this
 }
 
 export interface CheckoutProps {
@@ -43,15 +54,38 @@ export default function Checkout({
   grandTotal,
   selectedCartItems, // Nhận prop này
 }: CheckoutProps) {
-  // Thêm state cho địa chỉ
+  // Add user from Redux
+  const user = useSelector((state: RootState) => state.user);
+
+  // All your existing states...
   const [addresses, setAddresses] = useState<Address[]>([]);
-  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
-    null
-  );
+  const [selectedAddressId, setSelectedAddressId] = useState<
+    number | string | null
+  >(null);
   const [isAddressModalVisible, setIsAddressModalVisible] =
     useState<boolean>(false);
   const [addressForm] = Form.useForm();
   const [addressLoading, setAddressLoading] = useState<boolean>(false);
+
+  // Add this state to track which address is being edited
+  const [editingAddress, setEditingAddress] = useState<Address | null>(null);
+
+  // Add this function to handle edit clicks
+  const handleEditAddressClick = (address: Address) => {
+    setEditingAddress(address);
+    // Pre-fill form with existing address data
+    addressForm.setFieldsValue({
+      province: address.province,
+      district: address.district,
+      commune: address.commune,
+      address: address.address,
+      isDefault: address.isDefault,
+      name: address.guestName,
+      phone: address.guestPhone,
+    });
+
+    setIsAddressModalVisible(true);
+  };
 
   // Các state đã có
   const [selectedShipping, setSelectedShipping] = useState<string | null>(null);
@@ -68,6 +102,10 @@ export default function Checkout({
   const closeCheckout = () => {
     setOpen(false);
   };
+
+  // Add new states for guest customer info
+  const [guestName, setGuestName] = useState<string>("");
+  const [guestPhone, setGuestPhone] = useState<string>("");
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -130,17 +168,59 @@ export default function Checkout({
     );
   }, [grandTotalBeforeShipping, shippingCost, selectedVoucher]);
 
-  // Fetch địa chỉ người dùng
+  // Fetch địa chỉ người dùng - only if user is logged in
   useEffect(() => {
     if (open) {
-      fetchUserAddresses();
-    }
-  }, [open]);
+      if (user) {
+        // User is logged in, fetch from API
+        fetchUserAddresses();
+      } else {
+        // User is not logged in, try to get addresses from localStorage
+        const savedAddresses = localStorage.getItem("guestAddresses");
+        if (savedAddresses) {
+          try {
+            const parsedAddresses = JSON.parse(savedAddresses);
+            setAddresses(parsedAddresses);
 
-  // Hàm lấy danh sách địa chỉ
+            // Select default address if available
+            const defaultAddress = parsedAddresses.find(
+              (addr) => addr.isDefault
+            );
+            if (defaultAddress) {
+              setSelectedAddressId(defaultAddress.id);
+            } else if (parsedAddresses.length > 0) {
+              setSelectedAddressId(parsedAddresses[0].id);
+            }
+          } catch (e) {
+            console.error("Error parsing saved addresses:", e);
+            // In case of error, start with empty addresses
+            setAddresses([]);
+          }
+        }
+      }
+    }
+  }, [open, user]);
+
+  // Add this after the other useEffects
+  useEffect(() => {
+    if (!user) {
+      // Load guest customer info from localStorage
+      const savedInfo = localStorage.getItem("guestCustomerInfo");
+      if (savedInfo) {
+        try {
+          const parsedInfo = JSON.parse(savedInfo);
+          if (parsedInfo.name) setGuestName(parsedInfo.name);
+          if (parsedInfo.phone) setGuestPhone(parsedInfo.phone);
+        } catch (e) {
+          console.error("Error parsing guest info:", e);
+        }
+      }
+    }
+  }, [user]);
+
+  // Modified function to fetch addresses - only for logged in users
   const fetchUserAddresses = async () => {
     try {
-      // Cập nhật đường dẫn nếu cần
       const response = await api.get("/address/user");
       if (response.data && Array.isArray(response.data)) {
         setAddresses(response.data);
@@ -157,31 +237,155 @@ export default function Checkout({
     }
   };
 
-  // Hàm thêm địa chỉ mới
+  // Modify the address handling function to handle updates and save guest info
   const handleAddAddress = async (values: any) => {
     setAddressLoading(true);
+
     try {
-      // Thay đổi endpoint từ "/address" thành "/api/address/user"
-      const response = await api.post("/address/user", values);
-      if (response.data && response.data.id) {
-        message.success("Thêm địa chỉ thành công!");
-        setAddresses((prev) => [...prev, response.data]);
-        setSelectedAddressId(response.data.id);
-        setIsAddressModalVisible(false);
-        addressForm.resetFields();
+      // Validate input
+      if (
+        !values.province ||
+        !values.district ||
+        !values.commune ||
+        !values.address
+      ) {
+        message.error("Vui lòng điền đầy đủ thông tin địa chỉ");
+        return;
+      }
+
+      if (user) {
+        // User is logged in, use API
+        if (editingAddress) {
+          // Editing existing address
+          const response = await api.put(
+            `/address/user/${editingAddress.id}`,
+            values
+          );
+          if (response.data) {
+            setAddresses((prev) =>
+              prev.map((addr) =>
+                addr.id === editingAddress.id ? response.data : addr
+              )
+            );
+            message.success("Cập nhật địa chỉ thành công!");
+          }
+        } else {
+          // Adding new address
+          const response = await api.post("/address/user", values);
+          if (response.data && response.data.id) {
+            const newAddress = response.data;
+            setAddresses((prev) => [...prev, newAddress]);
+            setSelectedAddressId(newAddress.id);
+            message.success("Thêm địa chỉ thành công!");
+          }
+        }
+      } else {
+        // Guest user - save to local state and localStorage
+
+        // Save guest name and phone
+        const guestName = values.name;
+        const guestPhone = values.phone;
+
+        setGuestName(guestName);
+        setGuestPhone(guestPhone);
+
+        // Also save to localStorage for later use
+        localStorage.setItem(
+          "guestCustomerInfo",
+          JSON.stringify({
+            name: guestName,
+            phone: guestPhone,
+          })
+        );
+
+        if (editingAddress) {
+          // Updating existing address
+          const updatedAddress = {
+            ...editingAddress,
+            address: values.address,
+            province: values.province,
+            district: values.district,
+            commune: values.commune,
+            isDefault: values.isDefault,
+            guestName: guestName, // Include guest info
+            guestPhone: guestPhone,
+          };
+
+          const updatedAddresses = addresses.map((addr) =>
+            addr.id === editingAddress.id
+              ? updatedAddress
+              : // If this address is marked as default, unmark others
+              updatedAddress.isDefault && addr.isDefault
+              ? { ...addr, isDefault: false }
+              : addr
+          );
+
+          setAddresses(updatedAddresses);
+          localStorage.setItem(
+            "guestAddresses",
+            JSON.stringify(updatedAddresses)
+          );
+          message.success("Cập nhật địa chỉ thành công!");
+        } else {
+          // Adding new address
+          const newAddress = {
+            id: generateLocalAddressId(),
+            address: values.address,
+            province: values.province,
+            district: values.district,
+            commune: values.commune,
+            isDefault: values.isDefault || addresses.length === 0,
+            guestName: guestName, // Include guest info
+            guestPhone: guestPhone,
+          };
+
+          // Handle default address logic
+          let updatedAddresses;
+          if (newAddress.isDefault) {
+            updatedAddresses = addresses.map((addr) => ({
+              ...addr,
+              isDefault: false,
+            }));
+            updatedAddresses.push(newAddress);
+          } else {
+            updatedAddresses = [...addresses, newAddress];
+          }
+
+          setAddresses(updatedAddresses);
+          setSelectedAddressId(newAddress.id);
+          localStorage.setItem(
+            "guestAddresses",
+            JSON.stringify(updatedAddresses)
+          );
+          message.success("Thêm địa chỉ thành công!");
+        }
+      }
+
+      // Reset form and close modal
+      setIsAddressModalVisible(false);
+      addressForm.resetFields();
+      setEditingAddress(null); // Clear editing state
+
+      // Set shipping method if first address
+      if (addresses.length === 0) {
+        setSelectedShipping("Giao hàng tận nơi");
+        setShippingCost(grandTotalBeforeShipping * 0.1);
       }
     } catch (error) {
-      console.error("Lỗi khi thêm địa chỉ:", error);
-      message.error("Không thể thêm địa chỉ. Vui lòng thử lại.");
+      console.error("Lỗi khi xử lý địa chỉ:", error);
+      message.error(
+        user
+          ? "Không thể lưu địa chỉ. Vui lòng thử lại."
+          : "Có lỗi xảy ra khi lưu thông tin địa chỉ."
+      );
     } finally {
       setAddressLoading(false);
     }
   };
 
-  // Update the handleCreateOrder function to use the correct response structure
+  // Modified order creation function that works for both guests and logged in users
   const handleCreateOrder = async () => {
-    console.log("handleCreateOrder được gọi");
-
+    // Validate requirements
     if (!selectedCartItems || selectedCartItems.length === 0) {
       message.error("Không có sản phẩm nào được chọn");
       return;
@@ -192,31 +396,131 @@ export default function Checkout({
       return;
     }
 
+    if (!selectedPayment) {
+      message.error("Vui lòng chọn phương thức thanh toán");
+      return;
+    }
+
+    if (!selectedShipping) {
+      message.error("Vui lòng chọn phương thức vận chuyển");
+      return;
+    }
+
+    // Add validation for guest customer information
+    if (!user) {
+      if (!guestName || guestName.trim() === "") {
+        message.error("Vui lòng nhập tên khách hàng");
+        return;
+      }
+
+      if (!guestPhone || guestPhone.trim() === "") {
+        message.error("Vui lòng nhập số điện thoại liên hệ");
+        return;
+      }
+
+      // Simple phone validation
+      const phoneRegex = /^[0-9]{9,11}$/;
+      if (!phoneRegex.test(guestPhone.trim())) {
+        message.error("Số điện thoại không hợp lệ");
+        return;
+      }
+    }
+
+    // Get the selected address
+    const selectedAddress = addresses.find(
+      (addr) => addr.id === selectedAddressId
+    );
+    if (!selectedAddress) {
+      message.error("Địa chỉ không hợp lệ");
+      return;
+    }
+
     setIsLoading(true);
     try {
-      // Cập nhật payload với addressId
-      const payload = {
-        description: `FODOSH xin cam on`,
-        addressId: selectedAddressId, // Thêm addressId vào payload
-        cartItemIds: selectedCartItems,
-        returnUrl: `${window.location.origin}/payment-success`,
-        cancelUrl: `${window.location.origin}/payment-cancel`,
-      };
+      if (user) {
+        // Logged in user - use API
+        const payload = {
+          description: `FODOSH xin cảm ơn`,
+          addressId: selectedAddressId,
+          cartItemIds: selectedCartItems,
+          shippingMethod: selectedShipping,
+          paymentMethod: selectedPayment,
+          returnUrl: `${window.location.origin}/payment-success`,
+          cancelUrl: `${window.location.origin}/payment-cancel`,
+        };
 
-      console.log("Gọi API với payload:", payload);
-      const response = await api.post("/payment/create", payload);
-      console.log("Nhận response:", response.data);
+        const response = await api.post("/payment/create", payload);
 
-      // Update to use the correct response structure with data.checkoutUrl
-      if (
-        response.data &&
-        response.data.data &&
-        response.data.data.checkoutUrl
-      ) {
-        console.log("Chuyển hướng đến:", response.data.data.checkoutUrl);
-        window.location.href = response.data.data.checkoutUrl;
+        if (response.data?.data?.checkoutUrl) {
+          window.location.href = response.data.data.checkoutUrl;
+        } else if (selectedPayment === "COD") {
+          message.success("Đặt hàng thành công! Cảm ơn bạn đã mua hàng.");
+          setOpenConfirmModal(false);
+          setOpen(false);
+        } else {
+          message.success("Đặt hàng thành công!");
+          setOpenConfirmModal(false);
+          setOpen(false);
+        }
       } else {
-        message.success("Đặt hàng thành công!");
+        // Guest user - handle order locally or show login prompt
+        if (selectedPayment === "Credit Card") {
+          // For credit card payments, guests should register/login
+          message.info("Vui lòng đăng nhập để tiếp tục thanh toán trực tuyến");
+
+          // Optionally store order details in localStorage to resume after login
+          const pendingOrder = {
+            items: selectedCartItems,
+            address: selectedAddress,
+            shippingMethod: selectedShipping,
+            paymentMethod: selectedPayment,
+            total: grandTotalState,
+            customerName: guestName, // Add customer name
+            customerPhone: guestPhone, // Add customer phone
+          };
+          localStorage.setItem("pendingOrder", JSON.stringify(pendingOrder));
+
+          // Redirect to login
+          setTimeout(() => {
+            window.location.href = "/login?redirect=checkout";
+          }, 1500);
+
+          return;
+        }
+
+        // For COD orders as guest, proceed with order
+        // Here you would typically store the order in localStorage,
+        // and optionally send it to a temporary orders API endpoint
+
+        // Create a guest order object
+        const guestOrder = {
+          orderId: `GUEST-${Date.now()}`,
+          items: selectedCartItems,
+          address: selectedAddress,
+          shippingMethod: selectedShipping,
+          paymentMethod: selectedPayment,
+          total: grandTotalState,
+          orderDate: new Date().toISOString(),
+          customerName: guestName, // Add customer name
+          customerPhone: guestPhone, // Add customer phone
+        };
+
+        // Store in localStorage
+        const existingOrders = JSON.parse(
+          localStorage.getItem("guestOrders") || "[]"
+        );
+        localStorage.setItem(
+          "guestOrders",
+          JSON.stringify([...existingOrders, guestOrder])
+        );
+
+        // Clear the cart for these items
+        // NOTE: You'll need to implement this function in your cart slice
+        // dispatch(removeMultiple(selectedCartItems));
+
+        message.success(
+          "Đặt hàng thành công! Bạn sẽ nhận được cuộc gọi xác nhận từ chúng tôi."
+        );
         setOpenConfirmModal(false);
         setOpen(false);
       }
@@ -249,7 +553,10 @@ export default function Checkout({
         </div>
         <div className="checkout__content">
           <div className="checkout__address">
-            <div className="checkout__address__title">Địa chỉ giao hàng</div>
+            <div className="checkout__address__title">
+              Địa chỉ giao hàng
+              {!user && <span className="guest-mode-tag"> (Chế độ khách)</span>}
+            </div>
             <div className="checkout__address__items">
               {addresses.length > 0 ? (
                 addresses.map((address) => (
@@ -271,11 +578,35 @@ export default function Checkout({
                       <div className="checkout__address__items__item__content__name">
                         Địa chỉ {address?.isDefault && " (Mặc định)"}
                       </div>
+                      {/* Add this section to display guest contact info */}
+                      {!user && address.guestName && address.guestPhone && (
+                        <div className="checkout__address__items__item__content__contact">
+                          <div className="checkout__address__items__item__content__contact__name">
+                            <UserOutlined /> {address.guestName}
+                          </div>
+                          <div className="checkout__address__items__item__content__contact__phone">
+                            <PhoneOutlined /> {address.guestPhone}
+                          </div>
+                        </div>
+                      )}
                       <div className="checkout__address__items__item__content__address">
                         {address?.address}, {address?.commune},{" "}
                         {address?.district}, {address?.province}
                       </div>
                     </div>
+
+                    {/* Add Edit button for guest addresses */}
+                    {!user && (
+                      <div
+                        className="checkout__address__items__item__edit"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditAddressClick(address);
+                        }}
+                      >
+                        <Button type="text" icon={<EditOutlined />} />
+                      </div>
+                    )}
                   </div>
                 ))
               ) : (
@@ -464,7 +795,11 @@ export default function Checkout({
         </div>
         <ConfirmModal
           title="Xác nhận giao dịch"
-          message="Xác nhận bạn muốn mua vật phẩm , không hỗ trợ hoàn tiền"
+          message={
+            user
+              ? "Xác nhận bạn muốn mua vật phẩm, không hỗ trợ hoàn tiền"
+              : "Xác nhận mua hàng. Lưu ý: Bạn đang mua hàng ở chế độ khách."
+          }
           confirmText="Xác nhận"
           cancelText="Hủy"
           setOpen={setOpenConfirmModal}
@@ -479,17 +814,73 @@ export default function Checkout({
           onCancel={() => setIsAddressModalVisible(false)}
           footer={null}
           zIndex={1005}
+          width={500}
+          centered
         >
           <Form
             form={addressForm}
             layout="vertical"
             onFinish={handleAddAddress}
+            initialValues={{
+              isDefault: addresses.length === 0,
+              name: guestName, // Pre-fill with existing values if any
+              phone: guestPhone,
+            }}
           >
+            {!user && (
+              <div className="guest-address-notice">
+                <p>
+                  Bạn đang thêm địa chỉ ở chế độ khách. Thông tin này sẽ được
+                  lưu trên thiết bị của bạn.
+                </p>
+              </div>
+            )}
+
+            {/* Add guest information fields if not logged in */}
+            {!user && (
+              <>
+                <div className="form-section-title">Thông tin liên hệ</div>
+                <Form.Item
+                  name="name"
+                  label="Họ tên"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập họ tên" },
+                    { max: 100, message: "Tối đa 100 ký tự" },
+                  ]}
+                >
+                  <Input
+                    placeholder="Nhập họ tên khách hàng"
+                    prefix={<UserOutlined />}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="phone"
+                  label="Số điện thoại"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập số điện thoại" },
+                    {
+                      pattern: /^[0-9]{9,11}$/,
+                      message: "Số điện thoại không hợp lệ",
+                    },
+                  ]}
+                >
+                  <Input
+                    placeholder="Nhập số điện thoại liên hệ"
+                    prefix={<PhoneOutlined />}
+                  />
+                </Form.Item>
+
+                <div className="form-section-title">Địa chỉ giao hàng</div>
+              </>
+            )}
+
             <Form.Item
               name="province"
               label="Tỉnh/Thành phố"
               rules={[
                 { required: true, message: "Vui lòng nhập tỉnh/thành phố" },
+                { max: 100, message: "Tối đa 100 ký tự" },
               ]}
             >
               <Input placeholder="Nhập tỉnh/thành phố" />
@@ -498,7 +889,10 @@ export default function Checkout({
             <Form.Item
               name="district"
               label="Quận/Huyện"
-              rules={[{ required: true, message: "Vui lòng nhập quận/huyện" }]}
+              rules={[
+                { required: true, message: "Vui lòng nhập quận/huyện" },
+                { max: 100, message: "Tối đa 100 ký tự" },
+              ]}
             >
               <Input placeholder="Nhập quận/huyện" />
             </Form.Item>
@@ -506,7 +900,10 @@ export default function Checkout({
             <Form.Item
               name="commune"
               label="Phường/Xã"
-              rules={[{ required: true, message: "Vui lòng nhập phường/xã" }]}
+              rules={[
+                { required: true, message: "Vui lòng nhập phường/xã" },
+                { max: 100, message: "Tối đa 100 ký tự" },
+              ]}
             >
               <Input placeholder="Nhập phường/xã" />
             </Form.Item>
@@ -516,9 +913,15 @@ export default function Checkout({
               label="Địa chỉ chi tiết"
               rules={[
                 { required: true, message: "Vui lòng nhập địa chỉ chi tiết" },
+                { max: 200, message: "Tối đa 200 ký tự" },
               ]}
             >
-              <Input.TextArea placeholder="Số nhà, tên đường..." rows={3} />
+              <Input.TextArea
+                placeholder="Số nhà, tên đường..."
+                rows={3}
+                showCount
+                maxLength={200}
+              />
             </Form.Item>
 
             <Form.Item name="isDefault" valuePropName="checked">
@@ -526,13 +929,24 @@ export default function Checkout({
             </Form.Item>
 
             <Form.Item>
-              <ButtonComponent
-                htmlType="submit"
-                isActive
-                disabled={addressLoading}
+              <div
+                style={{
+                  display: "flex",
+                  gap: "10px",
+                  justifyContent: "flex-end",
+                }}
               >
-                {addressLoading ? "Đang xử lý..." : "Thêm địa chỉ"}
-              </ButtonComponent>
+                <Button onClick={() => setIsAddressModalVisible(false)}>
+                  Hủy
+                </Button>
+                <ButtonComponent
+                  htmlType="submit"
+                  isActive
+                  disabled={addressLoading}
+                >
+                  {addressLoading ? "Đang xử lý..." : "Thêm địa chỉ"}
+                </ButtonComponent>
+              </div>
             </Form.Item>
           </Form>
         </Modal>
