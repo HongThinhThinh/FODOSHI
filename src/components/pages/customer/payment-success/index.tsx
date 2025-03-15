@@ -8,6 +8,8 @@ import {
 import { Button, Result, Spin, Typography, Space, message } from "antd";
 import api from "../../../../config/api";
 import "./index.scss";
+import { useSelector } from "react-redux"; // Add this import
+import { RootState } from "../../../../redux/store"; // Add this import
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -25,6 +27,9 @@ const PaymentSuccess = () => {
   const [orderDetails, setOrderDetails] = useState<any>(null);
   const [statusUpdated, setStatusUpdated] = useState(false);
   const location = useLocation();
+
+  // Get authentication status from Redux
+  const user = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     // Scroll to top when component mounts
@@ -64,10 +69,19 @@ const PaymentSuccess = () => {
     if (statusUpdated) return; // Prevent duplicate API calls
 
     try {
-      // Call the PATCH endpoint to update status to PAID
-      const response = await api.patch(`/order/${id}/status`, {
-        status: "PAID",
-      });
+      let response;
+
+      if (user) {
+        // Authenticated user - use regular endpoint
+        response = await api.patch(`/order/${id}/status`, {
+          status: "PAID",
+        });
+      } else {
+        // Guest user - use guest endpoint
+        response = await api.patch(`/order/${id}/status/guest`, {
+          status: "PAID",
+        });
+      }
 
       console.log("Order status updated:", response.data);
       setStatusUpdated(true);

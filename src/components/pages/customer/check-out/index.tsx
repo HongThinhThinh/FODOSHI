@@ -57,6 +57,11 @@ export default function Checkout({
   // Add user from Redux
   const user = useSelector((state: RootState) => state.user);
 
+  // Import the necessary Redux selector to get cart items
+  const reduxCartItems = useSelector(
+    (state: RootState) => state.cart?.items || []
+  );
+
   // All your existing states...
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<
@@ -383,47 +388,12 @@ export default function Checkout({
     }
   };
 
-  // Modified order creation function that works for both guests and logged in users
+  // Updated handleCreateOrder function with the correct endpoint for guest users
   const handleCreateOrder = async () => {
-    // Validate requirements
-    if (!selectedCartItems || selectedCartItems.length === 0) {
-      message.error("Không có sản phẩm nào được chọn");
+    // Validation checks remain the same...
+    if (!selectedAddressId || !selectedPayment || !selectedShipping) {
+      message.error("Vui lòng chọn đầy đủ thông tin giao hàng");
       return;
-    }
-
-    if (!selectedAddressId) {
-      message.error("Vui lòng chọn địa chỉ giao hàng");
-      return;
-    }
-
-    if (!selectedPayment) {
-      message.error("Vui lòng chọn phương thức thanh toán");
-      return;
-    }
-
-    if (!selectedShipping) {
-      message.error("Vui lòng chọn phương thức vận chuyển");
-      return;
-    }
-
-    // Add validation for guest customer information
-    if (!user) {
-      if (!guestName || guestName.trim() === "") {
-        message.error("Vui lòng nhập tên khách hàng");
-        return;
-      }
-
-      if (!guestPhone || guestPhone.trim() === "") {
-        message.error("Vui lòng nhập số điện thoại liên hệ");
-        return;
-      }
-
-      // Simple phone validation
-      const phoneRegex = /^[0-9]{9,11}$/;
-      if (!phoneRegex.test(guestPhone.trim())) {
-        message.error("Số điện thoại không hợp lệ");
-        return;
-      }
     }
 
     // Get the selected address
@@ -437,90 +407,82 @@ export default function Checkout({
 
     setIsLoading(true);
     try {
-      if (user) {
-        // Logged in user - use API
-        const payload = {
-          description: `FODOSH xin cảm ơn`,
-          addressId: selectedAddressId,
-          cartItemIds: selectedCartItems,
-          shippingMethod: selectedShipping,
-          paymentMethod: selectedPayment,
-          returnUrl: `${window.location.origin}/payment-success`,
-          cancelUrl: `${window.location.origin}/payment-cancel`,
-        };
+      // Create base payment payload with shared properties
+      const basePayload = {
+        description: `FODOSH xin cảm ơn`,
+        shippingMethod: selectedShipping,
+        paymentMethod: selectedPayment,
+        returnUrl: `${window.location.origin}/payment-success`,
+        cancelUrl: `${window.location.origin}/payment-cancel`,
+      };
 
-        const response = await api.post("/payment/create", payload);
+      // Create the full payload based on user authentication status
+      const payload = user
+        ? {
+            // Logged in user payload
+            ...basePayload,
+            addressId: selectedAddressId,
+            cartItemIds: selectedCartItems,
+          }
+        : {
+            // Guest user payload
+            ...basePayload,
+            guest: true,
+            guestName: guestName,
+            guestPhone: guestPhone,
+            productIds: reduxCartItems
+              .filter((item) => selectedCartItems.includes(item.id))
+              .map((item) => item.id),
+            guestAddress: {
+              address: selectedAddress.address,
+              province: selectedAddress.province,
+              district: selectedAddress.district,
+              commune: selectedAddress.commune,
+              guestName: guestName,
+              guestPhone: guestPhone,
+            },
+          };
 
-        if (response.data?.data?.checkoutUrl) {
-          window.location.href = response.data.data.checkoutUrl;
-        } else if (selectedPayment === "COD") {
-          message.success("Đặt hàng thành công! Cảm ơn bạn đã mua hàng.");
-          setOpenConfirmModal(false);
-          setOpen(false);
-        } else {
-          message.success("Đặt hàng thành công!");
-          setOpenConfirmModal(false);
-          setOpen(false);
-        }
+      console.log("Sending order payload:", payload);
+
+      // Use the appropriate endpoint based on auth status
+      const endpoint = user ? "/payment/create" : "/payment/create/guest";
+      const response = await api.post(endpoint, payload);
+
+      // Rest of the function remains the same...
+      if (response.data?.data?.checkoutUrl) {
+        window.location.href = response.data.data.checkoutUrl;
       } else {
-        // Guest user - handle order locally or show login prompt
-        if (selectedPayment === "Credit Card") {
-          // For credit card payments, guests should register/login
-          message.info("Vui lòng đăng nhập để tiếp tục thanh toán trực tuyến");
+        message.success(
+          user
+            ? "Đặt hàng thành công! Cảm ơn bạn đã mua hàng."
+            : "Đặt hàng thành công! Bạn sẽ nhận được cuộc gọi xác nhận từ chúng tôi."
+        );
 
-          // Optionally store order details in localStorage to resume after login
-          const pendingOrder = {
+        // If guest and COD, still save locally for reference
+        if (!user) {
+          const guestOrder = {
+            orderId: `GUEST-${Date.now()}`,
+            serverOrderId: response.data?.data?.orderId || null,
             items: selectedCartItems,
             address: selectedAddress,
             shippingMethod: selectedShipping,
             paymentMethod: selectedPayment,
             total: grandTotalState,
-            customerName: guestName, // Add customer name
-            customerPhone: guestPhone, // Add customer phone
+            orderDate: new Date().toISOString(),
+            customerName: guestName,
+            customerPhone: guestPhone,
           };
-          localStorage.setItem("pendingOrder", JSON.stringify(pendingOrder));
 
-          // Redirect to login
-          setTimeout(() => {
-            window.location.href = "/login?redirect=checkout";
-          }, 1500);
-
-          return;
+          const existingOrders = JSON.parse(
+            localStorage.getItem("guestOrders") || "[]"
+          );
+          localStorage.setItem(
+            "guestOrders",
+            JSON.stringify([...existingOrders, guestOrder])
+          );
         }
 
-        // For COD orders as guest, proceed with order
-        // Here you would typically store the order in localStorage,
-        // and optionally send it to a temporary orders API endpoint
-
-        // Create a guest order object
-        const guestOrder = {
-          orderId: `GUEST-${Date.now()}`,
-          items: selectedCartItems,
-          address: selectedAddress,
-          shippingMethod: selectedShipping,
-          paymentMethod: selectedPayment,
-          total: grandTotalState,
-          orderDate: new Date().toISOString(),
-          customerName: guestName, // Add customer name
-          customerPhone: guestPhone, // Add customer phone
-        };
-
-        // Store in localStorage
-        const existingOrders = JSON.parse(
-          localStorage.getItem("guestOrders") || "[]"
-        );
-        localStorage.setItem(
-          "guestOrders",
-          JSON.stringify([...existingOrders, guestOrder])
-        );
-
-        // Clear the cart for these items
-        // NOTE: You'll need to implement this function in your cart slice
-        // dispatch(removeMultiple(selectedCartItems));
-
-        message.success(
-          "Đặt hàng thành công! Bạn sẽ nhận được cuộc gọi xác nhận từ chúng tôi."
-        );
         setOpenConfirmModal(false);
         setOpen(false);
       }

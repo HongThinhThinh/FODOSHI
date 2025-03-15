@@ -15,7 +15,7 @@ interface CartState {
 }
 
 const initialState: CartState = {
-  items: []
+  items: [],
 };
 
 export const cartSlice = createSlice({
@@ -23,6 +23,7 @@ export const cartSlice = createSlice({
   initialState,
   reducers: {
     add: (state, action: PayloadAction<CartItem>) => {
+      console.log(action);
       const index = state.items.findIndex(
         (item) => item.id === action.payload.id
       );
@@ -35,9 +36,7 @@ export const cartSlice = createSlice({
       }
     },
     remove: (state, action: PayloadAction<string | number>) => {
-      state.items = state.items.filter(
-        (item) => item.id !== action.payload
-      );
+      state.items = state.items.filter((item) => item.id !== action.payload);
     },
     changeQuantity: (
       state,
@@ -56,9 +55,10 @@ export const cartSlice = createSlice({
     // Add a merge action to handle login scenario
     mergeWithServerCart: (state, action: PayloadAction<CartItem[]>) => {
       state.items = action.payload;
-    }
+    },
   },
 });
 
-export const { add, remove, changeQuantity, reset, mergeWithServerCart } = cartSlice.actions;
+export const { add, remove, changeQuantity, reset, mergeWithServerCart } =
+  cartSlice.actions;
 export default cartSlice.reducer;
