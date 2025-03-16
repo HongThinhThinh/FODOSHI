@@ -9,11 +9,12 @@ import "./index.scss";
 import { ConfigProvider } from "antd";
 import { theme } from "./config/antd";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-// AOS.init({
-//   // initialise with other settings
-//   duration: 1000,
-// });
+import { useEffect } from "react";
+
 function App() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const queryClient = new QueryClient();
   return (
     <>

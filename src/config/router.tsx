@@ -37,6 +37,7 @@ import ManageCategory from "../components/pages/admin/manage-category";
 import ManageBrand from "../components/pages/admin/manage-brand";
 import PaymentSuccess from "../components/pages/customer/payment-success";
 import PaymentCancel from "../components/pages/customer/payment-cancel";
+import BlogDetail from "../components/pages/blog-detail";
 
 export const router = createBrowserRouter([
   {
@@ -95,6 +96,10 @@ export const router = createBrowserRouter([
       {
         path: "blog",
         element: <Blog />,
+      },
+      {
+        path: "blog/:id",
+        element: <BlogDetail />,
       },
       {
         path: "cart",
