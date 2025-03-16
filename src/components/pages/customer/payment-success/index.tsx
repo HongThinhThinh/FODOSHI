@@ -78,7 +78,7 @@ const PaymentSuccess = () => {
         });
       } else {
         // Guest user - use guest endpoint
-        response = await api.patch(`/order/${id}/status/guest`, {
+        response = await api.patch(`/order/status/guest/${id}`, {
           status: "PAID",
         });
       }
