@@ -6,8 +6,12 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Rubik", sans-serif;
+  // font-family: "Rubik", sans-serif;
+  font-family: "Nunito", sans-serif;
   // outline: 1px solid red;
+}
+h1 {
+  font-family: "Lora", sans-serif !important;
 }
 
 .menu-sidebar {
@@ -24,16 +28,29 @@
   }
 }
 :where(.css-dev-only-do-not-override-14i19y2).ant-menu-dark .ant-menu-item a,
-:where(.css-dev-only-do-not-override-14i19y2).ant-menu-dark > .ant-menu .ant-menu-item a,
-:where(.css-dev-only-do-not-override-14i19y2).ant-menu-dark .ant-menu-item a:hover,
-:where(.css-dev-only-do-not-override-14i19y2).ant-menu-dark > .ant-menu .ant-menu-item a:hover {
+:where(.css-dev-only-do-not-override-14i19y2).ant-menu-dark
+  > .ant-menu
+  .ant-menu-item
+  a,
+:where(.css-dev-only-do-not-override-14i19y2).ant-menu-dark
+  .ant-menu-item
+  a:hover,
+:where(.css-dev-only-do-not-override-14i19y2).ant-menu-dark
+  > .ant-menu
+  .ant-menu-item
+  a:hover {
   color: black !important;
 }
 
 :where(.css-dev-only-do-not-override-14i19y2).ant-menu-dark .ant-menu-item,
-:where(.css-dev-only-do-not-override-14i19y2).ant-menu-dark > .ant-menu .ant-menu-item,
-:where(.css-dev-only-do-not-override-14i19y2).ant-menu-dark .ant-menu-submenu-title,
-:where(.css-dev-only-do-not-override-14i19y2).ant-menu-dark > .ant-menu .ant-menu-submenu-title {
+:where(.css-dev-only-do-not-override-14i19y2).ant-menu-dark
+  > .ant-menu
+  .ant-menu-item,
+:where(.css-dev-only-do-not-override-14i19y2).ant-menu-dark
+  .ant-menu-submenu-title,
+:where(.css-dev-only-do-not-override-14i19y2).ant-menu-dark
+  > .ant-menu
+  .ant-menu-submenu-title {
   color: black !important;
 }
 .ant-layout {
