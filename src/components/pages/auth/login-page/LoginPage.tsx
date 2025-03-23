@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react"; // Thêm useEffect
 import { Form, message } from "antd";
-
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom"; // Thêm useLocation
 import ButtonComponent from "../../../atoms/button";
 import useApiService from "../../../../hooks/useApi";
 import { useDispatch } from "react-redux";
@@ -14,9 +13,17 @@ export default function LoginPage() {
   const [form] = Form.useForm();
   const { callApi, loading } = useApiService();
   const navigate = useNavigate();
+  const location = useLocation(); // Lấy location từ react-router
   const dispatch = useDispatch();
   const [messageApi, contextHolder] = message.useMessage();
   const isBigScreen = useMediaQuery({ query: "(min-width: 750px)" });
+
+  useEffect(() => {
+    if (location.state?.message) {
+      messageApi.info(location.state.message);
+    }
+  }, [location, messageApi]);
+
   const onFinish = async (values: any) => {
     const { username, password } = values;
     const payload = {

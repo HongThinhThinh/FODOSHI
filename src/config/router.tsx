@@ -90,11 +90,11 @@ export const router = createBrowserRouter([
         element: <ShoezizePage />,
       },
       {
-        path: "about",
+        path: "/about",
         element: <About />,
       },
       {
-        path: "blog",
+        path: "/blog",
         element: <Blog />,
       },
       {
@@ -102,13 +102,10 @@ export const router = createBrowserRouter([
         element: <BlogDetail />,
       },
       {
-        path: "cart",
+        path: "/cart",
         element: <Cart />,
       },
-      {
-        path: "cart",
-        element: <Cart />,
-      },
+
       {
         path: "male",
         element: <MalePage />,

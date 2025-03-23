@@ -31,12 +31,23 @@ function SideBarHeader({ className, ...rest }: SideBarHeaderProps) {
   return (
     <nav className={`sidebar_header ${className}`} {...rest}>
       <ul className="sidebar_header-container">
-        <Link
-          to={"/consignment"}
-          className="sidebar_header__item sidebar_header__item--text "
+        <div
+          onClick={() => {
+            if (user) {
+              navigate("/consignment");
+            } else {
+              navigate("/login", {
+                state: {
+                  from: "/consignment",
+                  message: "Vui lòng đăng nhập để sử dụng tính năng ký gửi",
+                },
+              });
+            }
+          }}
+          className="sidebar_header__item sidebar_header__item--text cursor-pointer"
         >
           Ký gửi
-        </Link>
+        </div>
         {user ? (
           <li
             onClick={() => navigate("/infomation/infomationPersonal")}

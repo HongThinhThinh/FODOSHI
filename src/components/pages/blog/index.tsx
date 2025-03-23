@@ -94,17 +94,6 @@ function Blog() {
       excerpt:
         "Khám phá hành trình của quần jeans từ trang phục lao động đến biểu tượng thời trang.",
     },
-    {
-      id: "6",
-      title: "Phong cách Y2K và sự trở lại",
-      author: "Trí Nguyên",
-      category: "Xu hướng",
-      created_at: "2 tuần trước",
-      image:
-        "https://images.unsplash.com/photo-1574201635302-388dd92a4c3f?q=80&w=2065",
-      excerpt:
-        "Tìm hiểu về sự trở lại của phong cách Y2K và cách kết hợp trong thời trang hiện đại.",
-    },
   ]);
 
   // Filter blogs based on category and search
