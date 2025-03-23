@@ -9,6 +9,7 @@ import InputComponent from "../../atoms/input";
 import "./styles.scss";
 import api from "../../../config/api";
 import ProductCard from "../../atoms/product-ht";
+import AOS from "aos";
 
 function NewProductPage() {
   // State for filters
@@ -191,6 +192,17 @@ function NewProductPage() {
     setSearchQuery("");
   };
 
+  // Initialize AOS
+  useEffect(() => {
+    AOS.init({
+      duration: 800,
+      easing: "ease-out-cubic",
+      once: false,
+      mirror: true,
+      offset: 50,
+    });
+  }, []);
+
   // Filters component to reuse in both desktop sidebar and mobile drawer
   const FiltersContent = () => (
     <>
@@ -319,10 +331,16 @@ function NewProductPage() {
   );
 
   return (
-    <section className="min-h-screen bg-gray-50 p-2 sm:p-4 md:p-8">
+    <section
+      className="min-h-screen bg-gray-50 p-2 sm:p-4 md:p-8"
+      data-aos="fade-in"
+    >
       <div className="max-w-7xl mx-auto">
         {/* Mobile Filter Button */}
-        <div className="md:hidden flex justify-between items-center mb-4">
+        <div
+          className="md:hidden flex justify-between items-center mb-4"
+          data-aos="fade-down"
+        >
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowFilters(true)}
@@ -350,16 +368,28 @@ function NewProductPage() {
 
         <div className="flex flex-col md:flex-row gap-4 md:gap-8">
           {/* Filters Section - Desktop */}
-          <div className="hidden md:block w-full md:w-1/4">
+          <div
+            className="hidden md:block w-full md:w-1/4"
+            data-aos="fade-right"
+            data-aos-delay="100"
+          >
             <div className="bg-white p-6 rounded-lg shadow-md sticky top-20">
               <FiltersContent />
             </div>
           </div>
 
           {/* Products Grid */}
-          <div className="w-full md:w-3/4">
+          <div
+            className="w-full md:w-3/4"
+            data-aos="fade-up"
+            data-aos-delay="200"
+          >
             {/* Product Count & Sorting - Desktop */}
-            <div className="hidden md:flex justify-between items-center mb-6">
+            <div
+              className="hidden md:flex justify-between items-center mb-6"
+              data-aos="fade-in"
+              data-aos-delay="300"
+            >
               <h2 className="text-xl font-semibold">
                 {loading
                   ? "Đang tải..."
@@ -405,7 +435,11 @@ function NewProductPage() {
             </div>
 
             {/* Sorting - Mobile */}
-            <div className="flex md:hidden justify-between mb-4 overflow-x-auto pb-2">
+            <div
+              className="flex md:hidden justify-between mb-4 overflow-x-auto pb-2"
+              data-aos="fade-up"
+              data-aos-delay="100"
+            >
               <button
                 className="px-3 py-1 whitespace-nowrap text-xs border rounded hover:bg-gray-100"
                 onClick={() => {
@@ -444,19 +478,35 @@ function NewProductPage() {
             </div>
 
             {loading ? (
-              <div className="flex items-center justify-center h-64">
+              <div
+                className="flex items-center justify-center h-64"
+                data-aos="fade"
+              >
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
               </div>
             ) : filteredProducts.length > 0 ? (
-              <div className="flex flex-col items-center sm:items-center md:block">
+              <div
+                className="flex flex-col items-center sm:items-center md:block"
+                data-aos="fade-up"
+              >
                 <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-4 md:gap-6">
-                  {filteredProducts?.map((product) => (
-                    <ProductCard key={product.id} product={product} />
+                  {filteredProducts?.map((product, index) => (
+                    <div
+                      key={product.id}
+                      data-aos="fade-up"
+                      data-aos-delay={50 * index}
+                      data-aos-anchor-placement="top-bottom"
+                    >
+                      <ProductCard product={product} />
+                    </div>
                   ))}
                 </div>
               </div>
             ) : (
-              <div className="bg-white rounded-lg p-8 text-center">
+              <div
+                className="bg-white rounded-lg p-8 text-center"
+                data-aos="zoom-in"
+              >
                 <p className="text-gray-500 mb-4">
                   Không tìm thấy sản phẩm phù hợp
                 </p>

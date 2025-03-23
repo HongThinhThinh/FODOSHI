@@ -4,11 +4,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   .homepage-banner__img {
     display: inline-block;
     width: 100%;
     height: 100%;
     object-fit: contain;
+    transform: scale(1.1);
+    transition: transform 0.5s ease-out;
+    animation: subtle-zoom 20s infinite alternate;
   }
   .homepage-banner__content {
     position: absolute;
@@ -232,5 +236,14 @@
       width: 100%;
       height: 300px;
     }
+  }
+}
+
+@keyframes subtle-zoom {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.1);
   }
 }

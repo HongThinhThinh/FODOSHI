@@ -17,6 +17,8 @@ import {
 } from "antd";
 import BlogCard, { BlogCardProps } from "../../atoms/blog-card";
 import "./index.scss";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const { TabPane } = Tabs;
 
@@ -25,6 +27,17 @@ function Blog() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchText, setSearchText] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Khởi tạo AOS
+  useEffect(() => {
+    AOS.init({
+      duration: 800,
+      easing: "ease-out-cubic",
+      once: false,
+      mirror: false,
+      offset: 50,
+    });
+  }, []);
 
   // Mock categories - in a real app these would come from an API
   const categories = [
@@ -117,7 +130,7 @@ function Blog() {
 
   return (
     <div className="blog-page">
-      <div className="blog-page-header">
+      <div className="blog-page-header" data-aos="fade-down">
         <div className="container">
           <Breadcrumb className="blog-breadcrumbs">
             <Breadcrumb.Item href="/">
@@ -126,8 +139,18 @@ function Blog() {
             <Breadcrumb.Item>Blog</Breadcrumb.Item>
           </Breadcrumb>
 
-          <h1 className="blog-page-title">Blog FODOSHI</h1>
-          <p className="blog-page-description">
+          <h1
+            className="blog-page-title"
+            data-aos="zoom-in"
+            data-aos-delay="200"
+          >
+            Blog FODOSHI
+          </h1>
+          <p
+            className="blog-page-description"
+            data-aos="fade-up"
+            data-aos-delay="300"
+          >
             Khám phá những bài viết mới nhất về thời trang, phong cách sống và
             bền vững
           </p>
@@ -135,21 +158,27 @@ function Blog() {
       </div>
 
       <div className="blog-page-content container">
-        <div className="blog-filters">
+        <div className="blog-filters" data-aos="fade-up" data-aos-delay="400">
           <Input
             placeholder="Tìm kiếm bài viết..."
-            prefix={<SearchOutlined />}
+            prefix={<SearchOutlined className="search-icon" />}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
             allowClear
+            className="search-input"
           />
 
-          <div className="blog-categories">
+          <div
+            className="blog-categories"
+            data-aos="fade-up"
+            data-aos-delay="500"
+          >
             <div className="category-label">
               <TagOutlined /> Danh mục:
             </div>
             <div className="category-tags">
               <Tag
+                className="category-tag"
                 color={selectedCategory === "all" ? "#d99041" : "default"}
                 onClick={() => setSelectedCategory("all")}
               >
@@ -158,8 +187,11 @@ function Blog() {
               {categories.slice(1).map((category, index) => (
                 <Tag
                   key={index}
+                  className="category-tag"
                   color={selectedCategory === category ? "#d99041" : "default"}
                   onClick={() => setSelectedCategory(category)}
+                  data-aos="zoom-in"
+                  data-aos-delay={550 + index * 50}
                 >
                   {category}
                 </Tag>
@@ -169,23 +201,42 @@ function Blog() {
         </div>
 
         {featuredBlog && selectedCategory === "all" && !searchText && (
-          <section className="featured-post-section">
-            <h2 className="section-title">Bài viết nổi bật</h2>
-            <BlogCard {...featuredBlog} featured={true} />
+          <section
+            className="featured-post-section"
+            data-aos="fade-up"
+            data-aos-delay="600"
+          >
+            <h2 className="section-title" data-aos="fade-right">
+              Bài viết nổi bật
+            </h2>
+            <div data-aos="zoom-in" data-aos-delay="700">
+              <BlogCard {...featuredBlog} featured={true} />
+            </div>
           </section>
         )}
 
-        <section className="blog-grid-section">
-          <h2 className="section-title">Bài viết mới nhất</h2>
+        <section
+          className="blog-grid-section"
+          data-aos="fade-up"
+          data-aos-delay="700"
+        >
+          <h2 className="section-title" data-aos="fade-right">
+            Bài viết mới nhất
+          </h2>
           <div className="blog-grid">
             {regularBlogs.length > 0 ? (
-              regularBlogs.map((blog) => (
-                <div key={blog.id} className="blog-grid-item">
+              regularBlogs.map((blog, index) => (
+                <div
+                  key={blog.id}
+                  className="blog-grid-item"
+                  data-aos="fade-up"
+                  data-aos-delay={800 + index * 100}
+                >
                   <BlogCard {...blog} />
                 </div>
               ))
             ) : (
-              <div className="no-results">
+              <div className="no-results" data-aos="fade">
                 <p>Không tìm thấy bài viết phù hợp</p>
               </div>
             )}
@@ -197,6 +248,8 @@ function Blog() {
           total={10}
           onChange={setCurrentPage}
           className="blog-pagination"
+          data-aos="fade-up"
+          data-aos-delay="900"
         />
       </div>
     </div>

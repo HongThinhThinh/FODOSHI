@@ -25,6 +25,20 @@
       color: #333;
       text-align: center;
       font-family: "Times New Roman", Times, serif;
+      position: relative;
+      display: inline-block;
+
+      &:after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: -10px;
+        width: 100px;
+        height: 3px;
+        background: linear-gradient(to right, #d99041, #f7c589);
+        transform: translateX(-50%);
+        border-radius: 3px;
+      }
     }
 
     .blog-page-description {
@@ -112,6 +126,8 @@
     position: relative;
     display: inline-block;
     color: #333;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
 
     &:after {
       content: "";
@@ -121,6 +137,13 @@
       width: 60%;
       height: 3px;
       background-color: #d99041;
+      width: 80px;
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+
+    &:hover:after {
+      width: 120px;
     }
   }
 
@@ -129,15 +152,20 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 30px;
+    transition: all 0.5s ease;
 
     .blog-grid-item {
       height: 100%;
       display: flex;
       cursor: pointer;
       transition: transform 0.3s ease;
+      transform: translateY(0);
+      transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
 
       &:hover {
-        transform: translateY(-5px);
+        transform: translateY(-10px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        z-index: 1;
       }
     }
   }
@@ -165,6 +193,21 @@
       a {
         color: #d99041;
       }
+    }
+
+    .ant-pagination-item,
+    .ant-pagination-prev button,
+    .ant-pagination-next button {
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+
+    .ant-pagination-item-active {
+      transform: scale(1.1);
+      box-shadow: 0 3px 6px rgba(217, 144, 65, 0.3);
     }
   }
 
@@ -211,4 +254,55 @@
 
 .featured-post-section .blog-card {
   cursor: pointer;
+  transition: all 0.5s ease;
+
+  &:hover {
+    transform: translateY(-5px) scale(1.01);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Hiệu ứng cho category tags
+.category-tag {
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Hiệu ứng cho search input
+.search-input {
+  transition: all 0.3s ease;
+
+  &:focus {
+    transform: scale(1.02);
+  }
+
+  .search-icon {
+    transition: all 0.3s ease;
+  }
+
+  &:focus .search-icon {
+    color: #d99041;
+  }
+}
+
+// Animation cho loading state (nếu có)
+@keyframes shimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+.loading-skeleton {
+  background: linear-gradient(to right, #f6f7f8 8%, #edeef1 18%, #f6f7f8 33%);
+  background-size: 800px 104px;
+  animation: shimmer 1.5s infinite linear;
+  border-radius: 8px;
 }
