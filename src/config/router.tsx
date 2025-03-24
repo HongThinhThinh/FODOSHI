@@ -38,6 +38,7 @@ import ManageBrand from "../components/pages/admin/manage-brand";
 import PaymentSuccess from "../components/pages/customer/payment-success";
 import PaymentCancel from "../components/pages/customer/payment-cancel";
 import BlogDetail from "../components/pages/blog-detail";
+import OrderList from "../components/pages/admin/order-list";
 
 export const router = createBrowserRouter([
   {
@@ -260,7 +261,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "orders",
-        element: <OrderManagement />,
+        element: <OrderList />,
+      },
+      {
+        path: "orders/:orderId",
+        element: <OrderDetails />,
       },
       {
         path: "orders/:id",

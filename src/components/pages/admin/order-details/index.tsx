@@ -30,7 +30,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCcMastercard } from "@fortawesome/free-brands-svg-icons";
 import { formatMoney } from "../../../../utils/formatMoney";
 import { toTitle } from "../../../../utils/formatStr";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import GenericTable, { ColumnType } from "../../../atoms/table";
 import type { OrderDetails } from "../../../../model/order";
 import api from "../../../../config/api";
@@ -113,8 +113,10 @@ export default function OrderDetails() {
   const [loading, setLoading] = useState<boolean>(true);
   const [orderData, setOrderData] = useState<ApiOrder | null>(null);
   const [orderItems, setOrderItems] = useState<OrderDetails[]>([]);
-  const { id } = useParams();
-
+  const location = useLocation();
+  const currentPath = location.pathname.split("/")[2];
+  const currentSubPath = location.pathname.split("/")[3];
+  const id = currentSubPath;
   // Modal states
   const [customerModalVisible, setCustomerModalVisible] =
     useState<boolean>(false);
@@ -142,39 +144,62 @@ export default function OrderDetails() {
     console.log("Opening order info modal");
     setOrderInfoModalVisible(true);
   };
+  const fetchOrderDetails = async () => {
+    try {
+      setLoading(true);
+      console.log("Fetching order details with ID:", id);
 
-  // Fetch order details when component mounts
-  useEffect(() => {
-    const fetchOrderDetails = async () => {
-      try {
-        setLoading(true);
-        const response = await api.get<ApiResponse>(`/order/${id}`);
+      const response = await api.get<ApiResponse>(`/order/${id}`);
+      console.log("API Response:", response);
 
-        if (response.data.statusCode === 200) {
-          setOrderData(response.data.data);
+      if (response.data && response.data.statusCode === 200) {
+        setOrderData(response.data.data);
+        console.log("Order data successfully set:", response.data.data);
 
-          // Use the user data from the order instead of consignor
-          if (response.data.data.user) {
-            // Set customer info from order.user
-            setCustomerInfo(response.data.data.user);
+        // Process user information
+        if (response.data.data.user) {
+          setCustomerInfo(response.data.data.user);
+          console.log("Customer info set:", response.data.data.user);
 
-            // Get address from user's addresses
-            if (
-              response.data.data.user.addresses &&
-              response.data.data.user.addresses.length > 0
-            ) {
-              const defaultAddress = response.data.data.user.addresses.find(
-                (addr) => addr.isDefault
-              );
-              setCustomerAddress(
-                defaultAddress || response.data.data.user.addresses[0]
-              );
-            }
+          // Get address from user's addresses
+          if (
+            response.data.data.user.addresses &&
+            response.data.data.user.addresses.length > 0
+          ) {
+            const defaultAddress = response.data.data.user.addresses.find(
+              (addr) => addr.isDefault
+            );
+            setCustomerAddress(
+              defaultAddress || response.data.data.user.addresses[0]
+            );
+            console.log("Customer address set:", customerAddress);
+          }
+        } else {
+          console.log(
+            "No user information in order data - possibly a guest order"
+          );
+
+          // For guest orders, check if there's a shipping address directly on the order
+          if (response.data.data.shippingAddress) {
+            setCustomerAddress(response.data.data.shippingAddress);
+            console.log(
+              "Guest shipping address set:",
+              response.data.data.shippingAddress
+            );
+          }
+        }
+
+        // Map order items with more error handling
+        const mappedItems = response.data.data.orderItems.map((item) => {
+          let itemId;
+          try {
+            itemId = parseInt(item.id.substring(0, 8), 16);
+          } catch (e) {
+            itemId = Math.floor(Math.random() * 10000); // Fallback ID if parsing fails
           }
 
-          // Rest of your code for mapping order items remains the same
-          const mappedItems = response.data.data.orderItems.map((item) => ({
-            id: parseInt(item.id.substring(0, 8), 16),
+          return {
+            id: itemId,
             productName: item.product.name,
             quantity: 1,
             price: item.price,
@@ -182,25 +207,30 @@ export default function OrderDetails() {
               item.product.imageUrls && item.product.imageUrls.length > 0
                 ? item.product.imageUrls[0].image
                 : "",
-          }));
+          };
+        });
 
-          setOrderItems(mappedItems);
-        } else {
-          message.error(
-            "Failed to load order details: " + response.data.message
-          );
-        }
-      } catch (error) {
-        console.error("Error fetching order details:", error);
-        message.error("Failed to load order details. Please try again.");
-      } finally {
-        setLoading(false);
+        setOrderItems(mappedItems);
+        console.log("Order items mapped:", mappedItems);
+      } else {
+        console.error("API returned non-success response:", response);
+        message.error(
+          `Failed to load order details: ${
+            response?.data?.message || "Unknown error"
+          }`
+        );
       }
-    };
-
-    if (id) {
-      fetchOrderDetails();
+    } catch (error) {
+      console.error("Error fetching order details:", error);
+      message.error("Failed to load order details. Please try again.");
+    } finally {
+      setLoading(false);
     }
+  };
+
+  // Fetch order details when component mounts
+  useEffect(() => {
+    fetchOrderDetails();
   }, [id]);
 
   const columns: ColumnType<OrderDetails>[] = [

@@ -23,6 +23,7 @@ import { Order, OrderStatus } from "../../../../model/order";
 import GenericTable, { ColumnType } from "../../../atoms/table";
 import { useNavigate } from "react-router-dom";
 import OrderManagement from "../manage-orders";
+import OrderList from "../order-list";
 function Dashboard() {
   // const [data, setData] = useState([]);
   const [activeButton, setActiveButton] = useState<string>("WEEK");
@@ -129,7 +130,7 @@ function Dashboard() {
 
   return (
     <div className="dashboard">
-      <Row
+      {/* <Row
         gutter={[16, 16]}
         justify="space-between"
         className="dashboard__card"
@@ -166,17 +167,10 @@ function Dashboard() {
               <div className="dashboard__card__bottom">
                 <span>So sánh to Oct 2023</span>
               </div>
-              {/* <Statistic
-                // title={item.title}
-                value={item.value}
-                valueStyle={{ color: "#cf1322" }}
-                prefix={<ArrowDownOutlined />}
-                suffix=""
-              /> */}
             </CustomizedCard>
           </Col>
         ))}
-      </Row>
+      </Row> */}
       <div className="dashboard__chart">
         <div className="dashboard__chart__left dashboard__chart__children">
           <div className="dashboard__chart__left__top">
@@ -282,7 +276,8 @@ function Dashboard() {
               pagination={{ pageSize: 5 }}
               scroll={{ x: "max-content" }}
             /> */}
-            <OrderManagement />
+            {/* <OrderManagement /> */}
+            <OrderList />
           </div>
         </div>
       </div>

@@ -153,9 +153,9 @@ export default function Checkout({
   };
   const handleShippingChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
-    setSelectedShipping(event.target.value);
+    setSelectedShipping(value);
     if (value === "Giao hàng tận nơi") {
-      setShippingCost(grandTotalBeforeShipping * 0.1);
+      setShippingCost(20000); // Giá cố định 20.000₫
     } else {
       setShippingCost(0);
     }
@@ -171,6 +171,17 @@ export default function Checkout({
         shippingCost -
         (shippingCost * (selectedVoucher?.discount || 0)) / 100
     );
+
+    // Log để debug
+    console.log({
+      tiền_hàng: grandTotalBeforeShipping,
+      phí_vận_chuyển: shippingCost,
+      giảm_giá: (shippingCost * (selectedVoucher?.discount || 0)) / 100,
+      tổng_cộng:
+        grandTotalBeforeShipping +
+        shippingCost -
+        (shippingCost * (selectedVoucher?.discount || 0)) / 100,
+    });
   }, [grandTotalBeforeShipping, shippingCost, selectedVoucher]);
 
   // Fetch địa chỉ người dùng - only if user is logged in
@@ -407,6 +418,18 @@ export default function Checkout({
 
     setIsLoading(true);
     try {
+      // Ánh xạ selectedShipping sang shippingType
+      const getShippingType = (shipping) => {
+        switch (shipping) {
+          case "Giao hàng tận nơi":
+            return "HOME_DELIVERY";
+          case "Nhận hàng tại cửa hàng":
+            return "IN_STORE_PICKUP";
+          default:
+            return "HOME_DELIVERY";
+        }
+      };
+
       // Create base payment payload with shared properties
       const basePayload = {
         description: `FODOSH xin cảm ơn`,
@@ -414,6 +437,8 @@ export default function Checkout({
         paymentMethod: selectedPayment,
         returnUrl: `${window.location.origin}/payment-success`,
         cancelUrl: `${window.location.origin}/payment-cancel`,
+        shippingType: getShippingType(selectedShipping), // Thêm shippingType
+        totalPrice: grandTotalState, // Thêm totalPrice
       };
 
       // Create the full payload based on user authentication status
