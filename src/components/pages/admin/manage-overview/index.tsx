@@ -1,176 +1,383 @@
-import { Button, Col, Row, Statistic, Table } from "antd";
-import { ArrowDownOutlined } from "@ant-design/icons";
-import React, { useState } from "react";
 import {
-  Bar,
-  BarChart,
+  Button,
+  Card,
+  Row,
+  Col,
+  Statistic,
+  Progress,
+  Spin,
+  Typography,
+  Divider,
+  Space,
+} from "antd";
+import React, { useState, useEffect } from "react";
+import {
   CartesianGrid,
-  Legend,
   Line,
   LineChart,
-  Pie,
-  PieChart,
   Tooltip,
   XAxis,
   YAxis,
+  ResponsiveContainer,
 } from "recharts";
-import { ShoppingOutlined, MoreOutlined } from "@ant-design/icons";
-import CustomizedCard from "../../../molecules/card/Card";
+import {
+  MoreOutlined,
+  ShoppingOutlined,
+  RiseOutlined,
+  TagsOutlined,
+  ShopOutlined,
+  DollarOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import "./index.scss";
 import ButtonComponent from "../../../atoms/button";
-import { recentOrdersDummyData } from "../../../../dummy-data/recent-order-data";
-import { Order, OrderStatus } from "../../../../model/order";
-import GenericTable, { ColumnType } from "../../../atoms/table";
-import { useNavigate } from "react-router-dom";
-import OrderManagement from "../manage-orders";
 import OrderList from "../order-list";
+import api from "../../../../config/api";
+
+const { Text } = Typography;
+
+// Chart data point interface
+interface ChartDataPoint {
+  name: string;
+  value: number;
+}
+
+// Interface for revenue data response
+interface RevenueResponse {
+  statusCode: number;
+  message: string;
+  data: {
+    periodType: string;
+    revenueData: Record<string, number>;
+  };
+}
+
+// Add new interfaces
+interface ProductSummary {
+  totalProducts: number;
+  availableProducts: number;
+  soldProducts: number;
+}
+
+interface ApiResponse<T> {
+  statusCode: number;
+  message: string;
+  data: T;
+}
+
+interface ProductsSold {
+  periodType: string;
+  count: number;
+  label: string | null;
+}
+
+interface DashboardState {
+  productSummary: ProductSummary | null;
+  productsSold: ProductsSold | null;
+  categoriesCount: number;
+  brandsCount: number;
+  loading: boolean;
+}
+
+// Constants
+const PERIOD_BUTTONS = [
+  { key: "DAY", label: "THEO NGÀY" },
+  { key: "WEEK", label: "THEO TUẦN" },
+  { key: "MONTH", label: "THEO THÁNG" },
+  { key: "YEAR", label: "THEO NĂM" },
+];
+
 function Dashboard() {
-  // const [data, setData] = useState([]);
-  const [activeButton, setActiveButton] = useState<string>("WEEK");
-  const navigate = useNavigate();
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
-  const data = [
-    { name: "Jan", uv: 400, pv: 2400, amt: 2400 },
-    { name: "Feb", uv: 300, pv: 1398, amt: 2210 },
-    { name: "Mar", uv: 200, pv: 9800, amt: 2290 },
-    { name: "Apr", uv: 278, pv: 3908, amt: 2000 },
-    { name: "May", uv: 189, pv: 4800, amt: 2181 },
-    { name: "Jun", uv: 239, pv: 3800, amt: 2500 },
-    { name: "Jul", uv: 349, pv: 4300, amt: 2100 },
-    { name: "Aug", uv: 400, pv: 2400, amt: 2400 },
-    { name: "Sep", uv: 300, pv: 1398, amt: 2210 },
-    { name: "Oct", uv: 200, pv: 9800, amt: 2290 },
-    { name: "Nov", uv: 278, pv: 3908, amt: 2000 },
-    { name: "Dec", uv: 189, pv: 4800, amt: 2181 },
-  ];
-  const topBrands = [
-    {
-      id: 1,
-      name: "Nike Air Max",
-      description: "High-quality sports shoes",
-      price: "126,500 VND",
-      sales: 999,
-      image: "nike.png",
-    },
-    {
-      id: 2,
-      name: "Adidas UltraBoost",
-      description: "Comfortable running shoes",
-      price: "135,000 VND",
-      sales: 800,
-      image: "adidas.png",
-    },
-    {
-      id: 3,
-      name: "Puma Suede",
-      description: "Classic street style",
-      price: "110,000 VND",
-      sales: 600,
-      image: "puma.png",
-    },
-    {
-      id: 4,
-      name: "Reebok Classic",
-      description: "Retro-inspired sneakers",
-      price: "95,000 VND",
-      sales: 700,
-      image: "reebok.png",
-    },
-  ];
+  const [activeButton, setActiveButton] = useState<string>("DAY");
+  const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [dashboardState, setDashboardState] = useState<DashboardState>({
+    productSummary: null,
+    productsSold: null,
+    categoriesCount: 0,
+    brandsCount: 0,
+    loading: false,
+  });
 
-  const columns: ColumnType<Order>[] = [
-    {
-      title: "Sản phẩm",
-      dataIndex: "product",
-      key: "product",
-    },
-    {
-      title: "Mã đơn",
-      dataIndex: "orderId",
-      key: "orderId",
-    },
-    {
-      title: "Ngày",
-      dataIndex: "date",
-      key: "date",
-    },
-    {
-      title: "Tên khách hàng",
-      dataIndex: "customerName",
-      key: "customerName",
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      render: (
-        status:
-          | OrderStatus.Pending
-          | OrderStatus.Completed
-          | OrderStatus.Cancelled
-      ) => {
-        const statusColor = {
-          Pending: "orange",
-          Completed: "green",
-          Cancelled: "red",
-        };
-        return <span style={{ color: statusColor[status] }}>{status}</span>;
-      },
-    },
-    {
-      title: "Tổng tiền",
-      dataIndex: "total",
-      key: "total",
-    },
-  ];
+  // Function to fetch revenue data from API
+  const fetchRevenueData = async (startDate?: string, endDate?: string) => {
+    setLoading(true);
+    setError(null);
 
+    try {
+      // Convert DAY/WEEK/MONTH/YEAR to day/week/month/year for API
+      const periodMap: Record<string, string> = {
+        DAY: "day",
+        WEEK: "week",
+        MONTH: "month",
+        YEAR: "year",
+      };
+
+      const period = periodMap[activeButton];
+
+      console.log(`Fetching revenue data for period: ${period}`);
+      if (startDate && endDate) {
+        console.log(`Date range: ${startDate} to ${endDate}`);
+      }
+
+      // Prepare query parameters
+      const params: Record<string, string> = { period };
+
+      // Add date range if provided
+      if (startDate) params.startDate = startDate;
+      if (endDate) params.endDate = endDate;
+
+      // Add timestamp to prevent caching
+      params._t = Date.now().toString();
+
+      console.log("API Request params:", params);
+
+      const response = await api.get<RevenueResponse>(
+        "/admin/dashboard/revenue",
+        {
+          params,
+        }
+      );
+
+      console.log("API Response:", response);
+
+      if (response.data?.data?.revenueData) {
+        // Convert the revenue data object to array and filter out zero values
+        const filteredData = Object.entries(response.data.data.revenueData)
+          .filter(([, value]) => value > 0)
+          .map(([name, value]) => ({
+            name,
+            value,
+          }));
+
+        setChartData(filteredData);
+      }
+    } catch (error) {
+      console.error("Error fetching revenue data:", error);
+      setError(
+        "Failed to load revenue data. Please check console for details."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to fetch all dashboard data
+  const fetchDashboardData = async () => {
+    setDashboardState((prev) => ({ ...prev, loading: true }));
+    try {
+      const [productSummaryRes, categoriesRes, brandsRes, productsSoldRes] =
+        await Promise.all([
+          api.get<ApiResponse<ProductSummary>>(
+            "/admin/dashboard/products/summary"
+          ),
+          api.get<ApiResponse<number>>("/admin/dashboard/categories/count"),
+          api.get<ApiResponse<number>>("/admin/dashboard/brands/count"),
+          api.get<ApiResponse<ProductsSold>>(
+            "/admin/dashboard/products/sold?period=week"
+          ),
+        ]);
+
+      setDashboardState({
+        productSummary: productSummaryRes.data.data,
+        productsSold: productsSoldRes.data.data,
+        categoriesCount: categoriesRes.data.data,
+        brandsCount: brandsRes.data.data,
+        loading: false,
+      });
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+      setDashboardState((prev) => ({ ...prev, loading: false }));
+    }
+  };
+
+  // Fetch data when component mounts or when activeButton changes
+  useEffect(() => {
+    fetchRevenueData();
+    fetchDashboardData();
+  }, [activeButton]);
+
+  // Get current date in YYYY-MM-DD format
+  const getCurrentDate = () => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  };
+
+  // Get date from X days ago in YYYY-MM-DD format
+  const getDateDaysAgo = (days: number) => {
+    const date = new Date();
+    date.setDate(date.getDate() - days);
+    return date.toISOString().split("T")[0];
+  };
+
+  // Handle date range for the different period views
   const handleClickButton = (value: string) => {
     setActiveButton(value);
+
+    // Set appropriate date ranges based on period
+    let startDate;
+    const endDate = getCurrentDate();
+
+    switch (value) {
+      case "DAY":
+        startDate = getDateDaysAgo(7);
+        break;
+      case "WEEK":
+        startDate = getDateDaysAgo(30);
+        break;
+      case "MONTH":
+        startDate = getDateDaysAgo(90);
+        break;
+      case "YEAR":
+        startDate = getDateDaysAgo(365);
+        break;
+      default:
+        startDate = undefined;
+    }
+
+    fetchRevenueData(startDate, endDate);
   };
+
+  const renderStatCard = (
+    title: string,
+    value: number | string,
+    icon: React.ReactNode,
+    color: string,
+    suffix?: string
+  ) => (
+    <Card className="stat-card" bordered={false}>
+      <Statistic
+        title={title}
+        value={value}
+        prefix={icon}
+        suffix={suffix}
+        valueStyle={{ color, fontSize: "18px" }}
+      />
+      <Progress
+        percent={100}
+        showInfo={false}
+        strokeColor={{ from: "#108ee9", to: "#87d068" }}
+        size="small"
+      />
+    </Card>
+  );
 
   return (
     <div className="dashboard">
-      {/* <Row
-        gutter={[16, 16]}
-        justify="space-between"
-        className="dashboard__card"
-      >
-        {[
-          { title: "Tổng đơn hàng", value: 0 },
-          { title: "Đơn hàng đang hoạt động", value: 0 },
-          { title: "Đơn hàng đang hoàn tất", value: 0 },
-          { title: "Đơn hàng hoàn trả", value: 0 },
-        ].map((item, index) => (
-          <Col key={index} flex="1 1 0" style={{ maxWidth: "300px" }}>
-            <CustomizedCard
-              width={"100%"}
-              height={"140px"}
-              borderRadious={"10px"}
-            >
-              <div className="dashboard__card__top">
-                <div className="dashboard__card__top__left">{item.title}</div>
-                <div className="dashboard__card__top__right">
-                  <MoreOutlined />
-                </div>
+      {/* Top Summary Section */}
+      <div className="dashboard__summary">
+        <div className="summary-card sales-ratio">
+          <h4>Tỷ lệ bán hàng</h4>
+          <div className="circular-progress">
+            <Progress
+              type="circle"
+              percent={Math.round(
+                ((dashboardState.productSummary?.soldProducts || 0) /
+                  (dashboardState.productSummary?.totalProducts || 1)) *
+                  100
+              )}
+              format={(percent) => `${percent}%`}
+              strokeColor={{
+                from: "#108ee9",
+                to: "#87d068",
+              }}
+            />
+          </div>
+          <div className="sales-stats">
+            <div className="stats-detail">
+              <div className="stat-item">
+                <span className="label">Đã bán</span>
+                <span className="value">
+                  {dashboardState.productSummary?.soldProducts || 0}
+                </span>
               </div>
-              <div className="dashboard__card__mid">
-                <div className="dashboard__card__mid__left">
-                  <ShoppingOutlined />
-                </div>
-                <div className="dashboard__card__mid__mid">
-                  <span>189.000 VND</span>
-                </div>
-                <div className="dashboard__card__mid__right">
-                  <span>34.7%</span>
-                </div>
+              <div className="stat-item">
+                <span className="label">Còn lại</span>
+                <span className="value">
+                  {(dashboardState.productSummary?.totalProducts || 0) -
+                    (dashboardState.productSummary?.soldProducts || 0)}
+                </span>
               </div>
-              <div className="dashboard__card__bottom">
-                <span>So sánh to Oct 2023</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="summary-card performance">
+          <h4>Hiệu suất hôm nay</h4>
+          <Space direction="vertical" size="large" style={{ width: "100%" }}>
+            <Statistic
+              title="Doanh thu"
+              value={chartData[0]?.value || 0}
+              prefix={<DollarOutlined />}
+              suffix="đ"
+              valueStyle={{ color: "#3f8600", fontSize: "24px" }}
+            />
+            <Statistic
+              title="Đơn hàng"
+              value={dashboardState.productsSold?.count || 0}
+              prefix={<ShoppingOutlined />}
+              valueStyle={{ color: "#cf1322", fontSize: "24px" }}
+            />
+          </Space>
+        </div>
+
+        <div className="summary-card inventory">
+          <h4>Thống kê sản phẩm</h4>
+          <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+            <Statistic
+              title="Tổng sản phẩm"
+              value={dashboardState.productSummary?.totalProducts || 0}
+              prefix={<ShopOutlined />}
+              valueStyle={{ color: "#3f8600", fontSize: "20px" }}
+            />
+            <div className="progress-section">
+              <div className="progress-item">
+                <div className="progress-header">
+                  <span className="label">Sản phẩm có sẵn</span>
+                  <span className="value">
+                    {dashboardState.productSummary?.availableProducts || 0}
+                  </span>
+                </div>
+                <Progress
+                  percent={Math.round(
+                    ((dashboardState.productSummary?.availableProducts || 0) /
+                      (dashboardState.productSummary?.totalProducts || 1)) *
+                      100
+                  )}
+                  status="success"
+                  strokeColor={{
+                    from: "#108ee9",
+                    to: "#87d068",
+                  }}
+                />
               </div>
-            </CustomizedCard>
-          </Col>
-        ))}
-      </Row> */}
+              <div className="progress-item">
+                <div className="progress-header">
+                  <span className="label">Sản phẩm đã bán</span>
+                  <span className="value">
+                    {dashboardState.productSummary?.soldProducts || 0}
+                  </span>
+                </div>
+                <Progress
+                  percent={Math.round(
+                    ((dashboardState.productSummary?.soldProducts || 0) /
+                      (dashboardState.productSummary?.totalProducts || 1)) *
+                      100
+                  )}
+                  status="exception"
+                  strokeColor={{
+                    from: "#ff4d4f",
+                    to: "#ff7875",
+                  }}
+                />
+              </div>
+            </div>
+          </Space>
+        </div>
+      </div>
+
+      {/* Chart Section */}
       <div className="dashboard__chart">
         <div className="dashboard__chart__left dashboard__chart__children">
           <div className="dashboard__chart__left__top">
@@ -178,131 +385,153 @@ function Dashboard() {
               <span>Biểu đồ doanh thu</span>
             </div>
             <div className="dashboard__chart__left__top__right">
-              <ButtonComponent
-                isActive={activeButton === "WEEK"}
-                onClick={() => handleClickButton("WEEK")}
-              >
-                THEO TUẦN
-              </ButtonComponent>
-              <ButtonComponent
-                isActive={activeButton === "MONTH"}
-                onClick={() => handleClickButton("MONTH")}
-              >
-                THEO THÁNG
-              </ButtonComponent>
-              <ButtonComponent
-                isActive={activeButton === "YEAR"}
-                onClick={() => handleClickButton("YEAR")}
-              >
-                THEO NĂM
-              </ButtonComponent>
+              <Space>
+                {PERIOD_BUTTONS.map((button) => (
+                  <ButtonComponent
+                    key={button.key}
+                    isActive={activeButton === button.key}
+                    onClick={() => handleClickButton(button.key)}
+                  >
+                    {button.label}
+                  </ButtonComponent>
+                ))}
+              </Space>
             </div>
           </div>
           <div className="dashboard__chart__left__bot">
-            <LineChart width={700} height={300} data={data}>
-              <Line type="monotone" dataKey="uv" stroke="#8884d8" />
-              <CartesianGrid stroke="#ccc" />
-              <XAxis dataKey="name" />
-              <YAxis />
-            </LineChart>
+            {loading ? (
+              <div
+                style={{
+                  height: 300,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Spin size="large" />
+              </div>
+            ) : error ? (
+              <div
+                style={{
+                  height: 300,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#ff4d4f",
+                }}
+              >
+                {error}
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={chartData}>
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#8884d8"
+                    strokeWidth={2}
+                    dot={{ r: 4 }}
+                  />
+                  <CartesianGrid stroke="#f0f0f0" />
+                  <XAxis
+                    dataKey="name"
+                    tickFormatter={(value) => {
+                      if (activeButton === "DAY") {
+                        return new Date(value).toLocaleDateString("vi-VN", {
+                          day: "2-digit",
+                          month: "2-digit",
+                        });
+                      } else if (activeButton === "WEEK") {
+                        return `Tuần ${value}`;
+                      } else if (activeButton === "MONTH") {
+                        return new Date(value).toLocaleDateString("vi-VN", {
+                          month: "2-digit",
+                          year: "numeric",
+                        });
+                      } else {
+                        return value;
+                      }
+                    }}
+                  />
+                  <YAxis
+                    tickFormatter={(value) =>
+                      `${value.toLocaleString("vi-VN")}đ`
+                    }
+                  />
+                  <Tooltip
+                    formatter={(value: number) => [
+                      `${value.toLocaleString("vi-VN")}đ`,
+                      "Doanh thu",
+                    ]}
+                    labelFormatter={(label) => {
+                      if (activeButton === "DAY") {
+                        return new Date(label).toLocaleDateString("vi-VN", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        });
+                      } else if (activeButton === "WEEK") {
+                        return `Tuần ${label}`;
+                      } else if (activeButton === "MONTH") {
+                        return new Date(label).toLocaleDateString("vi-VN", {
+                          month: "2-digit",
+                          year: "numeric",
+                        });
+                      } else {
+                        return label;
+                      }
+                    }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
+
         <div className="dashboard__chart__right dashboard__chart__children">
-          <div className="dashboard__chart__right__top">
-            <div className="dashboard__chart__right__top__left">
-              <span>Những brand bán chạy</span>
-            </div>
-            <div className="dashboard__chart__right__top__right">
-              <MoreOutlined />
-            </div>
-          </div>
-          <div className="dashboard__chart__right__mid">
-            {topBrands.map((brand) => (
-              <div
-                className="dashboard__chart__right__mid__item"
-                key={brand.id}
-              >
-                <div className="dashboard__chart__right__mid__item__left">
-                  <div
-                    className="dashboard__chart__right__mid__item__left__image"
-                    style={{
-                      backgroundImage: `url(${brand.image})`,
-                      backgroundSize: "cover",
-                      width: "50px",
-                      height: "50px",
-                    }}
-                  ></div>
-                  <div className="dashboard__chart__right__mid__item__left__brand">
-                    <div className="dashboard__chart__right__mid__item__left__brand__name">
-                      <span>{brand.name}</span>
-                    </div>
-                    <div className="dashboard__chart__right__mid__item__left__brand__description">
-                      <span>{brand.description}</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="dashboard__chart__right__mid__item__right">
-                  <div className="dashboard__chart__right__mid__item__right__price">
-                    <span>{brand.price}</span>
-                  </div>
-                  <div className="dashboard__chart__right__mid__item__right__sales">
-                    <span>{brand.sales} sales</span>
-                  </div>
-                </div>
+          <Spin spinning={dashboardState.loading}>
+            <div className="dashboard__chart__right__top">
+              <div className="dashboard__chart__right__top__left">
+                <span>Chi tiết hệ thống</span>
               </div>
-            ))}
-          </div>
-          <div className="dashboard__chart__right__bot">
-            <Button style={{ backgroundColor: "#d99041", color: "white" }}>
-              BÁO CÁO HOÀN CHỈNH
-            </Button>
-          </div>
+              <div className="dashboard__chart__right__top__right">
+                <Button type="text" icon={<MoreOutlined />} />
+              </div>
+            </div>
+            <div className="dashboard__chart__right__summary">
+              {renderStatCard(
+                "Danh mục",
+                dashboardState.categoriesCount,
+                <TagsOutlined />,
+                "#1890ff"
+              )}
+              {renderStatCard(
+                "Thương hiệu",
+                dashboardState.brandsCount,
+                <ShopOutlined />,
+                "#722ed1"
+              )}
+            </div>
+          </Spin>
         </div>
       </div>
-      <div className="dashboard__table">
+
+      {/* Table Section */}
+      {/* <div className="dashboard__table">
         <div className="dashboard__table__container">
           <div className="dashboard__table__container__header">
             <div className="dashboard__table__container__header__left">
               <span>Đơn hàng gần đây</span>
             </div>
             <div className="dashboard__table__container__header__right">
-              <MoreOutlined />
+              <Button type="text" icon={<MoreOutlined />} />
             </div>
           </div>
-          <div className="dashboard__table__container__body p-0">
-            {/* <Table
-              columns={columns}
-              dataSource={recentOrdersDummyData}
-              pagination={{ pageSize: 5 }}
-              scroll={{ x: "max-content" }}
-            /> */}
-            {/* <OrderManagement /> */}
+          <div className="dashboard__table__container__body">
             <OrderList />
           </div>
         </div>
-      </div>
-
-      {/* <PieChart width={400} height={200}>
-        <Pie
-          dataKey="totalSold"
-          nameKey="productName"
-          cx="50%"
-          cy="50%"
-          outerRadius={50}
-          fill="#8884d8"
-          label
-        />
-        <Tooltip />
-        <Legend />
-      </PieChart> */}
-      {/* <BarChart width={500} height={250} data={top5Mentor}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Bar dataKey="totalBooking" fill="#8884d8" />
-      </BarChart> */}
+      </div> */}
     </div>
   );
 }

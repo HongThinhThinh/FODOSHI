@@ -234,6 +234,11 @@ const OrderList = () => {
     navigate(`/admin/orders/${orderId}`);
   };
 
+  const toggleFilters = () => {
+    console.log("Toggling filters from:", showFilters, "to:", !showFilters);
+    setShowFilters((prevState) => !prevState);
+  };
+
   const columns = [
     {
       title: "Mã đơn hàng",
@@ -395,7 +400,7 @@ const OrderList = () => {
             <Button
               type={showFilters ? "primary" : "default"}
               icon={<FilterOutlined />}
-              onClick={() => setShowFilters(!showFilters)}
+              onClick={toggleFilters}
             >
               Bộ lọc {activeFilterCount > 0 && `(${activeFilterCount})`}
             </Button>

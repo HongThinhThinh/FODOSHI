@@ -94,3 +94,34 @@
     }
   }
 }
+
+.order-filters {
+  margin-bottom: 24px;
+  transition: max-height 0.5s ease, opacity 0.3s ease, margin-bottom 0.3s ease;
+  max-height: 500px; // Đảm bảo giá trị này đủ cao cho nội dung bộ lọc
+  opacity: 1;
+  overflow: hidden;
+
+  &.hide {
+    max-height: 0;
+    opacity: 0;
+    margin-bottom: 0;
+    pointer-events: none; // Ngăn tương tác khi ẩn
+  }
+
+  .filter-card {
+    background: white;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+    transform-origin: top;
+  }
+}
+
+// Đảm bảo nút filter có hiệu ứng khi được active
+button.ant-btn-primary {
+  background-color: #1890ff;
+
+  &:hover {
+    background-color: #40a9ff;
+  }
+}

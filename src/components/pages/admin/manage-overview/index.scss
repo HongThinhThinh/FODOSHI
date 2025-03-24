@@ -1,3 +1,297 @@
+// Variables
+$border-color: #f0f0f0;
+$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.1);
+$border-radius: 12px;
+$spacing-base: 8px;
+$spacing-lg: 16px;
+$spacing-xl: 24px;
+
+// Colors
+$text-primary: #1f1f1f;
+$text-secondary: #8c8c8c;
+$success-color: #3f8600;
+$primary-color: #1890ff;
+$error-color: #cf1322;
+$purple-color: #722ed1;
+
+// Mixins
+@mixin card-hover {
+  transition: all 0.3s ease;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-lg;
+  }
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin section-header {
+  font-size: 16px;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+@mixin card-base {
+  background: white;
+  border-radius: $border-radius;
+  padding: $spacing-xl;
+  box-shadow: $shadow-sm;
+}
+
+.dashboard {
+  padding: $spacing-xl;
+  background-color: #f0f2f5;
+  min-height: 100vh;
+
+  &__summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 24px;
+
+    .summary-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+      h4 {
+        margin-bottom: 16px;
+        font-size: 16px;
+        color: #333;
+      }
+
+      &.sales-ratio {
+        .circular-progress {
+          display: flex;
+          justify-content: center;
+          margin: 20px 0;
+        }
+
+        .sales-stats {
+          margin-top: 20px;
+
+          .stats-detail {
+            display: flex;
+            justify-content: space-around;
+
+            .stat-item {
+              text-align: center;
+
+              .label {
+                display: block;
+                color: #666;
+                margin-bottom: 4px;
+              }
+
+              .value {
+                font-size: 18px;
+                font-weight: 600;
+                color: #333;
+              }
+            }
+          }
+        }
+      }
+
+      &.performance {
+        .ant-statistic {
+          margin-bottom: 16px;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          .ant-statistic-title {
+            color: #666;
+          }
+        }
+      }
+
+      &.inventory {
+        .progress-section {
+          margin-top: 16px;
+        }
+
+        .progress-item {
+          margin-bottom: 16px;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+
+            .label {
+              color: #666;
+            }
+
+            .value {
+              font-weight: 600;
+              color: #333;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &__chart {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: $spacing-xl;
+    margin-bottom: $spacing-xl;
+
+    &__children {
+      @include card-base;
+    }
+
+    &__left,
+    &__right {
+      &__top {
+        @include flex-between;
+        margin-bottom: $spacing-xl;
+
+        &__left {
+          span {
+            @include section-header;
+          }
+        }
+
+        &__right {
+          display: flex;
+          gap: $spacing-base;
+        }
+      }
+    }
+
+    &__right {
+      .stat-card {
+        margin-bottom: $spacing-lg;
+        @include card-hover;
+
+        .ant-statistic {
+          .ant-statistic-title {
+            color: $text-secondary;
+            font-size: 14px;
+          }
+
+          .ant-statistic-content {
+            font-size: 24px;
+            font-weight: 600;
+          }
+        }
+      }
+
+      &__summary {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: $spacing-lg;
+        padding: $spacing-lg;
+
+        .stat-card {
+          height: 100%;
+          padding: $spacing-base;
+          @include card-hover;
+
+          .ant-statistic {
+            .ant-statistic-title {
+              font-size: 12px;
+              margin-bottom: 4px;
+            }
+
+            .ant-statistic-content {
+              font-size: 18px;
+              line-height: 1;
+
+              .ant-statistic-content-value {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+              }
+            }
+          }
+
+          .ant-progress {
+            margin-top: 8px;
+            line-height: 1;
+          }
+        }
+      }
+    }
+  }
+
+  &__stats {
+    margin-bottom: $spacing-xl;
+
+    .stat-card {
+      @include card-base;
+      @include card-hover;
+
+      .ant-statistic {
+        .ant-statistic-title {
+          color: $text-secondary;
+          font-size: 14px;
+        }
+
+        .ant-statistic-content {
+          font-size: 24px;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  &__table {
+    @include card-base;
+
+    &__container {
+      &__header {
+        @include flex-between;
+        margin-bottom: $spacing-xl;
+
+        &__left {
+          span {
+            @include section-header;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive styles
+@media (max-width: 1200px) {
+  .dashboard {
+    &__summary {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    &__chart {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    padding: $spacing-lg;
+
+    &__summary {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
 .dashboard__card {
   padding: 24px 16px;
   &__top {
@@ -137,6 +431,75 @@
           &__sales {
             span {
               opacity: 60%;
+            }
+          }
+        }
+      }
+    }
+    &__summary {
+      padding: 16px;
+
+      .ant-card {
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+        .ant-statistic {
+          text-align: center;
+
+          &-title {
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.65);
+          }
+
+          &-content {
+            font-size: 24px;
+            font-weight: bold;
+          }
+        }
+      }
+    }
+
+    &__brands {
+      padding: 16px;
+
+      &__title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        color: rgba(0, 0, 0, 0.85);
+      }
+
+      &__list {
+        .brand-card {
+          margin-bottom: 16px;
+          border-radius: 8px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          transition: all 0.3s ease;
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          }
+
+          h4 {
+            margin: 0 0 4px;
+            color: rgba(0, 0, 0, 0.85);
+          }
+
+          p {
+            margin: 0 0 12px;
+            color: rgba(0, 0, 0, 0.45);
+            font-size: 12px;
+          }
+
+          .brand-image {
+            border: 1px solid #f0f0f0;
+          }
+
+          .ant-statistic {
+            &-title {
+              font-size: 12px;
+              color: rgba(0, 0, 0, 0.45);
             }
           }
         }

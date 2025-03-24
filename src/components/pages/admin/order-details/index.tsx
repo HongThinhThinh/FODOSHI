@@ -24,6 +24,8 @@ import {
   Modal,
   Descriptions,
   Typography,
+  Tag,
+  Empty,
 } from "antd";
 import CustomizedCard from "../../../molecules/card/Card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -100,6 +102,12 @@ interface ApiOrder {
   };
   paymentMethod?: string;
   shippingMethod?: string;
+  orderHistories?: Array<{
+    id: string;
+    status: string;
+    note?: string;
+    createdAt: string;
+  }>;
 }
 
 interface ApiResponse {
@@ -179,12 +187,39 @@ export default function OrderDetails() {
             "No user information in order data - possibly a guest order"
           );
 
-          // For guest orders, check if there's a shipping address directly on the order
-          if (response.data.data.shippingAddress) {
+          // For guest orders, check for address information in the order.address field
+          if (response.data.data.address) {
+            // Set the address for display
+            setCustomerAddress(response.data.data.address);
+            console.log("Guest address found:", response.data.data.address);
+
+            // Create a guest info object from the address data
+            if (
+              response.data.data.address.guestName ||
+              response.data.data.address.guestPhone ||
+              response.data.data.address.guestEmail
+            ) {
+              const guestInfo = {
+                name: response.data.data.address.guestName || "Khách vãng lai",
+                email: response.data.data.address.guestEmail || "N/A",
+                phoneNumber: response.data.data.address.guestPhone || "N/A",
+                isGuest: true,
+              };
+
+              setCustomerInfo(guestInfo);
+              console.log("Created guest info object:", guestInfo);
+            }
+          } else if (response.data.data.shippingAddress) {
             setCustomerAddress(response.data.data.shippingAddress);
             console.log(
               "Guest shipping address set:",
               response.data.data.shippingAddress
+            );
+          } else if (response.data.data.orderAddress) {
+            setCustomerAddress(response.data.data.orderAddress);
+            console.log(
+              "Guest order address set:",
+              response.data.data.orderAddress
             );
           }
         }
@@ -233,9 +268,10 @@ export default function OrderDetails() {
     fetchOrderDetails();
   }, [id]);
 
+  // Cập nhật các column của bảng sản phẩm
   const columns: ColumnType<OrderDetails>[] = [
     {
-      title: "Product",
+      title: "Sản phẩm",
       dataIndex: "productName",
       key: "productName",
       render: (name, record) => (
@@ -253,18 +289,18 @@ export default function OrderDetails() {
       ),
     },
     {
-      title: "Quantity",
+      title: "Số lượng",
       dataIndex: "quantity",
       key: "quantity",
     },
     {
-      title: "Price",
+      title: "Giá",
       dataIndex: "price",
       key: "price",
       render: (price: number) => formatMoney(price),
     },
     {
-      title: "Total",
+      title: "Tổng tiền",
       key: "total",
       render: (_, record) => {
         const total = record.price * record.quantity;
@@ -273,18 +309,65 @@ export default function OrderDetails() {
     },
   ];
 
-  const handleMenuClick = (e) => {
-    setStatus(e.key);
-    // Here you would update the order status with an API call
-    console.log("Selected status:", e.key);
+  // Update the handleMenuClick function to better handle errors
+  const handleMenuClick = async (e) => {
+    const newStatus = e.key;
+
+    try {
+      console.log(`Updating order ${id} status to:`, newStatus);
+      setLoading(true);
+
+      const response = await api.patch(`/order/${id}/status`, {
+        status: newStatus,
+      });
+
+      if (response.data && response.data.statusCode === 200) {
+        setStatus(newStatus);
+        // Update the order data with the new status
+        setOrderData((prev) => (prev ? { ...prev, status: newStatus } : null));
+
+        message.success(
+          `Trạng thái đơn hàng đã được cập nhật thành ${getDisplayStatus(
+            newStatus
+          )}`
+        );
+
+        // Refresh the entire order to get updated history
+        fetchOrderDetails();
+      } else {
+        message.error(
+          `Không thể cập nhật trạng thái đơn hàng: ${
+            response.data?.message || "Unknown error"
+          }`
+        );
+      }
+    } catch (error) {
+      console.error("Error updating order status:", error);
+
+      // Show the specific error message from the API if available
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        message.error(`Lỗi: ${error.response.data.message}`);
+      } else {
+        message.error("Lỗi khi cập nhật trạng thái đơn hàng");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // Update the status menu with the correct allowed values
   const statusMenu = (
     <Menu onClick={handleMenuClick}>
-      <Menu.Item key="pending">Pending</Menu.Item>
-      <Menu.Item key="processing">Processing</Menu.Item>
-      <Menu.Item key="completed">Completed</Menu.Item>
-      <Menu.Item key="cancelled">Cancelled</Menu.Item>
+      <Menu.Item key="PENDING_PAYMENT">Chờ thanh toán</Menu.Item>
+      <Menu.Item key="PAID">Đã thanh toán</Menu.Item>
+      <Menu.Item key="PAYMENT_FAILED">Thanh toán thất bại</Menu.Item>
+      <Menu.Item key="AWAITING_PICKUP">Chờ lấy hàng</Menu.Item>
+      <Menu.Item key="AWAITING_DELIVERY">Đang giao hàng</Menu.Item>
+      <Menu.Item key="COMPLETED">Hoàn thành</Menu.Item>
     </Menu>
   );
 
@@ -292,13 +375,21 @@ export default function OrderDetails() {
   const getDisplayStatus = (apiStatus: string) => {
     switch (apiStatus) {
       case "PENDING_PAYMENT":
-        return "Pending Payment";
+        return "Chờ thanh toán";
+      case "PAID":
+        return "Đã thanh toán";
+      case "PAYMENT_FAILED":
+        return "Thanh toán thất bại";
+      case "AWAITING_PICKUP":
+        return "Chờ lấy hàng";
+      case "AWAITING_DELIVERY":
+        return "Đang giao hàng";
       case "COMPLETED":
-        return "Completed";
-      case "CANCELLED":
-        return "Cancelled";
+        return "Hoàn thành";
       default:
-        return "Processing";
+        return apiStatus
+          ? apiStatus.replace(/_/g, " ").toLowerCase()
+          : "Unknown Status";
     }
   };
 
@@ -310,81 +401,121 @@ export default function OrderDetails() {
     );
   };
 
-  // Modal content components
-  const CustomerModalContent = () => (
-    <Descriptions bordered column={1}>
-      <Descriptions.Item label="Name">
-        {customerInfo?.name || "N/A"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Email">
-        {customerInfo?.email || "N/A"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Phone">
-        {customerInfo?.phoneNumber || "N/A"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Username">
-        {customerInfo?.username || "N/A"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Role">
-        {customerInfo?.role || "N/A"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Registered On">
-        {customerInfo?.createdAt || "N/A"}
-      </Descriptions.Item>
-    </Descriptions>
-  );
-
-  const AddressModalContent = () => (
-    <Descriptions bordered column={1}>
-      <Descriptions.Item label="Address">
-        {customerAddress?.address || "N/A"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Commune">
-        {customerAddress?.commune || "N/A"}
-      </Descriptions.Item>
-      <Descriptions.Item label="District">
-        {customerAddress?.district || "N/A"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Province">
-        {customerAddress?.province || "N/A"}
-      </Descriptions.Item>
-      {customerAddress?.isDefault && (
-        <Descriptions.Item label="Default">Yes</Descriptions.Item>
-      )}
-    </Descriptions>
-  );
-
+  // Cập nhật OrderInfoModalContent
   const OrderInfoModalContent = () => (
     <Descriptions bordered column={1}>
-      <Descriptions.Item label="Order ID">
+      <Descriptions.Item label="Mã đơn hàng">
         {orderData?.id || "N/A"}
       </Descriptions.Item>
-      <Descriptions.Item label="Created At">
+      <Descriptions.Item label="Ngày tạo">
         {orderData?.createdAt || "N/A"}
       </Descriptions.Item>
-      <Descriptions.Item label="Status">
+      <Descriptions.Item label="Trạng thái">
         {getDisplayStatus(orderData?.status || "")}
       </Descriptions.Item>
-      <Descriptions.Item label="Total Price">
+      <Descriptions.Item label="Tổng tiền">
         {formatMoney(orderData?.totalPrice || 0)}
       </Descriptions.Item>
-      <Descriptions.Item label="Payment Method">
-        {orderData?.paymentMethod || "Credit Card"}
+      <Descriptions.Item label="Phương thức thanh toán">
+        {orderData?.paymentMethod || "Thẻ tín dụng"}
       </Descriptions.Item>
-      <Descriptions.Item label="Shipping Method">
-        {orderData?.shippingMethod || "Standard Shipping"}
+      <Descriptions.Item label="Phương thức vận chuyển">
+        {orderData?.shippingMethod || "Vận chuyển tiêu chuẩn"}
       </Descriptions.Item>
-      <Descriptions.Item label="Number of Items">
+      <Descriptions.Item label="Số lượng mặt hàng">
         {orderData?.orderItems?.length || 0}
       </Descriptions.Item>
     </Descriptions>
   );
 
+  // Cập nhật CustomerModalContent
+  const CustomerModalContent = () => (
+    <Descriptions bordered column={1}>
+      {customerInfo ? (
+        <>
+          <Descriptions.Item label="Tên">
+            {customerInfo.name}
+            {customerInfo.isGuest && (
+              <Tag color="orange" style={{ marginLeft: 8 }}>
+                Khách vãng lai
+              </Tag>
+            )}
+          </Descriptions.Item>
+          <Descriptions.Item label="Email">
+            {customerInfo.email}
+          </Descriptions.Item>
+          <Descriptions.Item label="Số điện thoại">
+            {customerInfo.phoneNumber}
+          </Descriptions.Item>
+          {!customerInfo.isGuest && (
+            <>
+              <Descriptions.Item label="Tên đăng nhập">
+                {customerInfo.username}
+              </Descriptions.Item>
+              <Descriptions.Item label="Vai trò">
+                {customerInfo.role}
+              </Descriptions.Item>
+              <Descriptions.Item label="Ngày đăng ký">
+                {customerInfo.createdAt}
+              </Descriptions.Item>
+            </>
+          )}
+        </>
+      ) : (
+        <>
+          <Descriptions.Item label="Loại khách hàng">
+            <strong>Khách vãng lai</strong>
+          </Descriptions.Item>
+          <Descriptions.Item label="Ghi chú">
+            Đây là đơn hàng của khách vãng lai không có thông tin đăng ký
+          </Descriptions.Item>
+        </>
+      )}
+    </Descriptions>
+  );
+
+  // Cập nhật AddressModalContent
+  const AddressModalContent = () => (
+    <Descriptions bordered column={1}>
+      <Descriptions.Item label="Địa chỉ">
+        {customerAddress?.address || "N/A"}
+      </Descriptions.Item>
+      <Descriptions.Item label="Phường/Xã">
+        {customerAddress?.commune || "N/A"}
+      </Descriptions.Item>
+      <Descriptions.Item label="Quận/Huyện">
+        {customerAddress?.district || "N/A"}
+      </Descriptions.Item>
+      <Descriptions.Item label="Tỉnh/Thành phố">
+        {customerAddress?.province || "N/A"}
+      </Descriptions.Item>
+      {customerAddress?.isDefault && (
+        <Descriptions.Item label="Mặc định">Có</Descriptions.Item>
+      )}
+      {customerAddress?.guestName && (
+        <Descriptions.Item label="Tên khách">
+          {customerAddress.guestName}
+        </Descriptions.Item>
+      )}
+      {customerAddress?.guestPhone && (
+        <Descriptions.Item label="SĐT khách">
+          {customerAddress.guestPhone}
+        </Descriptions.Item>
+      )}
+      {customerAddress?.guestEmail && (
+        <Descriptions.Item label="Email khách">
+          {customerAddress.guestEmail}
+        </Descriptions.Item>
+      )}
+    </Descriptions>
+  );
+
+  // Cập nhật nội dung loading và error
   if (loading) {
     return (
       <div className="order-details-loading">
         <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
-        <p>Loading order details...</p>
+        <p>Đang tải thông tin đơn hàng...</p>
       </div>
     );
   }
@@ -392,17 +523,18 @@ export default function OrderDetails() {
   if (!orderData) {
     return (
       <div className="order-details-error">
-        <p>Order not found or an error occurred.</p>
+        <p>Không tìm thấy đơn hàng hoặc đã xảy ra lỗi.</p>
       </div>
     );
   }
 
+  // Cập nhật phần giao diện chính
   return (
     <div className="order-details">
       <div className="order-details__info">
         <div className="order-details__info__header">
           <div className="order-details__info__header__id">
-            Order ID: #{orderData.id}
+            Mã đơn hàng: #{orderData.id}
           </div>
           <div className="order-details__info__header__status">
             <span>{getDisplayStatus(orderData.status)}</span>
@@ -422,7 +554,7 @@ export default function OrderDetails() {
               <PrinterOutlined />
             </button>
             <button className="order-details__info__sub-header__tools__save">
-              <span>Save</span>
+              <span>Lưu</span>
             </button>
           </div>
         </div>
@@ -434,7 +566,7 @@ export default function OrderDetails() {
           >
             {[
               {
-                title: "Customer",
+                title: "Khách hàng",
                 value: 0,
                 icon: <UserOutlined />,
                 details: (
@@ -443,6 +575,9 @@ export default function OrderDetails() {
                       <>
                         <div>
                           <UserOutlined /> {customerInfo.name || "N/A"}
+                          {customerInfo.isGuest && (
+                            <strong> (Khách vãng lai)</strong>
+                          )}
                         </div>
                         <div>
                           <MailOutlined /> {customerInfo.email || "N/A"}
@@ -452,32 +587,42 @@ export default function OrderDetails() {
                         </div>
                       </>
                     ) : (
-                      <div>Customer information not available</div>
+                      <div>
+                        <div>
+                          <UserOutlined /> <strong>Khách vãng lai</strong>
+                        </div>
+                        <div>
+                          <MailOutlined /> N/A
+                        </div>
+                        <div>
+                          <PhoneOutlined /> N/A
+                        </div>
+                      </div>
                     )}
                   </div>
                 ),
-                onDetail: handleCustomerDetailClick, // Use the named function
+                onDetail: handleCustomerDetailClick,
               },
               {
-                title: "Order Information",
+                title: "Thông tin đơn hàng",
                 value: 0,
                 icon: <ShoppingOutlined />,
                 details: (
                   <div>
                     <div>
-                      Shipping:{" "}
-                      {orderData.shippingMethod || "Standard Shipping"}
+                      Vận chuyển:{" "}
+                      {orderData.shippingMethod || "Vận chuyển tiêu chuẩn"}
                     </div>
                     <div>
-                      Payment: {orderData.paymentMethod || "Credit Card"}
+                      Thanh toán: {orderData.paymentMethod || "Thẻ tín dụng"}
                     </div>
-                    <div>Status: {getDisplayStatus(orderData.status)}</div>
+                    <div>Trạng thái: {getDisplayStatus(orderData.status)}</div>
                   </div>
                 ),
-                onDetail: handleOrderInfoDetailClick, // Use the named function
+                onDetail: handleOrderInfoDetailClick,
               },
               {
-                title: "Shipping Address",
+                title: "Địa chỉ giao hàng",
                 value: 0,
                 icon: <HomeOutlined />,
                 details: (
@@ -488,11 +633,11 @@ export default function OrderDetails() {
                         {customerAddress.district}, {customerAddress.province}
                       </span>
                     ) : (
-                      <span>Address information not available</span>
+                      <span>Không có thông tin địa chỉ</span>
                     )}
                   </div>
                 ),
-                onDetail: handleAddressDetailClick, // Use the named function
+                onDetail: handleAddressDetailClick,
               },
             ].map((item, index) => (
               <Col key={index} flex="1 1 0" style={{ maxWidth: "360px" }}>
@@ -517,7 +662,7 @@ export default function OrderDetails() {
                   </div>
                   <div className="order-details__info__customer-info__container__bottom">
                     <div className="order-details__info__customer-info__container__bottom__button">
-                      <button onClick={item.onDetail}>Details</button>
+                      <button onClick={item.onDetail}>Chi tiết</button>
                     </div>
                   </div>
                 </CustomizedCard>
@@ -529,86 +674,86 @@ export default function OrderDetails() {
         <div className="order-details__info__payment">
           <div className="order-details__info__payment__info">
             <div className="order-details__info__payment__info__title">
-              <div>Payment Information</div>
+              <div>Thông tin thanh toán</div>
             </div>
             <div className="order-details__info__payment__info__description">
               <div>
                 <FontAwesomeIcon icon={faCcMastercard} />
                 <span className="order-details__info__payment__info__description__item">
-                  Credit Card Payment
+                  Thanh toán bằng thẻ tín dụng
                 </span>
               </div>
             </div>
           </div>
           <div className="order-details__info__payment__note">
             <div className="order-details__info__payment__note__title">
-              <span>Notes</span>
+              <span>Ghi chú</span>
             </div>
             <div className="order-details__info__payment__note__description">
-              <span>Additional notes:</span>
+              <span>Ghi chú bổ sung:</span>
             </div>
           </div>
         </div>
 
-        {/* Customer Modal */}
+        {/* Các Modal */}
         <Modal
-          title="Customer Information"
-          open={customerModalVisible} // Change visible to open
-          visible={customerModalVisible} // Adding for backward compatibility
+          title="Thông tin khách hàng"
+          open={customerModalVisible}
+          visible={customerModalVisible}
           onCancel={() => setCustomerModalVisible(false)}
           footer={[
             <Button key="close" onClick={() => setCustomerModalVisible(false)}>
-              Close
+              Đóng
             </Button>,
           ]}
           width={600}
-          zIndex={1050} // Ensure it shows on top
-          destroyOnClose={true} // Clean up when closed
+          zIndex={1050}
+          destroyOnClose={true}
         >
           <CustomerModalContent />
         </Modal>
 
-        {/* Address Modal */}
         <Modal
-          title="Shipping Address Details"
-          open={addressModalVisible} // Change visible to open
-          visible={addressModalVisible} // Adding for backward compatibility
+          title="Chi tiết địa chỉ giao hàng"
+          open={addressModalVisible}
+          visible={addressModalVisible}
           onCancel={() => setAddressModalVisible(false)}
           footer={[
             <Button key="close" onClick={() => setAddressModalVisible(false)}>
-              Close
+              Đóng
             </Button>,
           ]}
           width={600}
-          zIndex={1050} // Ensure it shows on top
-          destroyOnClose={true} // Clean up when closed
+          zIndex={1050}
+          destroyOnClose={true}
         >
           <AddressModalContent />
         </Modal>
 
-        {/* Order Info Modal */}
         <Modal
-          title="Order Information"
-          open={orderInfoModalVisible} // Change visible to open
-          visible={orderInfoModalVisible} // Adding for backward compatibility
+          title="Thông tin đơn hàng"
+          open={orderInfoModalVisible}
+          visible={orderInfoModalVisible}
           onCancel={() => setOrderInfoModalVisible(false)}
           footer={[
             <Button key="close" onClick={() => setOrderInfoModalVisible(false)}>
-              Close
+              Đóng
             </Button>,
           ]}
           width={600}
-          zIndex={1050} // Ensure it shows on top
-          destroyOnClose={true} // Clean up when closed
+          zIndex={1050}
+          destroyOnClose={true}
         >
           <OrderInfoModalContent />
         </Modal>
       </div>
 
-      {/* Product list and bill section */}
+      {/* Danh sách sản phẩm và hóa đơn */}
       <div className="order-details__list">
         <div className="order-details__list__header">
-          <div className="order-details__list__header__left">Product List</div>
+          <div className="order-details__list__header__left">
+            Danh sách sản phẩm
+          </div>
           <div className="order-details__list__header__right">
             <MoreOutlined />
           </div>
@@ -620,25 +765,25 @@ export default function OrderDetails() {
           <div className="order-details__list__bill__content">
             <div className="order-details__list__bill__content__item">
               <span className="order-details__list__bill__content__item__title">
-                Subtotal
+                Tổng giá trị
               </span>
               <span>{formatMoney(calculateTotal())}</span>
             </div>
             <div className="order-details__list__bill__content__item">
               <span className="order-details__list__bill__content__item__title">
-                Tax
+                Thuế
               </span>
               <span>{formatMoney(0)}</span>
             </div>
             <div className="order-details__list__bill__content__item">
               <span className="order-details__list__bill__content__item__title">
-                Discount
+                Giảm giá
               </span>
               <span>{formatMoney(0)}</span>
             </div>
             <div className="order-details__list__bill__content__item">
               <span className="order-details__list__bill__content__item__title">
-                Shipping Fee
+                Phí vận chuyển
               </span>
               <span>{formatMoney(0)}</span>
             </div>
@@ -647,13 +792,72 @@ export default function OrderDetails() {
                 id="total"
                 className="order-details__list__bill__content__item__title"
               >
-                Total Amount
+                Tổng thanh toán
               </span>
               <span id="totalValue">{formatMoney(orderData.totalPrice)}</span>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Lịch sử đơn hàng */}
+      <div className="order-details__history">
+        <div className="order-details__history__header">
+          <div className="order-details__history__header__left">
+            Lịch sử đơn hàng
+          </div>
+        </div>
+        <div className="order-details__history__content">
+          {orderData.orderHistories && orderData.orderHistories.length > 0 ? (
+            <div className="order-details__history__timeline">
+              {orderData.orderHistories.map((history) => (
+                <div
+                  key={history.id}
+                  className="order-details__history__timeline__item"
+                >
+                  <div className="order-details__history__timeline__item__date">
+                    {history.createdAt}
+                  </div>
+                  <div className="order-details__history__timeline__item__status">
+                    <Tag
+                      color={
+                        history.status === "PENDING_PAYMENT"
+                          ? "orange"
+                          : history.status === "COMPLETED"
+                          ? "green"
+                          : history.status === "CANCELLED"
+                          ? "red"
+                          : history.status === "PAID"
+                          ? "blue"
+                          : "default"
+                      }
+                    >
+                      {getDisplayStatus(history.status)}
+                    </Tag>
+                  </div>
+                  {history.note && (
+                    <div className="order-details__history__timeline__item__note">
+                      Ghi chú: {history.note}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <Empty description="Chưa có lịch sử đơn hàng" />
+          )}
+        </div>
+      </div>
     </div>
   );
 }
+
+// Status to tag color mapping - update with correct values
+const statusColors = {
+  PENDING_PAYMENT: "orange",
+  PAID: "green",
+  PAYMENT_FAILED: "red",
+  AWAITING_PICKUP: "purple",
+  AWAITING_DELIVERY: "blue",
+  COMPLETED: "cyan",
+};
