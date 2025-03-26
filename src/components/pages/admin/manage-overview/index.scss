@@ -194,7 +194,6 @@ $purple-color: #722ed1;
 
       &__summary {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
         gap: $spacing-lg;
         padding: $spacing-lg;
 
@@ -271,15 +270,13 @@ $purple-color: #722ed1;
   &__chart__right {
     &__summary {
       padding: 0 16px 16px;
-
+      height: 340px;
+      overflow-y: scroll;
       .recently-sold-list {
         display: flex;
         flex-direction: column;
         gap: 12px;
-        max-height: 400px;
         width: 100%;
-        overflow-y: auto; // Thêm scrollbar khi nội dung vượt quá
-
         .recently-sold-item {
           display: flex;
           padding: 12px;
