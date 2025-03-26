@@ -48,12 +48,12 @@ function ProductCard({ product }: ProductCardProps) {
         dispatch({
           type: "cart/add",
           payload: {
-            id: product.id,
-            name: product.name,
-            price: product.sellingPrice,
-            image: product.mainImage || product.imageUrls?.[0]?.image || "",
+            id: product?.id,
+            name: product?.name,
+            price: product?.sellingPrice,
+            image: product?.mainImage || product?.imageUrls?.[0]?.image || "",
             quantity: 1,
-            originalPrice: product.originalPrice,
+            originalPrice: product?.originalPrice,
           },
         });
         message.success("Thêm giỏ hàng thành công");
@@ -66,17 +66,17 @@ function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div
-      key={product.id}
+      key={product?.id}
       className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-300 w-[280px] h-[400px] group"
       onClick={handleProductClick}
     >
       <div className="relative h-[280px] w-full overflow-hidden">
         <img
-          src={product.mainImage || product.imageUrls?.[0]?.image || ""}
-          alt={product.name}
+          src={product?.mainImage || product?.imageUrls?.[0]?.image || ""}
+          alt={product?.name}
           className="absolute top-0 left-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
-        {product.originalPrice > product.sellingPrice && (
+        {product?.originalPrice > product?.sellingPrice && (
           <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs z-10">
             Sale
           </div>
@@ -91,31 +91,31 @@ function ProductCard({ product }: ProductCardProps) {
       <div className="p-4 h-[120px] flex flex-col justify-between">
         <div>
           <div className="flex items-center gap-1 mb-1">
-            {product.brands?.map((brand) => (
+            {product?.brands?.map((brand) => (
               <span key={brand.id} className="text-xs bg-gray-100 px-1 rounded">
-                {brand.name}
+                {brand?.name}
               </span>
             ))}
           </div>
           <h3 className="text-sm font-medium mb-1 line-clamp-2">
-            {product.name}
+            {product?.name}
           </h3>
         </div>
         <div className="flex items-center justify-between">
           <div>
             <span className="text-red-500 font-semibold">
-              {product.sellingPrice?.toLocaleString("vi-VN")}₫
+              {product?.sellingPrice?.toLocaleString("vi-VN")}₫
             </span>
-            {product.originalPrice > product.sellingPrice && (
+            {product?.originalPrice > product?.sellingPrice && (
               <span className="text-gray-400 text-xs line-through ml-1">
-                {product.originalPrice?.toLocaleString("vi-VN")}₫
+                {product?.originalPrice?.toLocaleString("vi-VN")}₫
               </span>
             )}
           </div>
           <div className="text-xs text-gray-500">
-            {product.gender === "MALE"
+            {product?.gender === "MALE"
               ? "Nam"
-              : product.gender === "FEMALE"
+              : product?.gender === "FEMALE"
               ? "Nữ"
               : "Unisex"}
           </div>

@@ -1,6 +1,7 @@
 import { Navigation } from "swiper/modules";
 import {
   bannerHomepage,
+  bannerHomepage2,
   reasonCard,
   socialCard,
 } from "../../../assets/contant";
@@ -45,8 +46,14 @@ function HomePage() {
     <>
       {/* -------------Banner------------- */}
       <section className="homepage-banner__container">
-        <img className="homepage-banner__img" src={bannerHomepage} alt="" />
-        {isBigScreen && (
+        <img
+
+          onClick={() => navigate("/newProduct")}
+          className="homepage-banner__img "
+          src={bannerHomepage2}
+          alt=""
+        />
+        {/* {isBigScreen && (
           <div
             className="homepage-banner__content"
             data-aos="fade-right"
@@ -93,7 +100,7 @@ function HomePage() {
               Mua ngay
             </ButtonComponent>
           </div>
-        )}
+        )} */}
       </section>
 
       {/* -------------Reason------------- */}

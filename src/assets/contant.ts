@@ -7,12 +7,14 @@ import image8 from "../../public/image/image 8.png";
 import social1 from "../../public/soical-card/Frame 2609149.png";
 import social2 from "../../public/soical-card/Frame 2609149 (1).png";
 import social3 from "../../public/soical-card/Frame 2609149 (2).png";
+import banner2 from "../../public/banner (6).jpg";
 export const imageGirl = image8;
 export const footerBackground = background;
 export const bannerHomepage = banner;
 export const bannerMalePage = Malebanner;
 export const logo = fodoshi;
 export const logoWhite = fodoshi_white;
+export const bannerHomepage2 = banner2;
 
 export const navbar = [
   {
@@ -24,10 +26,6 @@ export const navbar = [
     name: "Hàng nhập mới",
   },
 
-  {
-    path: "shoeSize",
-    name: "Bảng size giày",
-  },
   {
     path: "blog",
     name: "Blog",

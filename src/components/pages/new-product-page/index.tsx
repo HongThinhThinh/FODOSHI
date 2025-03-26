@@ -43,8 +43,14 @@ function NewProductPage() {
     try {
       const response = await api.get("/products");
       if (response.data && response.data) {
-        setProducts(response.data);
-        setFilteredProducts(response.data);
+        // Chỉ lấy các sản phẩm chưa bị xóa (isDeleted = false)
+        const activeProducts = response.data.filter((item) => !item.deleted);
+
+        // Cập nhật cả hai state với dữ liệu nhất quán
+        setProducts(activeProducts);
+        setFilteredProducts(activeProducts);
+
+        console.log(`Đã tải ${activeProducts.length} sản phẩm hiện hành`);
       }
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -53,7 +59,6 @@ function NewProductPage() {
       setLoading(false);
     }
   };
-
   const fetchBrands = async () => {
     try {
       const response = await api.get("/brands/active");
