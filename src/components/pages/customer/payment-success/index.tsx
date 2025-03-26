@@ -51,15 +51,25 @@ const PaymentSuccess = () => {
 
   const fetchOrderDetails = async (id: string) => {
     try {
-      const response = await api.get(`/order/${id}`);
+      let response;
+
+      if (user) {
+        // Authenticated user - use regular endpoint
+        response = await api.get(`/order/${id}`);
+      } else {
+        // Guest user - use guess endpoint
+        response = await api.get(`/order/guess/${id}`);
+      }
+
       if (response.data && response.data.data) {
         setOrderDetails(response.data.data);
+        console.log("Order details loaded:", response.data.data);
       }
     } catch (error) {
       console.error("Error fetching order details:", error);
-      message.error(
-        "Không thể tải thông tin đơn hàng. Vui lòng liên hệ CSKH FODOSHI."
-      );
+      // message.error(
+      //   "Không thể tải thông tin đơn hàng. Vui lòng liên hệ CSKH FODOSHI."
+      // );
     } finally {
       setLoading(false);
     }
@@ -70,7 +80,7 @@ const PaymentSuccess = () => {
 
     try {
       let response;
-
+      console.log(user);
       if (user) {
         // Authenticated user - use regular endpoint
         response = await api.patch(`/order/${id}/status`, {

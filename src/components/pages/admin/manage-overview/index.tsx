@@ -9,6 +9,7 @@ import {
   Typography,
   Divider,
   Space,
+  Empty,
 } from "antd";
 import React, { useState, useEffect } from "react";
 import {
@@ -79,6 +80,16 @@ interface DashboardState {
   loading: boolean;
 }
 
+// Thêm interface này vào phần đầu component
+interface RecentlySoldProduct {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  brandName: string;
+  soldAt: string;
+}
+
 // Constants
 const PERIOD_BUTTONS = [
   { key: "DAY", label: "THEO NGÀY" },
@@ -86,6 +97,14 @@ const PERIOD_BUTTONS = [
   { key: "MONTH", label: "THEO THÁNG" },
   { key: "YEAR", label: "THEO NĂM" },
 ];
+
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    minimumFractionDigits: 0,
+  }).format(value);
+};
 
 function Dashboard() {
   const [activeButton, setActiveButton] = useState<string>("DAY");
@@ -99,6 +118,12 @@ function Dashboard() {
     brandsCount: 0,
     loading: false,
   });
+  // Thêm state mới để lưu doanh thu ngày hiện tại
+  const [todayRevenue, setTodayRevenue] = useState<number>(0);
+  // Thêm state này vào trong function Dashboard
+  const [recentlySoldProducts, setRecentlySoldProducts] = useState<
+    RecentlySoldProduct[]
+  >([]);
 
   // Function to fetch revenue data from API
   const fetchRevenueData = async (startDate?: string, endDate?: string) => {
@@ -143,15 +168,29 @@ function Dashboard() {
       console.log("API Response:", response);
 
       if (response.data?.data?.revenueData) {
-        // Convert the revenue data object to array and filter out zero values
-        const filteredData = Object.entries(response.data.data.revenueData)
-          .filter(([, value]) => value > 0)
-          .map(([name, value]) => ({
+        // Lấy ngày hiện tại theo định dạng YYYY-MM-DD
+        const today = new Date().toISOString().split("T")[0];
+        console.log("Today's date:", today);
+
+        // Lấy doanh thu của ngày hiện tại từ dữ liệu API
+        const todayRevenueValue = response.data.data.revenueData[today] || 0;
+        console.log("Today's revenue:", todayRevenueValue);
+
+        // Cập nhật state doanh thu ngày hiện tại
+        setTodayRevenue(todayRevenueValue);
+
+        // Convert the revenue data object to array without filtering zero values
+        const chartData = Object.entries(response.data.data.revenueData).map(
+          ([name, value]) => ({
             name,
             value,
-          }));
+          })
+        );
 
-        setChartData(filteredData);
+        // Only take the last 7 days if there are too many data points
+        const lastWeekData = chartData.slice(-7);
+
+        setChartData(lastWeekData);
       }
     } catch (error) {
       console.error("Error fetching revenue data:", error);
@@ -163,7 +202,7 @@ function Dashboard() {
     }
   };
 
-  // Function to fetch all dashboard data
+  // Cập nhật hàm fetchDashboardData
   const fetchDashboardData = async () => {
     setDashboardState((prev) => ({ ...prev, loading: true }));
     try {
@@ -186,9 +225,31 @@ function Dashboard() {
         brandsCount: brandsRes.data.data,
         loading: false,
       });
+
+      // Gọi API sản phẩm đã bán gần đây
+      fetchRecentlySoldProducts();
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
       setDashboardState((prev) => ({ ...prev, loading: false }));
+    }
+  };
+
+  // Thêm hàm này vào trong component Dashboard
+  const fetchRecentlySoldProducts = async (limit: number = 10) => {
+    try {
+      const response = await api.get<ApiResponse<RecentlySoldProduct[]>>(
+        "/admin/dashboard/recently-sold",
+        {
+          params: { limit },
+        }
+      );
+
+      if (response.data && response.data.data) {
+        setRecentlySoldProducts(response.data.data);
+        console.log("Recently sold products:", response.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching recently sold products:", error);
     }
   };
 
@@ -308,17 +369,41 @@ function Dashboard() {
           <Space direction="vertical" size="large" style={{ width: "100%" }}>
             <Statistic
               title="Doanh thu"
-              value={chartData[0]?.value || 0}
+              value={todayRevenue}
+              formatter={(value) => formatCurrency(value as number)}
               prefix={<DollarOutlined />}
-              suffix="đ"
               valueStyle={{ color: "#3f8600", fontSize: "24px" }}
             />
-            <Statistic
-              title="Đơn hàng"
-              value={dashboardState.productsSold?.count || 0}
-              prefix={<ShoppingOutlined />}
-              valueStyle={{ color: "#cf1322", fontSize: "24px" }}
-            />
+            <Space
+              direction="horizontal"
+              size="large"
+              style={{ width: "100%", justifyContent: "space-between" }}
+            >
+              <Statistic
+                title="Danh mục"
+                value={dashboardState.categoriesCount}
+                prefix={<TagsOutlined />}
+                valueStyle={{ color: "#cf1322", fontSize: "24px" }}
+              />
+              <Statistic
+                title="Thương hiệu"
+                value={dashboardState.brandsCount || 0}
+                prefix={<ShopOutlined />}
+                valueStyle={{ color: "#cf1322", fontSize: "24px" }}
+              />
+              {/* {renderStatCard(
+              "Danh mục",
+              dashboardState.categoriesCount,
+              <TagsOutlined />,
+              "#1890ff"
+            )}
+            {renderStatCard(
+              "Thương hiệu",
+              dashboardState.brandsCount,
+              <ShopOutlined />,
+              "#722ed1"
+            )} */}
+            </Space>
           </Space>
         </div>
 
@@ -492,24 +577,46 @@ function Dashboard() {
           <Spin spinning={dashboardState.loading}>
             <div className="dashboard__chart__right__top">
               <div className="dashboard__chart__right__top__left">
-                <span>Chi tiết hệ thống</span>
+                <span>Các sản phẩm đã bán gần đây</span>
               </div>
               <div className="dashboard__chart__right__top__right">
                 <Button type="text" icon={<MoreOutlined />} />
               </div>
             </div>
             <div className="dashboard__chart__right__summary">
-              {renderStatCard(
-                "Danh mục",
-                dashboardState.categoriesCount,
-                <TagsOutlined />,
-                "#1890ff"
-              )}
-              {renderStatCard(
-                "Thương hiệu",
-                dashboardState.brandsCount,
-                <ShopOutlined />,
-                "#722ed1"
+              {recentlySoldProducts.length > 0 ? (
+                <div className="recently-sold-list">
+                  {recentlySoldProducts.map((product) => (
+                    <div key={product.id} className="recently-sold-item">
+                      <div className="product-image">
+                        <img src={product.image} alt={product.name} />
+                      </div>
+                      <div className="product-details">
+                        <div className="product-name">{product.name}</div>
+                        <div className="product-brand">{product.brandName}</div>
+                        <div className="product-price">
+                          {formatCurrency(product.price)}
+                        </div>
+                        <div className="product-date">
+                          {new Date(product.soldAt).toLocaleDateString(
+                            "vi-VN",
+                            {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            }
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="empty-products">
+                  <Empty description="Chưa có sản phẩm nào được bán gần đây" />
+                </div>
               )}
             </div>
           </Spin>

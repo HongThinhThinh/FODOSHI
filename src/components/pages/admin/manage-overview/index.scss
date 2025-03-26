@@ -267,6 +267,94 @@ $purple-color: #722ed1;
       }
     }
   }
+
+  &__chart__right {
+    &__summary {
+      padding: 0 16px 16px;
+
+      .recently-sold-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        max-height: 400px;
+        width: 100%;
+        overflow-y: auto; // Thêm scrollbar khi nội dung vượt quá
+
+        .recently-sold-item {
+          display: flex;
+          padding: 12px;
+          border-radius: 8px;
+          background: #f9f9f9;
+          transition: all 0.3s;
+          width: 100%; // Đảm bảo width 100%
+          box-sizing: border-box; // Đảm bảo padding không làm tăng kích thước
+
+          &:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+          }
+
+          .product-image {
+            width: 60px;
+            height: 60px;
+            min-width: 60px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-right: 12px;
+
+            img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
+          }
+
+          .product-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-width: 0; // Đảm bảo nội dung không bị tràn
+
+            .product-name {
+              font-weight: 600;
+              font-size: 14px;
+              color: #333;
+              margin-bottom: 2px;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+
+            .product-brand {
+              font-size: 12px;
+              color: #666;
+              margin-bottom: 4px;
+            }
+
+            .product-price {
+              font-weight: 600;
+              color: #f5222d;
+              margin-bottom: 2px;
+            }
+
+            .product-date {
+              font-size: 12px;
+              color: #999;
+            }
+          }
+        }
+      }
+
+      .empty-products {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 200px;
+      }
+    }
+  }
 }
 
 // Responsive styles

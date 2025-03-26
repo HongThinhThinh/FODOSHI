@@ -43,6 +43,7 @@ export interface CheckoutProps {
   discount: number;
   grandTotal: number;
   selectedCartItems: string[]; // Thêm prop này
+  onCheckoutSuccess?: () => void; // Thêm callback này
 }
 
 export default function Checkout({
@@ -53,6 +54,7 @@ export default function Checkout({
   discount,
   grandTotal,
   selectedCartItems, // Nhận prop này
+  onCheckoutSuccess, // Nhận callback này
 }: CheckoutProps) {
   // Add user from Redux
   const user = useSelector((state: RootState) => state.user);
@@ -477,12 +479,21 @@ export default function Checkout({
       // Rest of the function remains the same...
       if (response.data?.data?.checkoutUrl) {
         window.location.href = response.data.data.checkoutUrl;
+        // Nếu là COD thì gọi callback luôn
+        if (selectedPayment === "COD" && onCheckoutSuccess) {
+          onCheckoutSuccess();
+        }
       } else {
         message.success(
           user
             ? "Đặt hàng thành công! Cảm ơn bạn đã mua hàng."
             : "Đặt hàng thành công! Bạn sẽ nhận được cuộc gọi xác nhận từ chúng tôi."
         );
+
+        // Gọi callback onCheckoutSuccess để xóa giỏ hàng
+        if (onCheckoutSuccess) {
+          onCheckoutSuccess();
+        }
 
         // If guest and COD, still save locally for reference
         if (!user) {

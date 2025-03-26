@@ -3,7 +3,7 @@ import "./index.scss";
 import { DeleteOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../redux/store";
-import { remove, changeQuantity } from "../../../../redux/features/cartSlice";
+import { remove, reset } from "../../../../redux/features/cartSlice";
 
 import ButtonComponent from "../../../atoms/button";
 import { Link, useNavigate } from "react-router-dom";
@@ -43,7 +43,7 @@ export default function Cart() {
     ? getParams?.data?.data?.cartItems || []
     : reduxCartItems.map((item) => ({
         id: item.id,
-        quantity: item.quantity,
+        quantity: 1, // Luôn đặt số lượng là 1 vì sản phẩm đồ cũ
         product: {
           id: item.id,
           name: item.name,
@@ -62,8 +62,8 @@ export default function Cart() {
     if (cartData && cartData.length > 0 && selectedItems.length > 0) {
       for (const item of cartData) {
         if (item.product && selectedItems.includes(item.product.id)) {
-          calculatedSubtotal +=
-            (item.product.sellingPrice || 0) * (item.quantity || 1);
+          // Luôn tính với số lượng là 1
+          calculatedSubtotal += item.product.sellingPrice || 0;
         }
       }
     }
@@ -71,6 +71,31 @@ export default function Cart() {
     setSubtotal(calculatedSubtotal);
     setGrandTotal(calculatedSubtotal + shippingFee - discount);
   }, [cartData, selectedItems, shippingFee, discount]);
+
+  // Hàm xóa toàn bộ giỏ hàng
+  const clearCart = async () => {
+    try {
+      if (user) {
+        // Xóa giỏ hàng qua API nếu đã đăng nhập
+        await api.delete("/cart");
+        getParams.refetch();
+      } else {
+        // Sử dụng Redux để xóa giỏ hàng nếu khách vãng lai
+        dispatch(reset());
+      }
+
+      // Reset các state
+      setSelectedItems([]);
+      setSelectedCartItems([]);
+
+      // Update totals
+      calculateTotals();
+
+      message.success("Giỏ hàng đã được xóa sau khi thanh toán thành công!");
+    } catch (error) {
+      console.error("Lỗi khi xóa giỏ hàng:", error);
+    }
+  };
 
   useEffect(() => {
     calculateTotals();
@@ -154,6 +179,12 @@ export default function Cart() {
       setSelectedItems(allProductIds);
       setSelectedCartItems(allCartItemIds);
     }
+  };
+
+  // Xử lý khi thanh toán thành công
+  const handleCheckoutSuccess = () => {
+    clearCart();
+    setOpenCheckout(false);
   };
 
   // Check if all items are selected
@@ -252,7 +283,6 @@ export default function Cart() {
                 </div>
                 <div className="cart__items__item__category--mobile">
                   {/* Mobile view content */}
-                  {/* ... rest of the component stays the same ... */}
                 </div>
               </div>
             );
@@ -298,8 +328,8 @@ export default function Cart() {
         shippingFee={shippingFee}
         discount={discount}
         grandTotal={grandTotal}
-        selectedItems={selectedItems}
         selectedCartItems={selectedCartItems}
+        onCheckoutSuccess={handleCheckoutSuccess}
       />
     </div>
   );

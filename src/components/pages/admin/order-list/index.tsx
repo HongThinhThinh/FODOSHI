@@ -104,8 +104,7 @@ const OrderList = () => {
       pending: orderData.filter((order) =>
         ["PENDING_PAYMENT", "PROCESSING", "SHIPPING"].includes(order.status)
       ).length,
-      completed: orderData.filter((order) => order.status === "COMPLETED")
-        .length,
+      completed: orderData.filter((order) => order.status === "PAID").length,
       cancelled: orderData.filter((order) => order.status === "CANCELLED")
         .length,
     };

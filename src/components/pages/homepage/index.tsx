@@ -189,16 +189,18 @@ function HomePage() {
             }}
             modules={[Navigation]}
           >
-            {products?.map((item, index) => (
-              <Carousel.Item
-                className="homepage-outfitOfDay__carousel-item"
-                key={item.id}
-                data-aos="flip-left"
-                data-aos-delay={index * 100}
-              >
-                <ProductCard product={item} />
-              </Carousel.Item>
-            ))}
+            {products
+              ?.filter((item) => item.deleted === false)
+              .map((item, index) => (
+                <Carousel.Item
+                  className="homepage-outfitOfDay__carousel-item"
+                  key={item.id}
+                  data-aos="flip-left"
+                  data-aos-delay={index * 100}
+                >
+                  <ProductCard product={item} />
+                </Carousel.Item>
+              ))}
             <IoIosArrowForward className="swiper-button-next" />
             <IoIosArrowBack className="swiper-button-prev" />
           </Carousel>
