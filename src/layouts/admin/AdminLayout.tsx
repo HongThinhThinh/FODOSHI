@@ -70,8 +70,10 @@ export default function AdminLayoutCustom({ routes }: AdminLayoutCustomProps) {
               ))}
             </>
             <div className="admin-layout-custom__container__sidebar__navigate__item">
-              onClick={handleLogout}
-              <div className="admin-layout-custom__container__sidebar__navigate__item__icon">
+              <div
+                onClick={handleLogout}
+                className="admin-layout-custom__container__sidebar__navigate__item__icon"
+              >
                 <button className="admin-layout-custom__container__sidebar__logout-btn flex">
                   {" "}
                   <LogoutOutlined />

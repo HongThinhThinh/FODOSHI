@@ -126,17 +126,22 @@ function HomePage() {
         <h2 className="homepage-category__title" data-aos="fade-up">
           Shop theo danh mục
         </h2>
-        <div
-          className="homepage-category__wrapper"
-          data-aos="fade-up"
-          data-aos-delay="200"
-        >
+        <div className="homepage-category__wrapper relative" data-aos="fade-up">
+          {/* Add navigation buttons OUTSIDE the Carousel component */}
+          <div className="swiper-button-prev-category absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md cursor-pointer">
+            <IoIosArrowBack className="text-[#d99041]" size={24} />
+          </div>
+
+          <div className="swiper-button-next-category absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md cursor-pointer">
+            <IoIosArrowForward className="text-[#d99041]" size={24} />
+          </div>
+
           <Carousel
             className="homepage-category__carousel"
             slidesPerView={isBigScreen ? 4 : 1}
             spaceBetween={20}
             initialSlide={0}
-            loop={false}
+            loop={true}
             centeredSlides={false}
             navigation={{
               nextEl: ".swiper-button-next-category",
@@ -170,12 +175,6 @@ function HomePage() {
                   </Carousel.Item>
                 ))
               : null}
-            <button className="swiper-button-next-category absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md">
-              <IoIosArrowForward className="text-[#d99041]" size={24} />
-            </button>
-            <button className="swiper-button-prev-category absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md">
-              <IoIosArrowBack className="text-[#d99041]" size={24} />
-            </button>
           </Carousel>
         </div>
       </section>
@@ -240,13 +239,6 @@ function HomePage() {
               />
             ))}
           </div>
-          <h1
-            className="homepage-social__title"
-            data-aos="fade-up"
-            data-aos-delay="300"
-          >
-            Đồng hợp tác
-          </h1>
         </div>
       </section>
     </>
