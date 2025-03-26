@@ -4,7 +4,7 @@ import Slider from "react-slider";
 import { useGetProductByCategory } from "../../../../services/productService";
 import { useGetBrandActive } from "../../../../services/categoryService";
 import { useParams } from "react-router-dom";
-import ShowCard from "../../../atoms/show-card";
+import ProductCard from "../../../atoms/product-ht";
 
 const ProductCategory = () => {
   const { id } = useParams();
@@ -17,6 +17,9 @@ const ProductCategory = () => {
 
   useEffect(() => {
     if (products) {
+      console.log("Products data:", products);
+      console.log("Selected brands:", selectedBrands);
+
       const filtered = products.filter((product) => {
         const sellingPrice = product.sellingPrice || product.originalPrice;
         let priceMatch =
@@ -34,13 +37,21 @@ const ProductCategory = () => {
           priceMatch = sellingPrice > 500000;
         }
 
+        // Check if product has brands before trying to filter
+        if (!product.brands || !Array.isArray(product.brands)) {
+          console.error("Product missing brands array:", product);
+          return false;
+        }
+
         const brandMatch =
           selectedBrands.length === 0 ||
           product.brands.some((brand) => selectedBrands.includes(brand.name));
 
-        return priceMatch && brandMatch;
+        return priceMatch && brandMatch && !product.deleted;
       });
+
       setFilteredProducts(filtered);
+      console.log("Filtered products:", filtered.length);
     }
   }, [products, priceRange, selectedBrands, selectedPriceFilter]);
 
@@ -112,7 +123,7 @@ const ProductCategory = () => {
               {/* Brand Filter */}
               <div>
                 <h3 className="text-lg font-medium mb-4">Thương hiệu</h3>
-                <div className="space-y-2">
+                <div className="space-y-2 max-h-60 overflow-y-auto">
                   {brands &&
                     brands.map((brand) => (
                       <label
@@ -135,13 +146,15 @@ const ProductCategory = () => {
           {/* Products Grid */}
           <div className="w-full md:w-3/4">
             {filteredProducts.length > 0 ? (
-              <div className="w-full md:w-3/4 flex flex-wrap gap-8">
+              <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                 {filteredProducts.map((product) => (
-                  <ShowCard card={product} />
+                  <ProductCard key={product.id} product={product} />
                 ))}
               </div>
             ) : (
-              <p className="text-center text-gray-500">Không có sản phẩm nào</p>
+              <div className="text-center p-8">
+                <p className="text-gray-500 text-lg">Không có sản phẩm nào</p>
+              </div>
             )}
           </div>
         </div>

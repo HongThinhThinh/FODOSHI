@@ -31,7 +31,7 @@ function SideBarHeader({ className, ...rest }: SideBarHeaderProps) {
   return (
     <nav className={`sidebar_header ${className}`} {...rest}>
       <ul className="sidebar_header-container">
-        <div
+        {/* <div
           onClick={() => {
             if (user) {
               navigate("/consignment");
@@ -47,7 +47,7 @@ function SideBarHeader({ className, ...rest }: SideBarHeaderProps) {
           className="sidebar_header__item sidebar_header__item--text cursor-pointer"
         >
           Ký gửi
-        </div>
+        </div> */}
         {user ? (
           <li
             onClick={() => navigate("/infomation/infomationPersonal")}

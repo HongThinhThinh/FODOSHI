@@ -23,8 +23,7 @@ function InfomationLayout() {
   };
   return (
     <>
-      <Header />
-      <main className="min-h-screen my-[80px]">
+      <main className="min-h-screen my-[80px] mt-10">
         <Row className="min-h-screen w-full">
           <Col span={7} className="pl-[35px] pr-[10px] h-full">
             <h1 className="text-[36px] font-[400] mb-4">Thông tin tài khoản</h1>

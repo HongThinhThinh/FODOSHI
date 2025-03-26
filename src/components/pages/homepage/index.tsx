@@ -47,7 +47,6 @@ function HomePage() {
       {/* -------------Banner------------- */}
       <section className="homepage-banner__container">
         <img
-
           onClick={() => navigate("/newProduct")}
           className="homepage-banner__img "
           src={bannerHomepage2}
@@ -133,13 +132,12 @@ function HomePage() {
           data-aos-delay="200"
         >
           <Carousel
-            style={{
-              width: "100%",
-            }}
-            className="homepage-category__carousel w-full"
+            className="homepage-category__carousel"
             slidesPerView={isBigScreen ? 4 : 1}
-            centeredSlides
-            spaceBetween={3}
+            spaceBetween={20}
+            initialSlide={0}
+            loop={false}
+            centeredSlides={false}
             navigation={{
               nextEl: ".swiper-button-next-category",
               prevEl: ".swiper-button-prev-category",
@@ -150,28 +148,34 @@ function HomePage() {
               ? categories.map((item, index) => (
                   <Carousel.Item
                     className="homepage-category__carousel-item"
-                    key={index}
+                    key={item.id || index}
                     data-aos="zoom-in"
                     data-aos-delay={index * 100}
                   >
                     <div
-                      className="cursor-pointer"
+                      className="flex flex-col items-center cursor-pointer transform transition-transform hover:scale-105"
                       onClick={() => navigate(`/productByCategory/${item?.id}`)}
                     >
-                      <img
-                        className="homepage-category__item--img"
-                        src={item?.image}
-                        alt=""
-                      />
-                      <p className="homepage-category__item--title">
+                      <div className="homepage-category__image-container overflow-hidden rounded-lg">
+                        <img
+                          className="homepage-category__item--img w-full h-48 object-cover"
+                          src={item?.image}
+                          alt={item?.name}
+                        />
+                      </div>
+                      <p className="homepage-category__item--title text-center mt-3 font-medium">
                         {item?.name}
                       </p>
                     </div>
                   </Carousel.Item>
                 ))
-              : ""}
-            <IoIosArrowForward className="swiper-button-next" />
-            <IoIosArrowBack className="swiper-button-prev" />
+              : null}
+            <button className="swiper-button-next-category absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md">
+              <IoIosArrowForward className="text-[#d99041]" size={24} />
+            </button>
+            <button className="swiper-button-prev-category absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md">
+              <IoIosArrowBack className="text-[#d99041]" size={24} />
+            </button>
           </Carousel>
         </div>
       </section>

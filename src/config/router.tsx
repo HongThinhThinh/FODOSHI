@@ -75,6 +75,99 @@ export const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
+        path: "infomation",
+        element: <InfomationLayout />,
+        children: [
+          {
+            path: "infomationPersonal",
+            element: <InfoPersonal />,
+            children: [
+              {
+                path: "waitingForShipping",
+                element: <h1>Waiting for shipping</h1>,
+              },
+              {
+                path: "shipping",
+                element: <h1>Shipping</h1>,
+              },
+              {
+                path: "handDelivered",
+                element: <h1>Hand delivered</h1>,
+              },
+            ],
+          },
+          {
+            path: "orderStatus",
+            element: (
+              <InfomationTabLayout
+                data={[
+                  { path: "waitingForShipping", name: "Chờ vận chuyển" },
+                  { path: "shipping", name: "Đang vận chuyển" },
+                  { path: "handDelivered", name: "Đã giao tận tay" },
+                ]}
+              />
+            ),
+            children: [
+              {
+                path: "waitingForShipping",
+                element: <h1>Waiting for shipping</h1>,
+              },
+              {
+                path: "shipping",
+                element: <h1>Shipping</h1>,
+              },
+              {
+                path: "handDelivered",
+                element: <h1>Hand delivered</h1>,
+              },
+            ],
+          },
+          {
+            path: "deliveryAddress",
+            element: <DeliveryAddress />,
+          },
+          {
+            path: "paymentMethod",
+            element: <PaymentMethod />,
+          },
+          {
+            path: "deposit",
+            element: (
+              <InfomationTabLayout
+                data={[
+                  { path: "registration", name: "Đăng ký ký gửi" },
+                  { path: "tracking", name: "Theo dõi đơn hàng" },
+                  { path: "instruction", name: "Hướng dẫn ký gửi" },
+                  { path: "policy", name: "Chính sách ký gửi" },
+                ]}
+              />
+            ),
+            children: [
+              {
+                path: "tracking",
+                element: <>hello youtube</>,
+              },
+              {
+                path: "registration",
+                element: (
+                  <>
+                    <ConsignmentPage />
+                  </>
+                ),
+              },
+              {
+                path: "instruction",
+                element: <>hello youtube</>,
+              },
+              {
+                path: "policy",
+                element: <DepositPolicy />,
+              },
+            ],
+          },
+        ],
+      },
+      {
         path: "/productByCategory/:id",
         element: <ProductByCategory />,
       },
@@ -154,99 +247,7 @@ export const router = createBrowserRouter([
       },
     ],
   },
-  {
-    path: "infomation",
-    element: <InfomationLayout />,
-    children: [
-      {
-        path: "infomationPersonal",
-        element: <InfoPersonal />,
-        children: [
-          {
-            path: "waitingForShipping",
-            element: <h1>Waiting for shipping</h1>,
-          },
-          {
-            path: "shipping",
-            element: <h1>Shipping</h1>,
-          },
-          {
-            path: "handDelivered",
-            element: <h1>Hand delivered</h1>,
-          },
-        ],
-      },
-      {
-        path: "orderStatus",
-        element: (
-          <InfomationTabLayout
-            data={[
-              { path: "waitingForShipping", name: "Chờ vận chuyển" },
-              { path: "shipping", name: "Đang vận chuyển" },
-              { path: "handDelivered", name: "Đã giao tận tay" },
-            ]}
-          />
-        ),
-        children: [
-          {
-            path: "waitingForShipping",
-            element: <h1>Waiting for shipping</h1>,
-          },
-          {
-            path: "shipping",
-            element: <h1>Shipping</h1>,
-          },
-          {
-            path: "handDelivered",
-            element: <h1>Hand delivered</h1>,
-          },
-        ],
-      },
-      {
-        path: "deliveryAddress",
-        element: <DeliveryAddress />,
-      },
-      {
-        path: "paymentMethod",
-        element: <PaymentMethod />,
-      },
-      {
-        path: "deposit",
-        element: (
-          <InfomationTabLayout
-            data={[
-              { path: "registration", name: "Đăng ký ký gửi" },
-              { path: "tracking", name: "Theo dõi đơn hàng" },
-              { path: "instruction", name: "Hướng dẫn ký gửi" },
-              { path: "policy", name: "Chính sách ký gửi" },
-            ]}
-          />
-        ),
-        children: [
-          {
-            path: "tracking",
-            element: <>hello youtube</>,
-          },
-          {
-            path: "registration",
-            element: (
-              <>
-                <ConsignmentPage />
-              </>
-            ),
-          },
-          {
-            path: "instruction",
-            element: <>hello youtube</>,
-          },
-          {
-            path: "policy",
-            element: <DepositPolicy />,
-          },
-        ],
-      },
-    ],
-  },
+
   {
     path: "/admin",
     element: <AdminLayoutCustom routes={mockAdminRouteData} />,
