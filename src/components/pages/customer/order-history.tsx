@@ -464,22 +464,6 @@ const OrderHistoryPage: React.FC = () => {
                   >
                     {statusInfo.label}
                   </Tag>
-                  <div className="flex mt-2 gap-2">
-                    <Button
-                      icon={<PrinterOutlined />}
-                      size="small"
-                      className="bg-gray-100 border-gray-200 text-gray-700"
-                    >
-                      In đơn
-                    </Button>
-                    <Button
-                      icon={<DownloadOutlined />}
-                      size="small"
-                      className="bg-amber-50 border-amber-200 text-amber-700"
-                    >
-                      Lưu PDF
-                    </Button>
-                  </div>
                 </div>
               </div>
 
