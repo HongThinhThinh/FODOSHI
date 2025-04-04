@@ -18,16 +18,16 @@ export const bannerHomepage2 = banner2;
 
 export const navbar = [
   {
-    path: "about",
+    path: "/about",
     name: "Giới thiệu",
   },
   {
-    path: "newProduct",
+    path: "/newProduct",
     name: "Hàng nhập mới",
   },
 
   {
-    path: "blog",
+    path: "/blog",
     name: "Blog",
   },
 ];

@@ -1,0 +1,283 @@
+.profile-page-container {
+  font-family: "Nunito", sans-serif !important;
+  background-color: #f8f8f8;
+  padding-top: 120px; // Giữ padding-top để tạo khoảng cách với header
+  position: relative;
+  z-index: 1;
+
+  .profile-banner {
+    background-color: #fff; // Thay đổi thành màu trắng thay vì gradient
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+
+    .profile-banner__container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .profile__navigation {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+
+      .home-link {
+        color: #832f21; // Màu giống trang About
+        cursor: pointer;
+        transition: color 0.3s;
+
+        &:hover {
+          text-decoration: underline;
+          color: #832f21;
+        }
+      }
+
+      .separator {
+        margin: 0 0.5rem;
+        color: #888;
+      }
+
+      .current-page {
+        font-weight: 500;
+        color: #333;
+      }
+    }
+
+    .profile__title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #832f21; // Màu giống trang About
+      margin-top: 0.5rem;
+      position: relative;
+      display: inline-block;
+
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 40px;
+        height: 3px;
+        background-color: #832f21;
+        transition: width 0.3s ease;
+      }
+
+      &:hover::after {
+        width: 100%;
+      }
+
+      @media (max-width: 768px) {
+        font-size: 2rem;
+      }
+
+      @media (max-width: 480px) {
+        font-size: 1.8rem;
+      }
+    }
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 20px;
+  }
+
+  .profile-content {
+    margin-bottom: 40px;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: white;
+
+    .user-summary {
+      padding: 2rem;
+      border-bottom: 1px solid #f0f0f0;
+      transition: all 0.3s ease;
+
+      &:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      }
+
+      .ant-avatar {
+        border: 3px solid #f5f5f5;
+        transition: transform 0.3s ease;
+
+        &:hover {
+          transform: scale(1.05);
+        }
+      }
+    }
+
+    .ant-list-item {
+      &:hover {
+        background-color: #f9f9f9;
+        transform: translateX(5px);
+      }
+
+      .ant-list-item-action {
+        margin-left: 16px;
+      }
+
+      .ant-btn-text {
+        &:hover {
+          background-color: rgba(131, 47, 33, 0.1);
+        }
+      }
+    }
+  }
+
+  .profile-tabs {
+    background: white;
+    padding: 24px;
+    border-radius: 8px;
+
+    .ant-tabs-nav-wrap {
+      display: flex;
+      justify-content: center;
+    }
+
+    .ant-tabs-tab {
+      padding: 12px 24px;
+      font-size: 16px;
+      position: relative;
+      transition: all 0.3s ease;
+
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background-color: #832f21;
+        transform: translateX(-50%);
+        transition: width 0.3s ease;
+      }
+
+      &:hover::after {
+        width: 60%;
+      }
+
+      &.ant-tabs-tab-active {
+        font-weight: 600;
+
+        &::after {
+          width: 80%;
+        }
+
+        .ant-tabs-tab-btn {
+          color: #832f21;
+        }
+      }
+    }
+
+    .ant-tabs-tab-btn {
+      &:hover {
+        color: #832f21 !important;
+      }
+    }
+
+    .ant-tabs-ink-bar {
+      background-color: #832f21;
+    }
+  }
+
+  // Các style khác giữ nguyên nhưng thay đổi màu
+  .ant-btn-primary {
+    background-color: #832f21;
+    border-color: #832f21;
+
+    &:hover {
+      background-color: darken(#832f21, 10%);
+      border-color: darken(#832f21, 10%);
+    }
+  }
+
+  .text-amber-600,
+  .text-amber-700 {
+    color: #832f21 !important;
+  }
+
+  .bg-amber-600,
+  .bg-amber-700 {
+    background-color: #832f21 !important;
+  }
+
+  .border-amber-600,
+  .border-amber-700 {
+    border-color: #832f21 !important;
+  }
+
+  .hover\:bg-amber-700:hover {
+    background-color: darken(#832f21, 10%) !important;
+  }
+
+  .hover\:text-amber-700:hover {
+    color: darken(#832f21, 10%) !important;
+  }
+
+  .hover\:border-amber-700:hover {
+    border-color: darken(#832f21, 10%) !important;
+  }
+
+  // Các styles khác giữ nguyên...
+}
+
+// Styling cho modal địa chỉ - cập nhật màu sắc
+.address-modal {
+  .ant-modal-content {
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .ant-modal-header {
+    border-bottom: 1px solid #f0f0f0;
+    padding: 16px 24px;
+  }
+
+  .ant-modal-body {
+    padding: 24px;
+  }
+
+  .ant-select-selector {
+    &:hover {
+      border-color: #832f21 !important;
+    }
+  }
+
+  .ant-select-focused .ant-select-selector {
+    border-color: #832f21 !important;
+    box-shadow: 0 0 0 2px rgba(131, 47, 33, 0.2) !important;
+  }
+
+  .ant-radio-wrapper:hover .ant-radio-inner {
+    border-color: #832f21;
+  }
+
+  .ant-radio-checked .ant-radio-inner {
+    border-color: #832f21;
+    background-color: #832f21;
+  }
+
+  .ant-radio-checked .ant-radio-inner::after {
+    background-color: white;
+  }
+}
+
+// Hiệu ứng hover cho các card
+.account-info-card,
+.order-card {
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  }
+}
+
+// Hiệu ứng transition cho các nút bấm
+button {
+  transition: all 0.3s ease !important;
+}

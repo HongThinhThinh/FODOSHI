@@ -50,7 +50,7 @@ function SideBarHeader({ className, ...rest }: SideBarHeaderProps) {
         </div> */}
         {user ? (
           <li
-            onClick={() => navigate("/infomation/infomationPersonal")}
+            onClick={() => navigate("/profile")}
             className="sidebar_header__item sidebar_header__item--text cursor-pointer"
           >
             <span>

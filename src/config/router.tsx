@@ -40,6 +40,9 @@ import PaymentCancel from "../components/pages/customer/payment-cancel";
 import BlogDetail from "../components/pages/blog-detail";
 import OrderList from "../components/pages/admin/order-list";
 import OrderTrackingPage from "../components/pages/customer/order-tracking";
+import OrderHistoryPage from "../components/pages/customer/order-history";
+import ProfilePage from "../components/pages/customer/profile";
+import Header from "../components/organisms/header";
 
 export const router = createBrowserRouter([
   {
@@ -212,7 +215,20 @@ export const router = createBrowserRouter([
         path: "/product-detail/:id",
         element: <ProductDetails />,
       },
+      {
+        path: "/my-orders",
+        element: <OrderHistoryPage />,
+      },
     ],
+  },
+  {
+    path: "/profile",
+    element: (
+      <>
+        <Header />
+        <ProfilePage />
+      </>
+    ),
   },
   {
     path: "infomation",

@@ -1,0 +1,124 @@
+// Font family
+.font-nunito,
+.order-detail-modal,
+.order-history-tabs,
+.order-card,
+.filter-drawer {
+  font-family: "Nunito", sans-serif !important;
+}
+
+// Tabs styles
+.order-history-tabs {
+  .ant-tabs-nav {
+    background-color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+    color: #4e80ee;
+    font-weight: 600;
+  }
+
+  .ant-tabs-ink-bar {
+    background: #4e80ee;
+  }
+
+  .ant-tabs-tab:hover {
+    color: #3d6ad2;
+  }
+}
+
+// Card styles
+.order-card {
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+  }
+
+  .ant-card-body {
+    padding: 16px;
+  }
+}
+
+// Modal styles
+.order-detail-modal {
+  .ant-modal-header {
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .ant-modal-title {
+    font-weight: 600;
+  }
+
+  .order-detail-tabs {
+    .ant-tabs-nav {
+      margin-bottom: 20px;
+    }
+
+    .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+      color: #4e80ee;
+      font-weight: 600;
+    }
+
+    .ant-tabs-ink-bar {
+      background: #4e80ee;
+    }
+  }
+
+  .order-history-timeline {
+    padding: 10px;
+
+    .timeline-dot {
+      background: white;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .ant-timeline-item-tail {
+      border-left: 2px solid #e6e6e6;
+    }
+
+    .history-item {
+      padding: 5px 0 15px 0;
+    }
+  }
+}
+
+// Steps for order status
+.ant-steps-item-process .ant-steps-item-icon {
+  background-color: #4e80ee;
+  border-color: #4e80ee;
+}
+
+.ant-steps-item-finish .ant-steps-item-icon {
+  background-color: #52c41a;
+  border-color: #52c41a;
+}
+
+.ant-steps-item-finish .ant-steps-item-tail::after {
+  background-color: #52c41a;
+}
+
+// Progress dot styling
+.ant-steps-dot .ant-steps-item-tail::after {
+  width: 2px;
+  margin-left: -1px;
+}
+
+// Button styling
+.ant-btn-primary {
+  &:hover,
+  &:focus {
+    background-color: #3d6ad2 !important;
+    border-color: #3d6ad2 !important;
+  }
+}
