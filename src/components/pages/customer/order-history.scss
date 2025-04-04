@@ -15,19 +15,64 @@
     border-radius: 10px;
     margin-bottom: 24px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+    @media (max-width: 768px) {
+      padding: 8px 12px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 480px) {
+      padding: 6px 8px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
   }
 
   .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-    color: #4e80ee;
+    color: #832f21;
     font-weight: 600;
   }
 
   .ant-tabs-ink-bar {
-    background: #4e80ee;
+    background: #832f21;
   }
 
   .ant-tabs-tab:hover {
-    color: #3d6ad2;
+    color: #832f21;
+  }
+
+  // Make tabs responsive
+  .ant-tabs-tab {
+    @media (max-width: 768px) {
+      padding: 8px 12px;
+      margin: 0 4px;
+    }
+
+    @media (max-width: 480px) {
+      padding: 6px 8px;
+      margin: 0 2px;
+      font-size: 14px;
+    }
+  }
+
+  // Badge responsive
+  .ant-badge {
+    @media (max-width: 480px) {
+      transform: scale(0.8);
+      transform-origin: center right;
+    }
+  }
+
+  // For overflow on mobile
+  .ant-tabs-nav-list {
+    @media (max-width: 576px) {
+      overflow-x: auto;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE and Edge */
+      &::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+      }
+    }
   }
 }
 
@@ -41,6 +86,57 @@
 
   .ant-card-body {
     padding: 16px;
+
+    @media (max-width: 576px) {
+      padding: 12px;
+    }
+  }
+
+  // Responsive card content
+  .mb-4 {
+    @media (max-width: 576px) {
+      margin-bottom: 0.75rem;
+    }
+  }
+
+  // Make card content stack on small screens
+  .flex.justify-between.items-center {
+    @media (max-width: 576px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+
+      .text-right {
+        text-align: left;
+        width: 100%;
+      }
+    }
+  }
+
+  // Product items
+  .flex.items-center.gap-3 {
+    @media (max-width: 576px) {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .w-16.h-16 {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1/1;
+        max-width: 120px;
+        margin-bottom: 8px;
+      }
+
+      .flex-grow {
+        width: 100%;
+      }
+
+      .text-right {
+        width: 100%;
+        text-align: left;
+        margin-top: 8px;
+      }
+    }
   }
 }
 
@@ -54,23 +150,46 @@
     font-weight: 600;
   }
 
+  // Responsive modal width
+  @media (max-width: 768px) {
+    .ant-modal {
+      max-width: 95vw !important;
+      margin: 0 auto;
+    }
+  }
+
   .order-detail-tabs {
     .ant-tabs-nav {
       margin-bottom: 20px;
+
+      @media (max-width: 576px) {
+        margin-bottom: 16px;
+      }
     }
 
     .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-      color: #4e80ee;
+      color: #832f21;
       font-weight: 600;
     }
 
     .ant-tabs-ink-bar {
-      background: #4e80ee;
+      background: #832f21;
+    }
+
+    // Responsive tabpanes
+    .ant-tabs-tabpane {
+      @media (max-width: 576px) {
+        padding: 0;
+      }
     }
   }
 
   .order-history-timeline {
     padding: 10px;
+
+    @media (max-width: 576px) {
+      padding: 0;
+    }
 
     .timeline-dot {
       background: white;
@@ -81,6 +200,12 @@
       align-items: center;
       justify-content: center;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+      @media (max-width: 576px) {
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+      }
     }
 
     .ant-timeline-item-tail {
@@ -89,14 +214,36 @@
 
     .history-item {
       padding: 5px 0 15px 0;
+
+      @media (max-width: 576px) {
+        padding: 3px 0 10px 0;
+      }
+    }
+  }
+
+  // Responsive content layout
+  .order-summary,
+  .shipping-info,
+  .address-info {
+    @media (max-width: 576px) {
+      padding: 12px !important;
+    }
+  }
+
+  // Order summary responsive
+  .flex.justify-between.items-center {
+    @media (max-width: 576px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
     }
   }
 }
 
 // Steps for order status
 .ant-steps-item-process .ant-steps-item-icon {
-  background-color: #4e80ee;
-  border-color: #4e80ee;
+  background-color: #832f21;
+  border-color: #832f21;
 }
 
 .ant-steps-item-finish .ant-steps-item-icon {
@@ -114,11 +261,79 @@
   margin-left: -1px;
 }
 
+// Make steps responsive
+.ant-steps {
+  @media (max-width: 768px) {
+    .ant-steps-item-title {
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .ant-steps-item-title {
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    &.ant-steps-label-vertical {
+      .ant-steps-item-tail {
+        margin-left: 51px;
+        padding: 3.5px 16px;
+      }
+    }
+  }
+}
+
 // Button styling
 .ant-btn-primary {
   &:hover,
   &:focus {
-    background-color: #3d6ad2 !important;
-    border-color: #3d6ad2 !important;
+    background-color: #a14330 !important;
+    border-color: #a14330 !important;
+  }
+}
+
+// Filter bar responsive
+.flex.flex-col.md\:flex-row.gap-3.justify-between.items-start.md\:items-center {
+  @media (max-width: 768px) {
+    .max-w-md.w-full.md\:w-auto {
+      margin-bottom: 8px;
+    }
+  }
+}
+
+// Pagination responsive
+.pagination-amber {
+  @media (max-width: 576px) {
+    .ant-pagination-item {
+      min-width: 28px;
+      height: 28px;
+      line-height: 26px;
+
+      a {
+        padding: 0;
+      }
+    }
+
+    .ant-pagination-prev,
+    .ant-pagination-next {
+      min-width: 28px;
+      height: 28px;
+      line-height: 26px;
+    }
+  }
+}
+
+// Animation for smoother responsive transitions
+* {
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s,
+    box-shadow 0.3s;
+}
+
+@media (max-width: 480px) {
+  * {
+    // Disable animations on mobile for better performance
+    transition: none !important;
+    animation: none !important;
   }
 }
