@@ -39,6 +39,7 @@ import PaymentSuccess from "../components/pages/customer/payment-success";
 import PaymentCancel from "../components/pages/customer/payment-cancel";
 import BlogDetail from "../components/pages/blog-detail";
 import OrderList from "../components/pages/admin/order-list";
+import OrderTrackingPage from "../components/pages/customer/order-tracking";
 
 export const router = createBrowserRouter([
   {
@@ -199,7 +200,10 @@ export const router = createBrowserRouter([
         path: "/cart",
         element: <Cart />,
       },
-
+      {
+        path: "/track-order",
+        element: <OrderTrackingPage />,
+      },
       {
         path: "male",
         element: <MalePage />,
