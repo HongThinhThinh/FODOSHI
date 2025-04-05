@@ -19,6 +19,7 @@ import {
   Empty,
   Tag,
   Radio,
+  Upload,
 } from "antd";
 import {
   UserOutlined,
@@ -46,12 +47,16 @@ import {
   CloseOutlined,
   EyeOutlined,
   DeleteOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
+import type { UploadChangeParam } from "antd/es/upload";
+import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../../redux/store";
 import api from "../../../../config/api";
-import { logout } from "../../../../redux/features/userSlice";
+import { login, logout } from "../../../../redux/features/userSlice";
+import uploadFile from "../../../../utils/uploadFile";
 import "./style.scss";
 import OrderHistoryPage from "../order-history";
 
@@ -106,6 +111,9 @@ const ProfilePage: React.FC = () => {
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
   const [addressForm] = Form.useForm();
   const [addressLoading, setAddressLoading] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(user?.image || null);
+  const [imageLoading, setImageLoading] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -123,6 +131,13 @@ const ProfilePage: React.FC = () => {
       offset: 50,
     });
   }, []);
+
+  // Add this useEffect to keep the image URL in sync with Redux state
+  useEffect(() => {
+    if (user) {
+      setImageUrl(user.image || null);
+    }
+  }, [user]);
 
   const fetchRecentOrders = async () => {
     setLoading(true);
@@ -179,29 +194,88 @@ const ProfilePage: React.FC = () => {
 
   const handleUpdateProfile = async (values: any) => {
     try {
-      await api.put("/user/profile", values);
+      let imageURL = user?.image; // Start with current image URL
+
+      // If there's a new image file, upload it to Firebase first
+      if (imageFile) {
+        setImageLoading(true);
+        imageURL = await uploadFile(imageFile);
+      }
+
+      // Now send the profile update with the image URL
+      const updateData = {
+        name: values.name,
+        email: values.email,
+        phoneNumber: values.phoneNumber,
+        image: imageURL, // Add the image URL (either existing or new)
+      };
+
+      const response = await api.put("/users", updateData);
+
+      // Alternative approach if API doesn't return full user data
+      const updatedUser = {
+        ...user,
+        name: values.name,
+        email: values.email,
+        phoneNumber: values.phoneNumber,
+        image: imageURL,
+      };
+
+      // Update Redux store
+      dispatch(login(updatedUser));
+
       message.success("Cập nhật thông tin thành công");
       setEditModalVisible(false);
+
+      // Reset image file state after successful update
+      setImageFile(null);
     } catch (error) {
       console.error("Error updating profile:", error);
       message.error("Không thể cập nhật thông tin");
+    } finally {
+      setImageLoading(false);
     }
   };
 
   const handleChangePassword = async (values: any) => {
     try {
-      await api.put("/user/change-password", {
-        currentPassword: values.currentPassword,
+      // First check if passwords match (redundant with form validation but good practice)
+      if (values.newPassword !== values.confirmPassword) {
+        return message.error("Mật khẩu xác nhận không khớp với mật khẩu mới");
+      }
+
+      // Call the API with the correct endpoint and parameter names
+      await api.put("users/change-password", {
+        oldPassword: values.currentPassword,
         newPassword: values.newPassword,
       });
+
+      // Success handling
       message.success("Đổi mật khẩu thành công");
       setChangePasswordVisible(false);
       passwordForm.resetFields();
-    } catch (error) {
+    } catch (error: any) {
+      // Error handling with more specific messages
       console.error("Error changing password:", error);
-      message.error(
-        "Không thể đổi mật khẩu. Hãy kiểm tra lại mật khẩu hiện tại"
-      );
+
+      if (error.response?.status === 400) {
+        // Handle validation errors from API
+        if (error.response.data && typeof error.response.data === "object") {
+          // Display specific error messages if API returns them
+          const errorMessages = Object.values(error.response.data).join(", ");
+          message.error(
+            errorMessages ||
+              "Không thể đổi mật khẩu.Vui lòng xem lại mật khẩu cũ"
+          );
+        } else {
+          message.error("Không thể đổi mật khẩu.Vui lòng xem lại mật khẩu cũ");
+        }
+      } else {
+        // Generic error message
+        message.error(
+          "Không thể đổi mật khẩu. Hãy kiểm tra lại mật khẩu hiện tại"
+        );
+      }
     }
   };
 
@@ -333,6 +407,45 @@ const ProfilePage: React.FC = () => {
     }
   };
 
+  // Add these functions to your component
+  const beforeUpload = (file: RcFile) => {
+    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+    if (!isJpgOrPng) {
+      message.error("Chỉ chấp nhận file JPG/PNG!");
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error("Kích thước ảnh phải nhỏ hơn 2MB!");
+    }
+    return isJpgOrPng && isLt2M;
+  };
+
+  const handleImageChange: UploadProps["onChange"] = (
+    info: UploadChangeParam<UploadFile>
+  ) => {
+    if (info.file.status === "uploading") {
+      setImageLoading(true);
+      return;
+    }
+    if (info.file.status === "done") {
+      // Get file object for later use in form submission
+      setImageFile(info.file.originFileObj as File);
+
+      // Preview image
+      getBase64(info.file.originFileObj as RcFile, (url) => {
+        setImageLoading(false);
+        setImageUrl(url);
+      });
+    }
+  };
+
+  // Helper function to convert file to base64 for preview
+  const getBase64 = (img: RcFile, callback: (url: string) => void) => {
+    const reader = new FileReader();
+    reader.addEventListener("load", () => callback(reader.result as string));
+    reader.readAsDataURL(img);
+  };
+
   const renderEditProfileModal = () => (
     <Modal
       title={
@@ -355,6 +468,49 @@ const ProfilePage: React.FC = () => {
         }}
         onFinish={handleUpdateProfile}
       >
+        {/* Avatar upload section */}
+        <div className="mb-6 text-center">
+          <div className="mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Ảnh đại diện
+            </label>
+            <Upload
+              name="avatar"
+              listType="picture-circle"
+              className="avatar-uploader text-center mx-auto"
+              showUploadList={false}
+              beforeUpload={beforeUpload}
+              onChange={handleImageChange}
+              customRequest={({ onSuccess }) => {
+                // Bypass actual upload since we'll handle it in form submission
+                setTimeout(() => {
+                  onSuccess && onSuccess("ok");
+                }, 0);
+              }}
+            >
+              {imageUrl || user?.image ? (
+                <div className="relative group">
+                  <img
+                    src={imageUrl || user?.image}
+                    alt="avatar"
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <EditOutlined className="text-white text-lg" />
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  {imageLoading ? <LoadingOutlined /> : <PlusOutlined />}
+                  <div style={{ marginTop: 8 }}>Tải lên</div>
+                </div>
+              )}
+            </Upload>
+          </div>
+          <p className="text-gray-500 text-xs">Nhấp vào ảnh để thay đổi</p>
+        </div>
+
+        {/* Rest of your form - name, email, phone */}
         <Form.Item
           name="name"
           label="Họ và tên"
@@ -387,6 +543,7 @@ const ProfilePage: React.FC = () => {
           <Button
             type="primary"
             htmlType="submit"
+            loading={imageLoading}
             className="bg-amber-600 hover:bg-amber-700 border-amber-600"
           >
             Cập nhật
@@ -665,6 +822,7 @@ const ProfilePage: React.FC = () => {
               <Avatar
                 size={80}
                 icon={<UserOutlined />}
+                src={user?.image}
                 className="bg-amber-100 text-amber-700 flex items-center justify-center border-2 border-amber-200"
               />
               <div>
