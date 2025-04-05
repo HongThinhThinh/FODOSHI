@@ -2,16 +2,15 @@ import React, { useState } from "react";
 import "./index.scss";
 import ggIcon from "../../../../assets/google.png";
 import { Button, Col, Form, theme, Row, Input, Checkbox, Radio } from "antd";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import LogoWhite from "../../component/logoWhite/LogoWhite";
-import api from "../../config/axios";
+import { Link, useNavigate } from "react-router-dom";
 import { WarningFilled } from "@ant-design/icons";
 import {
   alertFail,
   alertSuccessSignUp,
-} from "../../assets/hook/useNotification";
-import Loading from "../../component/loading/Loading";
+} from "../../../../hooks/useNotification";
 import { backIn } from "framer-motion";
+import LoadingUI from "../../../atoms/loading";
+import api from "../../../../config/api";
 
 const MyFormItemContext = React.createContext([]);
 
@@ -19,48 +18,22 @@ function toArr(str) {
   return Array.isArray(str) ? str : [str];
 }
 
-const MyFormItemGroup = ({ prefix, children }) => {
-  const prefixPath = React.useContext(MyFormItemContext);
-  const concatPath = React.useMemo(
-    () => [...prefixPath, ...toArr(prefix)],
-    [prefixPath, prefix]
-  );
-  return (
-    <MyFormItemContext.Provider value={concatPath}>
-      {children}
-    </MyFormItemContext.Provider>
-  );
-};
-
-const MyFormItem = ({ name, ...props }) => {
-  const prefixPath = React.useContext(MyFormItemContext);
-  const concatName =
-    name !== undefined ? [...prefixPath, ...toArr(name)] : undefined;
-  return <Form.Item name={concatName} {...props} />;
-};
-
 function SignUp() {
   const { token } = theme.useToken();
   const [isLoading, setIsLoading] = useState(false);
   const [role, setRole] = useState("audience");
   const [name, setName] = useState("");
-  const [userName, setUserName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [phone, setPhone] = useState("");
   const [checked, setChecked] = useState(false);
   const navigae = useNavigate();
-  const onFinish = async () => {
+  const onFinish = async (value) => {
     setIsLoading(true);
+    console.log(value);
     try {
-      console.log(userName);
-      const response = await api.post("/signup", {
-        userName,
-        password,
-        name,
-        email,
-        role,
-      });
+      console.log("test");
+      const response = await api.post("/register", value);
       alertSuccessSignUp("Please check and confirm to activate this account");
       navigae("/login");
     } catch (e) {
@@ -74,10 +47,9 @@ function SignUp() {
   return (
     <>
       {isLoading ? (
-        <Loading />
+        <LoadingUI />
       ) : (
         <Row container className="signUp">
-          <LogoWhite />
           <Col md={24} lg={8} className="signUp__side-bar">
             <video
               muted
@@ -97,199 +69,180 @@ function SignUp() {
                 layout="vertical"
                 onFinish={onFinish}
               >
-                <MyFormItemGroup className="signUp__form__container__group-form">
-                  <MyFormItem className="signUp__form__container__group-form__flex">
-                    <Form.Item
-                      label="Name"
-                      name="name"
-                      className="signUp__form__container__group-form__label"
-                      rules={[
-                        {
-                          required: true,
-                          message: (
+                <Form.Item
+                  label="Name"
+                  name="name"
+                  className="signUp__form__container__group-form__label"
+                  rules={[
+                    {
+                      required: true,
+                      message: (
+                        <div>
+                          <WarningFilled /> Please input your name!
+                        </div>
+                      ),
+                    },
+                    {
+                      validator: (_, value) => {
+                        if (!value || /^\s/.test(value)) {
+                          return Promise.reject(
                             <div>
-                              <WarningFilled /> Please input your name!
+                              <WarningFilled /> Name must not start with
+                              whitespace
                             </div>
-                          ),
-                        },
-                        {
-                          validator: (_, value) => {
-                            if (!value || /^\s/.test(value)) {
-                              return Promise.reject(
-                                <div>
-                                  <WarningFilled /> Name must not start with
-                                  whitespace
-                                </div>
-                              );
-                            }
-                            return Promise.resolve();
-                          },
-                        },
-                      ]}
-                    >
-                      <Input
-                        onInput={(e) => setName(e.target.value)}
-                        className="signUp__form__container__group-form__input"
-                      />
-                    </Form.Item>
-
-                    <Form.Item
-                      label="Username"
-                      name="username"
-                      className="signUp__form__container__group-form__label"
-                      rules={[
-                        {
-                          required: true,
-                          message: (
-                            <div>
-                              <WarningFilled /> Please input your username!
-                            </div>
-                          ),
-                        },
-                        {
-                          validator: (_, value) => {
-                            if (!/^[a-zA-Z0-9_]*$/.test(value)) {
-                              return Promise.reject(
-                                <div>
-                                  <WarningFilled /> Username must contain only
-                                  English characters, numbers, and underscores
-                                  NOT whitespace
-                                </div>
-                              );
-                            }
-
-                            return Promise.resolve();
-                          },
-                        },
-                      ]}
-                    >
-                      <Input
-                        onInput={(e) => setUserName(e.target.value)}
-                        onChange={(e) =>
-                          e.target.value.includes(" ") ? true : false
+                          );
                         }
-                        className="signUp__form__container__group-form__input"
-                      />
-                    </Form.Item>
-                  </MyFormItem>
-                  <MyFormItem className="signUp__form__container__group-form__base">
-                    <Form.Item
-                      label="Email"
-                      name="email"
-                      rules={[
-                        {
-                          type: "email",
-                          message: (
-                            <div>
-                              <WarningFilled /> Email is not valid!
-                            </div>
-                          ),
-                        },
-                        {
-                          required: true,
-                          message: (
-                            <div>
-                              <WarningFilled /> Please input your email!
-                            </div>
-                          ),
-                        },
-                      ]}
-                      className="signUp__form__container__group-form__label"
-                    >
-                      <Input
-                        onInput={(e) => setEmail(e.target.value)}
-                        className="signUp__form__container__group-form__input"
-                      />
-                    </Form.Item>
+                        return Promise.resolve();
+                      },
+                    },
+                  ]}
+                >
+                  <Input
+                    onInput={(e) => setName(e.target.value)}
+                    className="signUp__form__container__group-form__input"
+                  />
+                </Form.Item>
 
-                    <Form.Item
-                      label="Password"
-                      name="password"
-                      rules={[
-                        {
-                          validator: (_, value) => {
-                            if (/\s/.test(value)) {
-                              return Promise.reject(
-                                <div>
-                                  <WarningFilled /> Password must not contain
-                                  whitespace
-                                </div>
-                              );
-                            }
-                            return Promise.resolve();
-                          },
-                        },
-                        {
-                          min: 6,
-                          message: (
+                <Form.Item
+                  label="Phone number"
+                  name="phoneNumber"
+                  className="signUp__form__container__group-form__label"
+                  rules={[
+                    {
+                      required: true,
+                      message: (
+                        <div>
+                          <WarningFilled /> Please input your Phone number!
+                        </div>
+                      ),
+                    },
+                  ]}
+                >
+                  <Input
+                    onInput={(e) => setPhoneNumber(e.target.value)}
+                    onChange={(e) =>
+                      e.target.value.includes(" ") ? true : false
+                    }
+                    className="signUp__form__container__group-form__input"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Email"
+                  name="email"
+                  rules={[
+                    {
+                      type: "email",
+                      message: (
+                        <div>
+                          <WarningFilled /> Email is not valid!
+                        </div>
+                      ),
+                    },
+                    {
+                      required: true,
+                      message: (
+                        <div>
+                          <WarningFilled /> Please input your email!
+                        </div>
+                      ),
+                    },
+                  ]}
+                  className="signUp__form__container__group-form__label"
+                >
+                  <Input
+                    onInput={(e) => setEmail(e.target.value)}
+                    className="signUp__form__container__group-form__input"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Password"
+                  name="password"
+                  rules={[
+                    {
+                      validator: (_, value) => {
+                        if (/\s/.test(value)) {
+                          return Promise.reject(
                             <div>
-                              <WarningFilled /> Password must be at least 6
-                              characters!
+                              <WarningFilled /> Password must not contain
+                              whitespace
                             </div>
-                          ),
-                        },
-                        {
-                          required: true,
-                          message: (
+                          );
+                        }
+                        return Promise.resolve();
+                      },
+                    },
+                    {
+                      min: 6,
+                      message: (
+                        <div>
+                          <WarningFilled /> Password must be at least 6
+                          characters!
+                        </div>
+                      ),
+                    },
+                    {
+                      required: true,
+                      message: (
+                        <div>
+                          <WarningFilled /> Please input your password!
+                        </div>
+                      ),
+                    },
+                  ]}
+                  className="signUp__form__container__group-form__label"
+                >
+                  <Input.Password
+                    onInput={(e) => setPassword(e.target.value)}
+                    className="signUp__form__container__group-form__input"
+                    placeholder="6+ characters"
+                  />
+                </Form.Item>
+                <Form.Item
+                  label="Re-password"
+                  name="re-password"
+                  rules={[
+                    {
+                      min: 6,
+                      message: (
+                        <div>
+                          <WarningFilled /> Password must be at least 6
+                          characters!
+                        </div>
+                      ),
+                    },
+                    {
+                      required: true,
+                      message: (
+                        <div>
+                          <WarningFilled /> Please input your password!
+                        </div>
+                      ),
+                    },
+                    {
+                      validator: (_, value) => {
+                        if (/\s/.test(value)) {
+                          return Promise.reject(
                             <div>
-                              <WarningFilled /> Please input your password!
+                              <WarningFilled /> Password must not contain
+                              whitespace
                             </div>
-                          ),
-                        },
-                      ]}
-                      className="signUp__form__container__group-form__label"
-                    >
-                      <Input.Password
-                        onInput={(e) => setPassword(e.target.value)}
-                        className="signUp__form__container__group-form__input"
-                        placeholder="6+ characters"
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      label="Re-password"
-                      name="re-password"
-                      rules={[
-                        {
-                          min: 6,
-                          message: (
-                            <div>
-                              <WarningFilled /> Password must be at least 6
-                              characters!
-                            </div>
-                          ),
-                        },
-                        {
-                          required: true,
-                          message: (
-                            <div>
-                              <WarningFilled /> Please input your password!
-                            </div>
-                          ),
-                        },
-                        {
-                          validator: (_, value) => {
-                            if (/\s/.test(value)) {
-                              return Promise.reject(
-                                <div>
-                                  <WarningFilled /> Password must not contain
-                                  whitespace
-                                </div>
-                              );
-                            }
-                            return Promise.resolve();
-                          },
-                        },
-                      ]}
-                      className="signUp__form__container__group-form__label"
-                    >
-                      <Input.Password
-                        onInput={(e) => setPassword(e.target.value)}
-                        className="signUp__form__container__group-form__input"
-                        placeholder="6+ characters"
-                      />
-                    </Form.Item>
-                  </MyFormItem>
-                </MyFormItemGroup>
+                          );
+                        }
+                        return Promise.resolve();
+                      },
+                    },
+                  ]}
+                  className="signUp__form__container__group-form__label"
+                >
+                  <Input.Password
+                    onInput={(e) => setPassword(e.target.value)}
+                    className="signUp__form__container__group-form__input"
+                    placeholder="6+ characters"
+                  />
+                </Form.Item>
+
                 <Checkbox onChange={onChange}>
                   I agree with Cremo{" "}
                   <Link to="" className="about__detail">
