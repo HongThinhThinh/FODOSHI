@@ -1,9 +1,8 @@
-import React, { act, useEffect } from "react";
+import React, { useEffect } from "react";
 import "./index.scss";
-import ggIcon from "../../assets/google.png";
+import ggIcon from "../../../../assets/google.png";
 import { Button, Col, Divider, Form, Input, Row } from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import "./Login.scss";
 import { signInWithPopup, GoogleAuthProvider, getAuth } from "firebase/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { WarningFilled } from "@ant-design/icons";
@@ -62,7 +61,7 @@ function Login() {
     //   }
     // });
 
-    const res = await api.post("/login-gg", { token });
+    const res = await api.post("/login-google", { token: token });
     const role = res.data.role;
 
     console.log(res.data.role);
@@ -120,7 +119,6 @@ function Login() {
 
   return (
     <Row container className="login">
-      {/* <LogoWhite /> */}
       <Col md={24} lg={7} className="login__side-bar">
         <video
           muted
@@ -133,7 +131,7 @@ function Login() {
       </Col>
       <Col md={24} lg={17} className="login__form">
         <Col lg={14} className="login__form__container">
-          <h3>Sign in to Cremo</h3>
+          <h3>Sign in to FODOSHI</h3>
           <Button
             onClick={handleLoginGoogle}
             className="login__form__container__gg-btn"
@@ -161,8 +159,8 @@ function Login() {
                 <Input className="login__form__container__namepass__group-form__input" />
               </MyFormItem> */}
               <Form.Item
-                label="Username"
-                name="username"
+                label="Phone Number"
+                name="phoneNumber"
                 className="login__form__container__namepass__group-form"
                 rules={[
                   {
@@ -172,20 +170,6 @@ function Login() {
                         <WarningFilled /> Please input your username!
                       </div>
                     ),
-                  },
-                  {
-                    validator: (_, value) => {
-                      if (!/^[a-zA-Z0-9_]*$/.test(value)) {
-                        return Promise.reject(
-                          <div>
-                            <WarningFilled /> Username must contain only English
-                            characters, numbers, and underscores NOT whitespace
-                          </div>
-                        );
-                      }
-
-                      return Promise.resolve();
-                    },
                   },
                 ]}
               >
