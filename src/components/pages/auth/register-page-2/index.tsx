@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import "./SignUp.scss";
-import ggIcon from "../../assets/google.png";
+import "./index.scss";
+import ggIcon from "../../../../assets/google.png";
 import { Button, Col, Form, theme, Row, Input, Checkbox, Radio } from "antd";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import LogoWhite from "../../component/logoWhite/LogoWhite";

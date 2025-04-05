@@ -43,6 +43,8 @@ import OrderTrackingPage from "../components/pages/customer/order-tracking";
 import OrderHistoryPage from "../components/pages/customer/order-history";
 import ProfilePage from "../components/pages/customer/profile";
 import Header from "../components/organisms/header";
+import SignUp from "../components/pages/auth/register-page-2";
+import Login from "../components/pages/auth/login-page-2";
 
 export const router = createBrowserRouter([
   {
@@ -366,11 +368,11 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "register",
-        element: <RegisterPage />,
+        element: <SignUp />,
       },
       {
         path: "login",
-        element: <LoginPage />,
+        element: <Login />,
       },
     ],
   },

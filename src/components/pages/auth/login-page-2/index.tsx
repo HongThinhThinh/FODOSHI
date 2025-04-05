@@ -1,5 +1,5 @@
 import React, { act, useEffect } from "react";
-import "./Login.scss";
+import "./index.scss";
 import ggIcon from "../../assets/google.png";
 import { Button, Col, Divider, Form, Input, Row } from "antd";
 import { Link, useNavigate } from "react-router-dom";
