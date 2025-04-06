@@ -47,7 +47,7 @@ function Login() {
 
       // Use callApi instead of direct api.post
       const response = await callApi("post", "login-google", { token: token });
-
+      console.log(response);
       // Store tokens in localStorage (same pattern as regular login)
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("refreshToken", response.data.refreshToken);

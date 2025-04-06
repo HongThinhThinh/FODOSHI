@@ -20,6 +20,8 @@ import {
   Tag,
   Radio,
   Upload,
+  Spin,
+  Result,
 } from "antd";
 import {
   UserOutlined,
@@ -52,11 +54,11 @@ import {
 import type { UploadChangeParam } from "antd/es/upload";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../../../redux/store";
+import { useDispatch } from "react-redux";
 import api from "../../../../config/api";
-import { login, logout } from "../../../../redux/features/userSlice";
+import { logout } from "../../../../redux/features/userSlice";
 import uploadFile from "../../../../utils/uploadFile";
+import getCurrentUser, { UserData } from "../../../../utils/getCurrentUser";
 import "./style.scss";
 import OrderHistoryPage from "../order-history";
 
@@ -80,7 +82,6 @@ interface Order {
   }[];
 }
 
-// Cập nhật interface Address - giữ lại isDefault trong interface để tương thích với API
 interface Address {
   id: number;
   address: string;
@@ -88,7 +89,7 @@ interface Address {
   district: string;
   commune: string;
   isDeleted: boolean;
-  isDefault?: boolean; // Giữ lại để tương thích với dữ liệu API
+  isDefault?: boolean;
   guestName: string | null;
   guestPhone: string | null;
   guestEmail: string | null;
@@ -97,7 +98,9 @@ interface Address {
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.user);
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [userLoading, setUserLoading] = useState(true);
+  const [userError, setUserError] = useState<Error | null>(null);
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -111,16 +114,39 @@ const ProfilePage: React.FC = () => {
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
   const [addressForm] = Form.useForm();
   const [addressLoading, setAddressLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string | null>(user?.image || null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
 
+  const fetchUserData = async () => {
+    setUserLoading(true);
+    try {
+      const data = await getCurrentUser();
+      setUserData(data);
+      setUserError(null);
+      setImageUrl(data.image || null);
+    } catch (error) {
+      setUserError(
+        error instanceof Error
+          ? error
+          : new Error("Không thể tải thông tin người dùng")
+      );
+      console.error("Error fetching user data:", error);
+    } finally {
+      setUserLoading(false);
+    }
+  };
+
   useEffect(() => {
-    if (user) {
+    fetchUserData();
+  }, []);
+
+  useEffect(() => {
+    if (userData) {
       fetchRecentOrders();
       fetchAddresses();
     }
-  }, [user]);
+  }, [userData]);
 
   useEffect(() => {
     AOS.init({
@@ -131,13 +157,6 @@ const ProfilePage: React.FC = () => {
       offset: 50,
     });
   }, []);
-
-  // Add this useEffect to keep the image URL in sync with Redux state
-  useEffect(() => {
-    if (user) {
-      setImageUrl(user.image || null);
-    }
-  }, [user]);
 
   const fetchRecentOrders = async () => {
     setLoading(true);
@@ -194,40 +213,25 @@ const ProfilePage: React.FC = () => {
 
   const handleUpdateProfile = async (values: any) => {
     try {
-      let imageURL = user?.image; // Start with current image URL
+      let imageURL = userData?.image;
 
-      // If there's a new image file, upload it to Firebase first
       if (imageFile) {
         setImageLoading(true);
         imageURL = await uploadFile(imageFile);
       }
 
-      // Now send the profile update with the image URL
       const updateData = {
-        name: values.name,
-        email: values.email,
-        phoneNumber: values.phoneNumber,
-        image: imageURL, // Add the image URL (either existing or new)
-      };
-
-      const response = await api.put("/users", updateData);
-
-      // Alternative approach if API doesn't return full user data
-      const updatedUser = {
-        ...user,
         name: values.name,
         email: values.email,
         phoneNumber: values.phoneNumber,
         image: imageURL,
       };
 
-      // Update Redux store
-      dispatch(login(updatedUser));
+      await api.put("/users", updateData);
+      await fetchUserData();
 
       message.success("Cập nhật thông tin thành công");
       setEditModalVisible(false);
-
-      // Reset image file state after successful update
       setImageFile(null);
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -239,39 +243,32 @@ const ProfilePage: React.FC = () => {
 
   const handleChangePassword = async (values: any) => {
     try {
-      // First check if passwords match (redundant with form validation but good practice)
       if (values.newPassword !== values.confirmPassword) {
         return message.error("Mật khẩu xác nhận không khớp với mật khẩu mới");
       }
 
-      // Call the API with the correct endpoint and parameter names
       await api.put("users/change-password", {
         oldPassword: values.currentPassword,
         newPassword: values.newPassword,
       });
 
-      // Success handling
       message.success("Đổi mật khẩu thành công");
       setChangePasswordVisible(false);
       passwordForm.resetFields();
     } catch (error: any) {
-      // Error handling with more specific messages
       console.error("Error changing password:", error);
 
       if (error.response?.status === 400) {
-        // Handle validation errors from API
         if (error.response.data && typeof error.response.data === "object") {
-          // Display specific error messages if API returns them
           const errorMessages = Object.values(error.response.data).join(", ");
           message.error(
             errorMessages ||
-              "Không thể đổi mật khẩu.Vui lòng xem lại mật khẩu cũ"
+              "Không thể đổi mật khẩu. Vui lòng xem lại mật khẩu cũ"
           );
         } else {
-          message.error("Không thể đổi mật khẩu.Vui lòng xem lại mật khẩu cũ");
+          message.error("Không thể đổi mật khẩu. Vui lòng xem lại mật khẩu cũ");
         }
       } else {
-        // Generic error message
         message.error(
           "Không thể đổi mật khẩu. Hãy kiểm tra lại mật khẩu hiện tại"
         );
@@ -343,7 +340,6 @@ const ProfilePage: React.FC = () => {
 
   const showAddressModal = (address?: Address) => {
     if (address) {
-      // Sửa địa chỉ
       setEditingAddress(address);
 
       addressForm.setFieldsValue({
@@ -354,7 +350,6 @@ const ProfilePage: React.FC = () => {
         isDefault: address.isDefault || false,
       });
     } else {
-      // Thêm địa chỉ mới
       setEditingAddress(null);
       addressForm.resetFields();
       addressForm.setFieldsValue({
@@ -370,16 +365,13 @@ const ProfilePage: React.FC = () => {
 
     try {
       if (editingAddress) {
-        // Cập nhật địa chỉ
         await api.put(`/address/user/${editingAddress.id}`, values);
         message.success("Cập nhật địa chỉ thành công");
       } else {
-        // Thêm địa chỉ mới
         await api.post("/address/user", values);
         message.success("Thêm địa chỉ mới thành công");
       }
 
-      // Refresh danh sách địa chỉ
       fetchAddresses();
       setAddressModalVisible(false);
     } catch (error) {
@@ -394,12 +386,10 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  // Thêm hàm xử lý xóa địa chỉ
   const handleDeleteAddress = async (id: number) => {
     try {
       await api.delete(`/address/user/${id}`);
       message.success("Xóa địa chỉ thành công");
-      // Cập nhật lại danh sách địa chỉ
       fetchAddresses();
     } catch (error) {
       console.error("Error deleting address:", error);
@@ -407,7 +397,6 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  // Add these functions to your component
   const beforeUpload = (file: RcFile) => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
     if (!isJpgOrPng) {
@@ -428,10 +417,8 @@ const ProfilePage: React.FC = () => {
       return;
     }
     if (info.file.status === "done") {
-      // Get file object for later use in form submission
       setImageFile(info.file.originFileObj as File);
 
-      // Preview image
       getBase64(info.file.originFileObj as RcFile, (url) => {
         setImageLoading(false);
         setImageUrl(url);
@@ -439,7 +426,6 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  // Helper function to convert file to base64 for preview
   const getBase64 = (img: RcFile, callback: (url: string) => void) => {
     const reader = new FileReader();
     reader.addEventListener("load", () => callback(reader.result as string));
@@ -462,13 +448,12 @@ const ProfilePage: React.FC = () => {
         form={form}
         layout="vertical"
         initialValues={{
-          name: user?.name,
-          email: user?.email,
-          phoneNumber: user?.phoneNumber,
+          name: userData?.name,
+          email: userData?.email,
+          phoneNumber: userData?.phoneNumber,
         }}
         onFinish={handleUpdateProfile}
       >
-        {/* Avatar upload section */}
         <div className="mb-6 text-center">
           <div className="mb-2">
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -482,16 +467,15 @@ const ProfilePage: React.FC = () => {
               beforeUpload={beforeUpload}
               onChange={handleImageChange}
               customRequest={({ onSuccess }) => {
-                // Bypass actual upload since we'll handle it in form submission
                 setTimeout(() => {
                   onSuccess && onSuccess("ok");
                 }, 0);
               }}
             >
-              {imageUrl || user?.image ? (
+              {imageUrl || userData?.image ? (
                 <div className="relative group">
                   <img
-                    src={imageUrl || user?.image}
+                    src={imageUrl || userData?.image}
                     alt="avatar"
                     className="w-full h-full rounded-full object-cover"
                   />
@@ -510,7 +494,6 @@ const ProfilePage: React.FC = () => {
           <p className="text-gray-500 text-xs">Nhấp vào ảnh để thay đổi</p>
         </div>
 
-        {/* Rest of your form - name, email, phone */}
         <Form.Item
           name="name"
           label="Họ và tên"
@@ -631,7 +614,6 @@ const ProfilePage: React.FC = () => {
     </Modal>
   );
 
-  // Cập nhật renderAddressModal không còn tùy chọn đặt mặc định
   const renderAddressModal = () => (
     <Modal
       title={
@@ -700,7 +682,6 @@ const ProfilePage: React.FC = () => {
     </Modal>
   );
 
-  // Cập nhật renderAddressCard không hiển thị mặc định
   const renderAddressCard = () => (
     <Card
       title={
@@ -761,9 +742,7 @@ const ProfilePage: React.FC = () => {
           )}
           footer={
             addresses.length > 2 ? (
-              <div className="text-center text-amber-600 pt-2">
-                {/* + {addresses.length - 2} địa chỉ khác */}
-              </div>
+              <div className="text-center text-amber-600 pt-2"></div>
             ) : null
           }
         />
@@ -788,16 +767,43 @@ const ProfilePage: React.FC = () => {
     </Card>
   );
 
-  if (!user) {
-    navigate("/login");
-    return null;
+  if (userLoading) {
+    return (
+      <div className="profile-page-container font-nunito flex items-center justify-center min-h-screen">
+        <Spin size="large" tip="Đang tải thông tin tài khoản..." />
+      </div>
+    );
+  }
+
+  if (userError || !userData) {
+    return (
+      <div className="profile-page-container font-nunito">
+        <Result
+          status="error"
+          title="Không thể tải thông tin tài khoản"
+          subTitle="Vui lòng thử lại sau hoặc đăng nhập lại"
+          extra={[
+            <Button
+              type="primary"
+              key="login"
+              onClick={() => navigate("/login")}
+              className="bg-amber-600 hover:bg-amber-700 border-amber-600"
+            >
+              Đăng nhập lại
+            </Button>,
+            <Button key="retry" onClick={fetchUserData}>
+              Thử lại
+            </Button>,
+          ]}
+        />
+      </div>
+    );
   }
 
   return (
     <div className="profile-page-container font-nunito">
       <div className="profile-banner">
         <div className="profile-banner__container">
-          {/* Navigation path */}
           <div
             className="profile__navigation"
             data-aos="fade-down"
@@ -822,19 +828,19 @@ const ProfilePage: React.FC = () => {
               <Avatar
                 size={80}
                 icon={<UserOutlined />}
-                src={user?.image}
+                src={userData?.image}
                 className="bg-amber-100 text-amber-700 flex items-center justify-center border-2 border-amber-200"
               />
               <div>
                 <h2 className="text-xl font-bold text-gray-800">
-                  {user?.name}
+                  {userData?.name}
                 </h2>
                 <p className="text-gray-500 flex items-center gap-1">
-                  <MailOutlined /> {user?.email}
+                  <MailOutlined /> {userData?.email}
                 </p>
                 <p className="text-gray-500 flex items-center gap-1">
                   <PhoneOutlined />{" "}
-                  {user?.phoneNumber || "Chưa cập nhật số điện thoại"}
+                  {userData?.phoneNumber || "Chưa cập nhật số điện thoại"}
                 </p>
               </div>
             </div>
@@ -891,31 +897,31 @@ const ProfilePage: React.FC = () => {
                       dataSource={[
                         {
                           label: "Họ và tên",
-                          value: user?.name,
+                          value: userData?.name,
                           icon: <UserOutlined className="text-amber-600" />,
                         },
                         {
                           label: "Email",
-                          value: user?.email,
+                          value: userData?.email,
                           icon: <MailOutlined className="text-amber-600" />,
                         },
                         {
                           label: "Số điện thoại",
-                          value: user?.phoneNumber || "Chưa cập nhật",
+                          value: userData?.phoneNumber || "Chưa cập nhật",
                           icon: <PhoneOutlined className="text-amber-600" />,
                         },
                         {
                           label: "Vai trò",
                           value:
-                            user?.role === "CONSIGNOR"
+                            userData?.role === "CONSIGNOR"
                               ? "Khách hàng"
-                              : user?.role,
+                              : userData?.role,
                           icon: <ShopOutlined className="text-amber-600" />,
                         },
                         {
                           label: "Ngày tham gia",
-                          value: user?.createdAt
-                            ? formatDate(user.createdAt)
+                          value: userData?.createdAt
+                            ? formatDate(userData.createdAt)
                             : "Không có thông tin",
                           icon: <CalendarOutlined className="text-amber-600" />,
                         },
