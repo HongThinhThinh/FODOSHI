@@ -6,12 +6,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { WarningFilled } from "@ant-design/icons";
 import {
   alertFail,
+  alertSuccess,
   alertSuccessSignUp,
 } from "../../../../hooks/useNotification";
 import { backIn } from "framer-motion";
 import LoadingUI from "../../../atoms/loading";
 import api from "../../../../config/api";
-
+import { toast } from "react-toastify";
+import videoSource from "../../../../assets/video.mp4";
 const MyFormItemContext = React.createContext([]);
 
 function toArr(str) {
@@ -32,12 +34,15 @@ function SignUp() {
     setIsLoading(true);
     console.log(value);
     try {
-      console.log("test");
       const response = await api.post("/register", value);
-      alertSuccessSignUp("Please check and confirm to activate this account");
-      navigae("/login");
+      alertSuccess("Đã đăng ký thành công");
+
+      // Add delay before navigation
+      setTimeout(() => {
+        navigae("/login");
+      }, 1500); // 1.5 seconds delay
     } catch (e) {
-      alertFail(e.response.data);
+      alertFail(e?.response?.data);
     }
     setIsLoading(false);
   };
@@ -57,12 +62,12 @@ function SignUp() {
               loop
               preload="auto"
               className="signUp__side-bar__media"
-              src="https://cdn.dribbble.com/uploads/48292/original/30fd1f7b63806eff4db0d4276eb1ac45.mp4?1689187515"
+              src={videoSource}
             ></video>
           </Col>
           <Col md={24} lg={16} className="signUp__form">
             <Col lg={14} className="signUp__form__container">
-              <h3>Sign up to Cremo</h3>
+              <h3 className="font-semibold">Đăng ký vào FODOSHI</h3>
               <Form
                 className="signUp__form__container"
                 name="form_item_path"
@@ -70,7 +75,7 @@ function SignUp() {
                 onFinish={onFinish}
               >
                 <Form.Item
-                  label="Name"
+                  label="Họ và tên"
                   name="name"
                   className="signUp__form__container__group-form__label"
                   rules={[
@@ -78,7 +83,7 @@ function SignUp() {
                       required: true,
                       message: (
                         <div>
-                          <WarningFilled /> Please input your name!
+                          <WarningFilled /> Vui lòng nhập họ tên!
                         </div>
                       ),
                     },
@@ -87,8 +92,8 @@ function SignUp() {
                         if (!value || /^\s/.test(value)) {
                           return Promise.reject(
                             <div>
-                              <WarningFilled /> Name must not start with
-                              whitespace
+                              <WarningFilled /> Tên không được bắt đầu bằng
+                              khoảng trắng
                             </div>
                           );
                         }
@@ -104,7 +109,7 @@ function SignUp() {
                 </Form.Item>
 
                 <Form.Item
-                  label="Phone number"
+                  label="Số điện thoại"
                   name="phoneNumber"
                   className="signUp__form__container__group-form__label"
                   rules={[
@@ -112,18 +117,37 @@ function SignUp() {
                       required: true,
                       message: (
                         <div>
-                          <WarningFilled /> Please input your Phone number!
+                          <WarningFilled /> Vui lòng nhập số điện thoại!
                         </div>
                       ),
+                    },
+                    {
+                      pattern: /^(0[2-9][0-9]{8})$/,
+                      message: (
+                        <div>
+                          <WarningFilled /> Số điện thoại không hợp lệ!
+                        </div>
+                      ),
+                    },
+                    {
+                      validator: (_, value) => {
+                        if (value && /\s/.test(value)) {
+                          return Promise.reject(
+                            <div>
+                              <WarningFilled /> Số điện thoại không được chứa
+                              khoảng trắng
+                            </div>
+                          );
+                        }
+                        return Promise.resolve();
+                      },
                     },
                   ]}
                 >
                   <Input
                     onInput={(e) => setPhoneNumber(e.target.value)}
-                    onChange={(e) =>
-                      e.target.value.includes(" ") ? true : false
-                    }
                     className="signUp__form__container__group-form__input"
+                    placeholder="Nhập số điện thoại 10 số"
                   />
                 </Form.Item>
 
@@ -135,7 +159,7 @@ function SignUp() {
                       type: "email",
                       message: (
                         <div>
-                          <WarningFilled /> Email is not valid!
+                          <WarningFilled /> Email không hợp lệ!
                         </div>
                       ),
                     },
@@ -143,7 +167,7 @@ function SignUp() {
                       required: true,
                       message: (
                         <div>
-                          <WarningFilled /> Please input your email!
+                          <WarningFilled /> Vui lòng nhập email!
                         </div>
                       ),
                     },
@@ -157,7 +181,7 @@ function SignUp() {
                 </Form.Item>
 
                 <Form.Item
-                  label="Password"
+                  label="Mật khẩu"
                   name="password"
                   rules={[
                     {
@@ -165,8 +189,8 @@ function SignUp() {
                         if (/\s/.test(value)) {
                           return Promise.reject(
                             <div>
-                              <WarningFilled /> Password must not contain
-                              whitespace
+                              <WarningFilled /> Mật khẩu không được chứa khoảng
+                              trắng
                             </div>
                           );
                         }
@@ -177,8 +201,7 @@ function SignUp() {
                       min: 6,
                       message: (
                         <div>
-                          <WarningFilled /> Password must be at least 6
-                          characters!
+                          <WarningFilled /> Mật khẩu phải có ít nhất 6 ký tự!
                         </div>
                       ),
                     },
@@ -186,7 +209,7 @@ function SignUp() {
                       required: true,
                       message: (
                         <div>
-                          <WarningFilled /> Please input your password!
+                          <WarningFilled /> Vui lòng nhập mật khẩu!
                         </div>
                       ),
                     },
@@ -196,19 +219,18 @@ function SignUp() {
                   <Input.Password
                     onInput={(e) => setPassword(e.target.value)}
                     className="signUp__form__container__group-form__input"
-                    placeholder="6+ characters"
+                    placeholder="Tối thiểu 6 ký tự"
                   />
                 </Form.Item>
                 <Form.Item
-                  label="Re-password"
+                  label="Nhập lại mật khẩu"
                   name="re-password"
                   rules={[
                     {
                       min: 6,
                       message: (
                         <div>
-                          <WarningFilled /> Password must be at least 6
-                          characters!
+                          <WarningFilled /> Mật khẩu phải có ít nhất 6 ký tự!
                         </div>
                       ),
                     },
@@ -216,7 +238,7 @@ function SignUp() {
                       required: true,
                       message: (
                         <div>
-                          <WarningFilled /> Please input your password!
+                          <WarningFilled /> Vui lòng nhập lại mật khẩu!
                         </div>
                       ),
                     },
@@ -225,8 +247,8 @@ function SignUp() {
                         if (/\s/.test(value)) {
                           return Promise.reject(
                             <div>
-                              <WarningFilled /> Password must not contain
-                              whitespace
+                              <WarningFilled /> Mật khẩu không được chứa khoảng
+                              trắng
                             </div>
                           );
                         }
@@ -239,23 +261,24 @@ function SignUp() {
                   <Input.Password
                     onInput={(e) => setPassword(e.target.value)}
                     className="signUp__form__container__group-form__input"
-                    placeholder="6+ characters"
+                    placeholder="Tối thiểu 6 ký tự"
                   />
                 </Form.Item>
 
                 <Checkbox onChange={onChange}>
-                  I agree with Cremo{" "}
+                  Tôi đồng ý với{" "}
                   <Link to="" className="about__detail">
-                    Terms of Service
+                    Điều khoản dịch vụ
                   </Link>
                   ,{" "}
                   <Link to="" className="about__detail">
-                    Privacy Policy
+                    Chính sách bảo mật
                   </Link>
-                  , and our default{" "}
+                  , và{" "}
                   <Link to="" className="about__detail">
-                    Notification Settings
-                  </Link>
+                    Cài đặt thông báo
+                  </Link>{" "}
+                  mặc định của FODOSHI
                 </Checkbox>
 
                 <Button
@@ -267,16 +290,16 @@ function SignUp() {
                     checked && { backgroundColor: "#0d0c22", color: "white" }
                   }
                 >
-                  Create Account
+                  Tạo tài khoản
                 </Button>
               </Form>
               <h5 className="signUp__form__container__linkToSignUp">
-                Already have an account?
+                Đã có tài khoản?{" "}
                 <Link
                   to="/login"
                   className="signUp__form__container__linkToSignUp__signUp"
                 >
-                  Sign In
+                  Đăng nhập
                 </Link>
               </h5>
             </Col>

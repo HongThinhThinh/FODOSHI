@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import "./index.scss";
 import ggIcon from "../../../../assets/google.png";
+import videoSource from "../../../../assets/video.mp4";
 import { Button, Col, Divider, Form, Input, Row } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { signInWithPopup, GoogleAuthProvider, getAuth } from "firebase/auth";
@@ -9,6 +10,7 @@ import { WarningFilled } from "@ant-design/icons";
 import api from "../../../../config/api";
 import { login } from "../../../../redux/features/userSlice";
 import { toast } from "react-toastify";
+import useApiService from "../../../../hooks/useApi";
 const provider = new GoogleAuthProvider();
 
 function toArr(str) {
@@ -30,86 +32,70 @@ const MyFormItemGroup = ({ prefix, children }) => {
   );
 };
 
-// eslint-disable-next-line react/prop-types
-// const MyFormItem = ({ name, children, ...props }) => {
-//   const prefixPath = React.useContext(MyFormItemContext);
-//   const concatName =
-//     name !== undefined ? [...prefixPath, ...toArr(name)] : undefined;
-//   console.log(children);
-//   return (
-//     <Form.Item name={name} {...props}>
-//       {children}
-//     </Form.Item>
-//   );
-// };
-
 function Login() {
   const user = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const { callApi, loading } = useApiService();
   const handleLoginGoogle = async () => {
-    const auth = getAuth();
-    const result = await signInWithPopup(auth, provider);
-    console.log(result);
-    const token = result.user.accessToken;
-    console.log(token);
-    // api.post("/login-gg", { token }).then((data) => {
-    //   if (data) {
-    //     localStorage.setItem("role", data);
-    //     navigate("/creator");
-    //   }
-    // });
+    try {
+      const auth = getAuth();
+      const result = await signInWithPopup(auth, provider);
+      console.log(result);
+      // Get token from Google Auth
+      const token = result.user.accessToken;
 
-    const res = await api.post("/login-google", { token: token });
-    const role = res.data.role;
+      // Use callApi instead of direct api.post
+      const response = await callApi("post", "login-google", { token: token });
 
-    console.log(res.data.role);
-    localStorage.setItem("token", res.data.token);
-    localStorage.setItem("accountId", res.id);
-    //save redux
-    dispatch(login(res.data));
-    if (role === "ADMIN") {
-      navigate("/dashboard");
-    }
-    if (role === "MOD") {
-      navigate("/dashboard");
-    }
-    if (role === "CREATOR") {
-      navigate("/creator-manage/artworks");
-    }
-    if (role === "AUDIENCE") {
-      navigate("/profile");
+      // Store tokens in localStorage (same pattern as regular login)
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("refreshToken", response.data.refreshToken);
+
+      // Show success message
+      toast.success("Đăng nhập thành công");
+
+      // Update Redux store with user data
+      dispatch(login(response.data));
+
+      // Use simplified navigation logic matching onFinish
+      if (response?.data.role === "ADMIN") {
+        navigate("/admin/dashboard", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
+    } catch (error) {
+      console.error("Lỗi đăng nhập Google:", error);
+      toast.error("Đăng nhập Google thất bại. Vui lòng thử lại.");
     }
   };
 
   const onFinish = async (value) => {
     try {
-      const response = await api.post("/login", value);
-      console.log(response.data);
-      const role = response.data.data.role;
-      console.log(role);
-      const user = response.data.data;
-      console.log(user);
-      localStorage.setItem("token", response.data.data.token);
-      localStorage.setItem("accountId", response.data.data.id);
-      //save redux
-      dispatch(login(user));
-      if (role === "ADMIN") {
-        navigate("/dashboard");
+      // Create payload with expected parameter names
+      const payload = {
+        phoneNumber: value.phoneNumber,
+        password: value.password,
+      };
+
+      // Use callApi instead of api.post directly
+      const response = await callApi("post", "login", payload);
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("refreshToken", response.data.refreshToken);
+      toast.success("Login successful");
+      dispatch(login(response.data));
+      // Update Redux store with user data
+      dispatch(login(response.data));
+
+      // Simplify navigation logic
+      if (response?.data.role === "ADMIN") {
+        navigate("/admin/dashboard", { replace: true });
+      } else {
+        navigate("/", { replace: true });
       }
-      if (role === "MOD") {
-        navigate("/dashboard");
-      }
-      if (role === "CREATOR") {
-        navigate("/creator-manage/artworks");
-      }
-      if (role === "AUDIENCE") {
-        navigate("/profile");
-      }
-    } catch (e) {
-      console.log(e);
-      toast.error(e.response.data + "Please Try Again");
+    } catch (error) {
+      console.error("Lỗi đăng nhập:", error);
+      toast.error("Đăng nhập thất bại. Vui lòng thử lại.");
     }
   };
 
@@ -126,21 +112,21 @@ function Login() {
           loop
           preload="auto"
           className="login__side-bar__media"
-          src="https://cdn.dribbble.com/uploads/48226/original/b8bd4e4273cceae2889d9d259b04f732.mp4?1689028949"
+          src={videoSource}
         ></video>
       </Col>
       <Col md={24} lg={17} className="login__form">
         <Col lg={14} className="login__form__container">
-          <h3>Sign in to FODOSHI</h3>
+          <h3 className="font-semibold">Đăng nhập vào FODOSHI</h3>
           <Button
             onClick={handleLoginGoogle}
             className="login__form__container__gg-btn"
           >
             <img src={ggIcon} />
-            Sign in with Google
+            Đăng nhập với google
           </Button>
           <Divider className="login__form__container__divider" plain>
-            or sign in with email
+            Hoặc đăng nhập bằng số điện thoại
           </Divider>
           <Form
             className="login__form__container__namepass"
@@ -149,17 +135,8 @@ function Login() {
             onFinish={onFinish}
           >
             <MyFormItemGroup className="login__form__container__namepass__group-form">
-              {/* <MyFormItem
-                name="username"
-                className="login__form__container__namepass__group-form"
-              >
-                <label className="login__form__container__namepass__group-form__label">
-                  Username or Email
-                </label>
-                <Input className="login__form__container__namepass__group-form__input" />
-              </MyFormItem> */}
               <Form.Item
-                label="Phone Number"
+                label="Số điện thoại"
                 name="phoneNumber"
                 className="login__form__container__namepass__group-form"
                 rules={[
@@ -167,7 +144,7 @@ function Login() {
                     required: true,
                     message: (
                       <div>
-                        <WarningFilled /> Please input your username!
+                        <WarningFilled /> Hãy nhập số điện thoại của bạn!
                       </div>
                     ),
                   },
@@ -175,12 +152,6 @@ function Login() {
               >
                 <Input className="login__form__container__namepass__group-form__input" />
               </Form.Item>
-              {/* <MyFormItem className="login__form__container__namepass__group-form">
-                <label className="login__form__container__namepass__group-form__label">
-                  Password
-                </label>
-                <Input className="login__form__container__namepass__group-form__input" />
-              </MyFormItem> */}
               <Form.Item
                 label={
                   <label
@@ -190,12 +161,12 @@ function Login() {
                       justifyContent: "space-between",
                     }}
                   >
-                    <p>Password</p>
+                    <p>Mật khẩu</p>
                     <Link
                       to="/password_resets/new"
                       className="login__form__container__linkToSignUp__signUp"
                     >
-                      Forgot?
+                      Quên mật khẩu?
                     </Link>
                   </label>
                 }
@@ -220,7 +191,7 @@ function Login() {
                     required: true,
                     message: (
                       <div>
-                        <WarningFilled /> Please input your password!
+                        <WarningFilled /> Hãy nhập mật khẩu của bạn!
                       </div>
                     ),
                   },
@@ -232,17 +203,21 @@ function Login() {
             <Button
               className="login__form__container__namepass__submit"
               htmlType="submit"
+              loading={loading}
+              style={{
+                color: "#fff",
+              }}
             >
-              Sign in
+              Đăng nhập
             </Button>
           </Form>
           <h5 className="login__form__container__linkToSignUp">
-            Don&apos;t have an account?{" "}
+            Chưa có tài khoản {""}
             <Link
               to="/register"
               className="login__form__container__linkToSignUp__signUp"
             >
-              Sign up
+              Đăng ký ngay
             </Link>
           </h5>
         </Col>
