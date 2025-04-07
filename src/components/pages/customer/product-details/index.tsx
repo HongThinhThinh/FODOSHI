@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
+import parse from "html-react-parser";
 import Carousel from "../../../atoms/carousel";
 import { Navigation } from "swiper/modules";
 import { showCardModel, showCardModel1 } from "../../../../assets/model";
@@ -221,6 +222,18 @@ const ProductDetails = () => {
     // Other cleanup as needed
   };
 
+  const [expanded, setExpanded] = useState(false);
+  const [shouldShowReadMore, setShouldShowReadMore] = useState(false);
+  const descriptionRef = useRef(null);
+
+  // Kiểm tra nếu mô tả đủ dài để hiển thị nút "Xem thêm"
+  useEffect(() => {
+    if (descriptionRef.current) {
+      const element = descriptionRef.current;
+      setShouldShowReadMore(element.scrollHeight > 100);
+    }
+  }, [product?.description]);
+
   return (
     <main className="min-h-screen my-[80px]">
       <section className="product-details-section">
@@ -258,34 +271,59 @@ const ProductDetails = () => {
               )}
             </div>
             <div className="product-details__info">
-              <p className="product-details__name">{product?.name}</p>
-              <p className="product-details__type">
+              <div>
+                <p className="product-details__name">{product?.name}</p>
+                {/* <p className="product-details__type">
                 {product?.brands?.map((brand) => brand.name).join(", ")}
               </p>
               <p className="product-details__category">
                 {product?.categories
                   ?.map((category) => category.name)
                   .join(", ")}
-              </p>
-              <p>
-                Size:{" "}
-                <span className="product-details__size">{product?.size}</span>
-              </p>
-              <p>
-                Color:{" "}
-                <ColorPicker
-                  value={product?.color}
-                  disabled
-                  className="product-details__color"
-                />
-              </p>
-              <p className="product-details__price">
-                {formatMoney(product?.sellingPrice)}
-              </p>
-              <p className="text-[#832F21] text-[15px] mb-4">
-                Dùng mã “FODOSHIXINCHAO” để được giảm 10% lần thanh toán đầu
-                tiên
-              </p>
+              </p> */}
+                <p>
+                  Size:{" "}
+                  <span className="product-details__size">{product?.size}</span>
+                </p>
+                <p>
+                  Color:{" "}
+                  <ColorPicker
+                    value={product?.color}
+                    disabled
+                    className="product-details__color"
+                  />
+                </p>
+
+                <p className="product-details__price">
+                  {formatMoney(product?.sellingPrice)}
+                </p>
+              </div>
+                 <div className="product-description-container">
+                <h3 className="product-description-title">Mô tả sản phẩm</h3>
+                <div
+                  ref={descriptionRef}
+                  className={`product-description-content ${
+                    expanded ? "expanded" : ""
+                  }`}
+                >
+                  {product?.description ? (
+                    parse(product.description.replace(/\n/g, "<br/>"))
+                  ) : (
+                    <p className="no-description">
+                      Chưa có mô tả cho sản phẩm này
+                    </p>
+                  )}
+                </div>
+
+                {shouldShowReadMore && (
+                  <button
+                    className="read-more-button"
+                    onClick={() => setExpanded(!expanded)}
+                  >
+                    {expanded ? "Thu gọn" : "Xem thêm"}
+                  </button>
+                )}
+              </div>
               <div className="product-details__button flex gap-5">
                 <ButtonComponent
                   size="large"

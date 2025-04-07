@@ -123,6 +123,131 @@
   }
 }
 
+.product-description-container {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: #fcfaf7;
+  border: 1px solid #f0eee6;
+  position: relative;
+
+  .product-description-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #832f21;
+    margin-bottom: 12px;
+    position: relative;
+    display: inline-block;
+
+    &::after {
+      content: "";
+      position: absolute;
+      width: 40px;
+      height: 2px;
+      background-color: #d99041;
+      bottom: -4px;
+      left: 0;
+      transition: width 0.3s ease;
+    }
+
+    &:hover::after {
+      width: 100%;
+    }
+  }
+
+  .product-description-content {
+    color: #4a4a4a;
+    line-height: 1.7;
+    font-size: 15px;
+    max-height: 100px;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    position: relative;
+
+    &.expanded {
+      max-height: 2000px; // Đủ lớn để hiển thị toàn bộ nội dung
+    }
+
+    &:not(.expanded)::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 40px;
+      background: linear-gradient(
+        to bottom,
+        rgba(252, 250, 247, 0),
+        rgba(252, 250, 247, 1)
+      );
+      pointer-events: none;
+    }
+
+    p {
+      margin-bottom: 0.75rem;
+    }
+
+    ul,
+    ol {
+      padding-left: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    strong,
+    b {
+      color: #333;
+    }
+
+    // Định dạng cho table nếu có trong mô tả
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+
+      th,
+      td {
+        border: 1px solid #e0e0e0;
+        padding: 8px 12px;
+      }
+
+      th {
+        background-color: #f5f5f5;
+      }
+    }
+
+    // Định dạng cho ảnh nếu có trong mô tả
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      margin: 0.5rem 0;
+    }
+  }
+
+  .read-more-button {
+    margin-top: 0.75rem;
+    padding: 4px 12px;
+    background-color: transparent;
+    color: #d99041;
+    border: 1px solid #d99041;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #d99041;
+      color: white;
+    }
+  }
+
+  .no-description {
+    color: #888;
+    font-style: italic;
+  }
+}
+
+// Responsive styles
 @media only screen and (max-width: 1136px) {
   .product-details-section {
     .product-details__container {
@@ -137,6 +262,21 @@
           margin-top: 22px;
         }
       }
+    }
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .product-description-container {
+    padding: 0.75rem;
+
+    .product-description-title {
+      font-size: 16px;
+    }
+
+    .product-description-content {
+      font-size: 14px;
+      line-height: 1.6;
     }
   }
 }
