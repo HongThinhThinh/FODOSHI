@@ -127,7 +127,7 @@ export default function Checkout({
     },
     {
       id: "NhanHangTaiCuaHang",
-      label: "Nhận hàng tại cửa hàng",
+      label: "Nhận hàng tại cửa hàng ( Vinhome Grandpart S6.05 )",
       value: "Nhận hàng tại cửa hàng",
       img: "https://cdn-icons-png.flaticon.com/512/126/126122.png",
     },

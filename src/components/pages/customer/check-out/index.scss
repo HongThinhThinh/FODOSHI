@@ -1,3 +1,7 @@
+// Add these media query variables at the top of your file
+$mobile: 576px;
+$tablet: 992px;
+
 .checkout {
   position: fixed;
   padding: 24px 16px;
@@ -277,5 +281,164 @@
         }
       }
     }
+  }
+}
+
+// Responsive styles that only affect mobile and tablet
+@media (max-width: $tablet) {
+  .checkout {
+    max-width: 90%; // Wider on tablet
+    max-height: 85vh; // More vertical space
+    
+    &__header {
+      padding: 10px 0;
+      
+      img {
+        width: 150px; // Smaller logo
+        height: 40px;
+      }
+    }
+    
+    &__address,
+    &__payment,
+    &__shipping,
+    &__shipping-voucher {
+      padding: 10px 15px; // Reduce horizontal padding
+      
+      &__title {
+        font-size: 18px; // Smaller title
+      }
+      
+      &__items {
+        flex-wrap: wrap; // Allow wrapping for multiple items
+        gap: 10px;
+        
+        &__icon {
+          min-width: 150px; // Ensure minimum size
+          
+          img {
+            width: 35px;
+            height: 35px;
+          }
+        }
+      }
+    }
+    
+    &__bills {
+      padding: 10px 15px;
+      
+      &__content {
+        &__item {
+          width: 100%; // Full width on smaller screens
+          
+          &__title {
+            width: auto; // Auto width for title
+          }
+        }
+      }
+    }
+    
+    &__confirm {
+      padding: 10px 15px;
+    }
+  }
+  
+  // Address section adjustments
+  .checkout__address__items__item {
+    flex-direction: column; // Stack elements on mobile
+    
+    &__edit {
+      position: static; // Position normally instead of absolute
+      align-self: flex-end;
+      margin-top: 5px;
+    }
+    
+    &__content__contact {
+      flex-direction: column; // Stack name and phone
+      align-items: flex-start;
+      gap: 5px;
+    }
+  }
+}
+
+// Mobile-specific styles
+@media (max-width: $mobile) {
+  .checkout {
+    max-width: 95%; // Almost full width on mobile
+    padding: 16px 10px; // Reduce padding
+    
+    &__header {
+      img {
+        width: 120px; // Even smaller logo
+        height: 30px;
+      }
+    }
+    
+    &__address,
+    &__payment,
+    &__shipping,
+    &__shipping-voucher {
+      padding: 8px 10px; // Further reduce padding
+      
+      &__title {
+        font-size: 16px; // Smaller title on mobile
+      }
+      
+      &__items {
+        padding: 10px 0; // Reduce vertical padding
+        
+        &__item {
+          padding: 5px 10px; // Smaller padding for items
+        }
+        
+        &__icon {
+          img {
+            width: 30px;
+            height: 30px;
+          }
+          
+          &__upper {
+            gap: 5px; // Reduce gap
+          }
+        }
+      }
+    }
+    
+    // Payment and shipping method adjustments for mobile
+    &__payment__items,
+    &__shipping__items {
+      flex-direction: column; // Stack items vertically on mobile
+      width: 100%;
+      
+      &__icon {
+        width: 100%;
+      }
+    }
+    
+    // Bills section mobile adjustments
+    &__bills {
+      &__content__item {
+        &__title {
+          font-size: 14px;
+        }
+        
+        #grand-total-checkout {
+          font-size: 16px;
+        }
+      }
+    }
+    
+    // Confirmation button mobile adjustments
+    &__confirm {
+      button {
+        width: 100%; // Full width button on mobile
+        padding: 10px !important; // Override any existing padding
+      }
+    }
+  }
+  
+  // Make scrollbar thinner on mobile
+  .checkout__content::-webkit-scrollbar {
+    width: 4px;
   }
 }

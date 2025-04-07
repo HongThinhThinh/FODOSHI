@@ -160,58 +160,60 @@ const ProductDetails = () => {
 
   // Function to handle Buy Now button
   const handleBuyNow = async () => {
-    if (user) {
-      // User is logged in, use API
-      try {
-        const response = await mutate(
-          { productId: id },
-          {
-            onSuccess: (data) => {
-              // Find the created cart item ID
-              const cartItemId = data?.data?.id;
-              if (cartItemId) {
-                setCheckoutCartItemId(cartItemId);
-                setCheckoutItem(product);
-                setOpenCheckout(true);
-              } else {
-                message.error("Không thể tìm thấy sản phẩm trong giỏ hàng");
-              }
-            },
-            onError: (error) => {
-              message.error(error?.response?.data);
-            },
-          }
-        ).unwrap();
-      } catch (error) {
-        console.error("Unexpected error:", error);
-      }
-    } else {
-      // User is not logged in, use Redux
-      try {
-        // Add to cart via Redux
-        dispatch({
-          type: "cart/add",
-          payload: {
-            id: id,
-            name: product.name,
-            price: product.sellingPrice,
-            image: product.mainImage || product.imageUrls?.[0]?.image || "",
-            quantity: 1,
-            originalPrice: product.originalPrice,
-            color: product.color,
-            size: product.size,
-          },
-        });
+    setCheckoutItem(product);
+    setOpenCheckout(true);
+    // if (user) {
+    //   // User is logged in, use API
+    //   try {
+    //     const response = await mutate(
+    //       { productId: id },
+    //       {
+    //         onSuccess: (data) => {
+    //           // Find the created cart item ID
+    //           const cartItemId = data?.data?.id;
+    //           if (cartItemId) {
+    //             setCheckoutCartItemId(cartItemId);
+    //             setCheckoutItem(product);
+    //             setOpenCheckout(true);
+    //           } else {
+    //             message.error("Không thể tìm thấy sản phẩm trong giỏ hàng");
+    //           }
+    //         },
+    //         onError: (error) => {
+    //           message.error(error?.response?.data);
+    //         },
+    //       }
+    //     ).unwrap();
+    //   } catch (error) {
+    //     console.error("Unexpected error:", error);
+    //   }
+    // } else {
+    //   // User is not logged in, use Redux
+    //   try {
+    //     // Add to cart via Redux
+    //     dispatch({
+    //       type: "cart/add",
+    //       payload: {
+    //         id: id,
+    //         name: product.name,
+    //         price: product.sellingPrice,
+    //         image: product.mainImage || product.imageUrls?.[0]?.image || "",
+    //         quantity: 1,
+    //         originalPrice: product.originalPrice,
+    //         color: product.color,
+    //         size: product.size,
+    //       },
+    //     });
 
-        // Set the product for checkout
-        setCheckoutItem(product);
-        setCheckoutCartItemId(id); // Use product ID as cart item ID for guests
-        setOpenCheckout(true);
-      } catch (error) {
-        console.error("Error adding to local cart:", error);
-        message.error("Có lỗi xảy ra khi thêm vào giỏ hàng");
-      }
-    }
+    //     // Set the product for checkout
+    //     setCheckoutItem(product);
+    //     setCheckoutCartItemId(id); // Use product ID as cart item ID for guests
+    //     setOpenCheckout(true);
+    //   } catch (error) {
+    //     console.error("Error adding to local cart:", error);
+    //     message.error("Có lỗi xảy ra khi thêm vào giỏ hàng");
+    //   }
+    // }
   };
 
   // Function to handle checkout success
@@ -298,7 +300,7 @@ const ProductDetails = () => {
                   {formatMoney(product?.sellingPrice)}
                 </p>
               </div>
-                 <div className="product-description-container">
+              <div className="product-description-container">
                 <h3 className="product-description-title">Mô tả sản phẩm</h3>
                 <div
                   ref={descriptionRef}
