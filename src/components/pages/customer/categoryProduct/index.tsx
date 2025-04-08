@@ -5,6 +5,7 @@ import { useGetProductByCategory } from "../../../../services/productService";
 import { useGetBrandActive } from "../../../../services/categoryService";
 import { useParams } from "react-router-dom";
 import ProductCard from "../../../atoms/product-ht";
+import { Pagination } from "antd";
 
 const ProductCategory = () => {
   const { id } = useParams();
@@ -14,6 +15,10 @@ const ProductCategory = () => {
   const { data: products } = useGetProductByCategory(id);
   const { data: brands } = useGetBrandActive(id);
   const [selectedPriceFilter, setSelectedPriceFilter] = useState(null);
+
+  // Add pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 9; // 9 products per page
 
   useEffect(() => {
     if (products) {
@@ -51,6 +56,7 @@ const ProductCategory = () => {
       });
 
       setFilteredProducts(filtered);
+      setCurrentPage(1); // Reset to first page when filters change
       console.log("Filtered products:", filtered.length);
     }
   }, [products, priceRange, selectedBrands, selectedPriceFilter]);
@@ -69,6 +75,24 @@ const ProductCategory = () => {
     setPriceRange([0, 1000000]);
     setSelectedBrands([]);
     setSelectedPriceFilter(null);
+    setCurrentPage(1); // Reset to first page when filters are reset
+  };
+
+  // Get current page's products
+  const getCurrentPageProducts = () => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return filteredProducts.slice(startIndex, endIndex);
+  };
+
+  // Handle page change
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    // Scroll to top of products section
+    window.scrollTo({
+      top: document.querySelector(".product-grid")?.offsetTop - 100 || 0,
+      behavior: "smooth",
+    });
   };
 
   return (
@@ -145,11 +169,32 @@ const ProductCategory = () => {
           </div>
           {/* Products Grid */}
           <div className="w-full md:w-3/4">
+            <div className="mb-4">
+              <h2 className="text-xl font-semibold">
+                Tìm thấy {filteredProducts.length} sản phẩm
+              </h2>
+            </div>
+
             {filteredProducts.length > 0 ? (
-              <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                {filteredProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
+              <div className="flex flex-col">
+                <div className="flex flex-wrap gap-4 justify-center md:justify-start product-grid">
+                  {getCurrentPageProducts().map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                <div className="flex justify-center mt-8 mb-4">
+                  <Pagination
+                    current={currentPage}
+                    total={filteredProducts.length}
+                    pageSize={pageSize}
+                    onChange={handlePageChange}
+                    showSizeChanger={false}
+                    showQuickJumper
+                    showTotal={(total) => `Tổng cộng ${total} sản phẩm`}
+                  />
+                </div>
               </div>
             ) : (
               <div className="text-center p-8">

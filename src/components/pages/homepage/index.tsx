@@ -37,8 +37,8 @@ function HomePage() {
   useEffect(() => {
     AOS.init({
       duration: 1000,
-      once: false,
-      mirror: true,
+      once: true, // Change to true to prevent animations from repeating
+      mirror: false, // Disable reverse animations on scroll up
     });
   }, []);
 
@@ -127,7 +127,7 @@ function HomePage() {
           Shop theo danh mục
         </h2>
         <div className="homepage-category__wrapper relative" data-aos="fade-up">
-          {/* Add navigation buttons OUTSIDE the Carousel component */}
+          {/* Navigation buttons remain unchanged */}
           <div className="swiper-button-prev-category absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md cursor-pointer">
             <IoIosArrowBack className="text-[#d99041]" size={24} />
           </div>
@@ -154,8 +154,6 @@ function HomePage() {
                   <Carousel.Item
                     className="homepage-category__carousel-item"
                     key={item.id || index}
-                    data-aos="zoom-in"
-                    data-aos-delay={index * 100}
                   >
                     <div
                       className="flex flex-col items-center cursor-pointer transform transition-transform hover:scale-105"
@@ -205,8 +203,6 @@ function HomePage() {
                 <Carousel.Item
                   className="homepage-outfitOfDay__carousel-item"
                   key={item.id}
-                  data-aos="flip-left"
-                  data-aos-delay={index * 100}
                 >
                   <ProductCard product={item} />
                 </Carousel.Item>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Col, Row, message, Drawer, Button } from "antd";
+import { Col, Row, message, Drawer, Button, Pagination } from "antd";
 import {
   SearchOutlined,
   FilterOutlined,
@@ -27,6 +27,10 @@ function NewProductPage() {
   const [products, setProducts] = useState([]);
   const [brands, setBrands] = useState([]);
   const [categories, setCategories] = useState([]);
+
+  // Add pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 9; // 9 products per page
 
   useEffect(() => {
     // Scroll to top when component mounts
@@ -153,6 +157,8 @@ function NewProductPage() {
       });
 
       setFilteredProducts(filtered);
+      // Reset to first page when filters change
+      setCurrentPage(1);
     }
   }, [
     products,
@@ -195,6 +201,24 @@ function NewProductPage() {
     setSelectedGenders([]);
     setSelectedPriceFilter(null);
     setSearchQuery("");
+    setCurrentPage(1); // Reset to first page
+  };
+
+  // Get current page's products
+  const getCurrentPageProducts = () => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return filteredProducts.slice(startIndex, endIndex);
+  };
+
+  // Handle page change
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    // Scroll to top of products section
+    window.scrollTo({
+      top: document.querySelector(".product-grid")?.offsetTop - 100 || 0,
+      behavior: "smooth",
+    });
   };
 
   // Initialize AOS
@@ -494,8 +518,8 @@ function NewProductPage() {
                 className="flex flex-col items-center sm:items-center md:block"
                 data-aos="fade-up"
               >
-                <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-4 md:gap-6">
-                  {filteredProducts?.map((product, index) => (
+                <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-4 md:gap-6 product-grid">
+                  {getCurrentPageProducts()?.map((product, index) => (
                     <div
                       key={product.id}
                       data-aos="fade-up"
@@ -505,6 +529,19 @@ function NewProductPage() {
                       <ProductCard product={product} />
                     </div>
                   ))}
+                </div>
+
+                {/* Pagination */}
+                <div className="flex justify-center mt-8 mb-4">
+                  <Pagination
+                    current={currentPage}
+                    total={filteredProducts.length}
+                    pageSize={pageSize}
+                    onChange={handlePageChange}
+                    showSizeChanger={false}
+                    showQuickJumper
+                    showTotal={(total) => `Tổng cộng ${total} sản phẩm`}
+                  />
                 </div>
               </div>
             ) : (
