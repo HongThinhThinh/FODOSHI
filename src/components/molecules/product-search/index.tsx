@@ -24,6 +24,7 @@ interface Product {
   gender?: string;
   brands?: Array<{ id: number; name: string }>;
   originalPrice?: number;
+  deleted?: boolean;
 }
 
 interface ProductSearchProps {
@@ -56,17 +57,75 @@ const ProductSearch: React.FC<ProductSearchProps> = ({
 
   useEffect(() => {
     if (activeFilter) {
+      // Log all products with their gender for debugging
+      console.log(
+        "All products before filtering:",
+        products.map((p) => ({ id: p.id, name: p.name, gender: p.gender }))
+      );
+
       const filtered = products.filter((product) => {
-        if (activeFilter === "male") return product.gender === "MALE";
-        if (activeFilter === "female") return product.gender === "FEMALE";
-        if (activeFilter === "unisex") return product.gender === "UNISEX";
-        if (activeFilter === "sale")
+        // Skip products that don't have gender information
+        if (
+          !product.gender ||
+          product.gender === "" ||
+          product.gender === null ||
+          product.gender === "null" ||
+          product.gender === undefined
+        ) {
+          console.log(
+            `Product ${product.id} (${product.name}) has no gender value, skipping`
+          );
+          return (
+            activeFilter !== "male" &&
+            activeFilter !== "female" &&
+            activeFilter !== "unisex"
+          );
+        }
+
+        // Normalize gender value to handle different formats
+        const normalizedGender = product.gender?.trim().toUpperCase() || "";
+        console.log(
+          `DEBUG: Product ${product.id} (${product.name}) has gender="${product.gender}", normalized="${normalizedGender}"`
+        );
+
+        if (activeFilter === "male") {
+          // Chỉ hiển thị sản phẩm Nam
+          console.log(
+            `Filtering for MALE, product ${product.id} gender is ${normalizedGender}`
+          );
+          return normalizedGender === "MALE";
+        }
+
+        if (activeFilter === "female") {
+          // Chỉ hiển thị sản phẩm Nữ
+          console.log(
+            `Filtering for FEMALE, product ${product.id} gender is ${normalizedGender}`
+          );
+          return normalizedGender === "FEMALE";
+        }
+
+        if (activeFilter === "unisex") {
+          // Chỉ lọc chính xác các sản phẩm unisex
+          console.log(
+            `Filtering for UNISEX, product ${product.id} gender is ${normalizedGender}`
+          );
+          return normalizedGender === "UNISEX";
+        }
+
+        if (activeFilter === "sale") {
           return (
             product.originalPrice &&
             product.originalPrice > product.sellingPrice
           );
+        }
         return true;
       });
+
+      console.log(
+        `Filtered for ${activeFilter}:`,
+        filtered.map((p) => ({ id: p.id, name: p.name, gender: p.gender }))
+      );
+
       setFilteredProducts(filtered);
     } else {
       setFilteredProducts(products);
@@ -95,8 +154,38 @@ const ProductSearch: React.FC<ProductSearchProps> = ({
       }
 
       const data = await response.json();
-      setProducts(data);
-      setFilteredProducts(data);
+
+      // Log the raw data to see what we're getting from the API
+      console.log("Raw API response:", data.slice(0, 3)); // Just log a few items to keep console clean
+
+      // Get unique gender values from the response for debugging
+      const uniqueGenders = [...new Set(data.map((p: any) => p.gender))];
+      console.log("Unique gender values in API response:", uniqueGenders);
+
+      // Check gender values in the response
+      console.log(
+        "Gender values in response:",
+        data
+          .map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            gender: p.gender,
+            genderType: typeof p.gender,
+          }))
+          .slice(0, 10)
+      );
+
+      // Make sure to filter out deleted products
+      const availableProducts = data.filter(
+        (product: Product) => product.deleted === false
+      );
+      console.log(
+        "Available (non-deleted) products:",
+        availableProducts.length
+      );
+
+      setProducts(availableProducts);
+      setFilteredProducts(availableProducts);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Đã xảy ra lỗi khi tìm kiếm"
@@ -122,8 +211,7 @@ const ProductSearch: React.FC<ProductSearchProps> = ({
     searchProducts(term);
   };
 
-  const displayProducts =
-    filteredProducts.length > 0 ? filteredProducts : products;
+  const displayProducts = filteredProducts.length > 0 ? filteredProducts : [];
 
   return (
     <div className="product-search">

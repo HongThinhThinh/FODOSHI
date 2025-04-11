@@ -130,13 +130,43 @@ function NewProductPage() {
         // Gender filtering
         const genderMatch =
           selectedGenders.length === 0 ||
-          selectedGenders.includes(
-            product.gender === "MALE"
-              ? "Nam"
-              : product.gender === "FEMALE"
-              ? "Nữ"
-              : "Unisex"
-          );
+          selectedGenders.some((selectedGender) => {
+            // Check for null, undefined, or empty gender values
+            if (
+              !product.gender ||
+              product.gender === "" ||
+              product.gender === null ||
+              product.gender === "null" ||
+              product.gender === undefined
+            ) {
+              console.log(
+                `Product ${product.id} (${product.name}) has no valid gender value`
+              );
+              return false; // Skip products without valid gender when filtering by gender
+            }
+
+            const productGenderValue =
+              product.gender?.trim().toUpperCase() || "";
+
+            console.log(
+              `DEBUG FILTER: Selected gender=${selectedGender}, product=${product.id} has gender="${product.gender}"`
+            );
+
+            // Chỉ lọc chính xác theo giá trị API
+            if (selectedGender === "Nam") {
+              return productGenderValue === "MALE";
+            }
+
+            if (selectedGender === "Nữ") {
+              return productGenderValue === "FEMALE";
+            }
+
+            if (selectedGender === "Unisex") {
+              return productGenderValue === "UNISEX";
+            }
+
+            return false;
+          });
 
         // Search query filtering in name and description
         const searchMatch =

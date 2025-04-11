@@ -181,6 +181,27 @@
       }
     }
   }
+
+  .no-products-message {
+    text-align: center;
+    padding: 40px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin: 20px auto;
+    max-width: 600px;
+
+    h3 {
+      font-size: 20px;
+      color: #333;
+      margin-bottom: 12px;
+    }
+
+    p {
+      color: #666;
+      font-size: 16px;
+    }
+  }
 }
 
 // Responsive styles

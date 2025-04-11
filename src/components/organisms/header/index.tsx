@@ -22,6 +22,7 @@ interface Product {
   name: string;
   mainImage: string;
   sellingPrice: number;
+  deleted: boolean;
 }
 
 function Header() {
@@ -81,8 +82,17 @@ function Header() {
       }
 
       const data = await response.json();
+      console.log("Raw search results:", data);
+
+      // Ensure we only show non-deleted products
+      const filteredProducts = data.filter(
+        (product: Product) => product?.deleted === false
+      );
+
+      console.log("Filtered products (deleted=false only):", filteredProducts);
+
       // Limit to 6 products
-      setSuggestions(data.slice(0, 6));
+      setSuggestions(filteredProducts.slice(0, 6));
       setShowSuggestions(true);
     } catch (err) {
       console.error("Error fetching suggestions:", err);

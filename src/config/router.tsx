@@ -8,7 +8,6 @@ import ForgetPassword from "../components/pages/auth/forget-password";
 import ConfirmPassword from "../components/pages/auth/confirm-password";
 import SuccessAuth from "../components/pages/auth/success-auth";
 import ProductsPage from "../components/pages/admin/products";
-import OrderManagement from "../components/pages/admin/manage-orders";
 import OrderDetails from "../components/pages/admin/order-details";
 import Cart from "../components/pages/customer/cart";
 import HomePage from "../components/pages/homepage";

@@ -87,10 +87,16 @@ const ProductList: React.FC = () => {
 
     // Gender filter
     if (currentFilters.gender !== "all") {
-      filtered = filtered.filter(
-        (product) =>
-          product.gender.toLowerCase() === currentFilters.gender.toLowerCase()
-      );
+      filtered = filtered.filter((product) => {
+        // Ensure case-insensitive comparison
+        const productGender = product.gender
+          ? product.gender.toUpperCase()
+          : "";
+        const filterGender = currentFilters.gender.toUpperCase();
+
+        // Only exact matches - strict filtering
+        return productGender === filterGender;
+      });
     }
 
     // Price range filter
@@ -188,51 +194,60 @@ const ProductList: React.FC = () => {
       </div>
 
       <Row gutter={[16, 16]} className="products-grid">
-        {filteredProducts.map((product) => (
-          <Col xs={24} sm={12} md={8} lg={6} key={product.id}>
-            <Card
-              hoverable
-              cover={
-                <div className="product-image">
-                  <img alt={product.name} src={product.mainImage} />
-                  {product.deleted && (
-                    <div className="sold-overlay">
-                      <span>Đã bán</span>
-                    </div>
-                  )}
-                </div>
-              }
-            >
-              <Card.Meta
-                title={product.name}
-                description={
-                  <div className="product-info">
-                    <div className="price-info">
-                      <span className="selling-price">
-                        {formatPrice(product.sellingPrice)}
-                      </span>
-                      <span className="original-price">
-                        {formatPrice(product.originalPrice)}
-                      </span>
-                    </div>
-                    <div className="tags">
-                      <Tag color="blue">{product.gender}</Tag>
-                      <Tag color="green">{product.size}</Tag>
-                      <Tag color="purple">{product.productCondition}</Tag>
-                    </div>
-                    <div className="categories">
-                      {product.categories.map((category) => (
-                        <Tag key={category.name} color="orange">
-                          {category.name}
-                        </Tag>
-                      ))}
-                    </div>
+        {filteredProducts.length === 0 ? (
+          <Col span={24}>
+            <div className="no-products-message">
+              <h3>Không tìm thấy sản phẩm phù hợp với bộ lọc đã chọn</h3>
+              <p>Vui lòng thử lại với các bộ lọc khác</p>
+            </div>
+          </Col>
+        ) : (
+          filteredProducts.map((product) => (
+            <Col xs={24} sm={12} md={8} lg={6} key={product.id}>
+              <Card
+                hoverable
+                cover={
+                  <div className="product-image">
+                    <img alt={product.name} src={product.mainImage} />
+                    {product.deleted && (
+                      <div className="sold-overlay">
+                        <span>Đã bán</span>
+                      </div>
+                    )}
                   </div>
                 }
-              />
-            </Card>
-          </Col>
-        ))}
+              >
+                <Card.Meta
+                  title={product.name}
+                  description={
+                    <div className="product-info">
+                      <div className="price-info">
+                        <span className="selling-price">
+                          {formatPrice(product.sellingPrice)}
+                        </span>
+                        <span className="original-price">
+                          {formatPrice(product.originalPrice)}
+                        </span>
+                      </div>
+                      <div className="tags">
+                        <Tag color="blue">{product.gender}</Tag>
+                        <Tag color="green">{product.size}</Tag>
+                        <Tag color="purple">{product.productCondition}</Tag>
+                      </div>
+                      <div className="categories">
+                        {product.categories.map((category) => (
+                          <Tag key={category.name} color="orange">
+                            {category.name}
+                          </Tag>
+                        ))}
+                      </div>
+                    </div>
+                  }
+                />
+              </Card>
+            </Col>
+          ))
+        )}
       </Row>
     </div>
   );
