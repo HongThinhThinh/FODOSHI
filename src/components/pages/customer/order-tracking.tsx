@@ -598,14 +598,34 @@ const OrderTrackingPage: React.FC = () => {
                           <div className="flex items-start gap-2">
                             <UserOutlined className="mt-1 text-gray-500" />
                             <div>
-                              <p className="font-medium">{order.user.name}</p>
-                              <p className="text-gray-600 flex items-center gap-1">
-                                <PhoneOutlined /> {order.user.phoneNumber}
-                              </p>
-                              {order.user.email && (
-                                <p className="text-gray-600">
-                                  {order.user.email}
-                                </p>
+                              {order.user ? (
+                                <>
+                                  <p className="font-medium">
+                                    {order.user.name}
+                                  </p>
+                                  <p className="text-gray-600 flex items-center gap-1">
+                                    <PhoneOutlined /> {order.user.phoneNumber}
+                                  </p>
+                                  {order.user.email && (
+                                    <p className="text-gray-600">
+                                      {order.user.email}
+                                    </p>
+                                  )}
+                                </>
+                              ) : (
+                                <>
+                                  <p className="font-medium">
+                                    {order.address.guestName}
+                                  </p>
+                                  <p className="text-gray-600 flex items-center gap-1">
+                                    <PhoneOutlined /> {order.address.guestPhone}
+                                  </p>
+                                  {order.address.guestEmail && (
+                                    <p className="text-gray-600">
+                                      {order.address.guestEmail}
+                                    </p>
+                                  )}
+                                </>
                               )}
                             </div>
                           </div>

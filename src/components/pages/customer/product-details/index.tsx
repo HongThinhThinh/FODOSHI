@@ -390,6 +390,8 @@ const ProductDetails = () => {
           grandTotal={checkoutItem.sellingPrice + 20000}
           selectedCartItems={checkoutCartItemId ? [checkoutCartItemId] : []}
           onCheckoutSuccess={handleCheckoutSuccess}
+          isDirectPayment={true}
+          productId={checkoutItem.id}
         />
       )}
     </main>

@@ -46,6 +46,8 @@ export interface CheckoutProps {
   grandTotal: number;
   selectedCartItems: string[]; // Thêm prop này
   onCheckoutSuccess?: () => void; // Thêm callback này
+  isDirectPayment?: boolean; // Add this property to identify direct payment
+  productId?: string; // Add this property for direct payment
 }
 
 export default function Checkout({
@@ -57,6 +59,8 @@ export default function Checkout({
   grandTotal,
   selectedCartItems, // Nhận prop này
   onCheckoutSuccess, // Nhận callback này
+  isDirectPayment = false, // Default to false
+  productId, // Optional productId for direct payment
 }: CheckoutProps) {
   // Add user from Redux
   const user = useSelector((state: RootState) => state.user);
@@ -448,13 +452,15 @@ export default function Checkout({
         totalPrice: grandTotalState, // Thêm totalPrice
       };
 
-      // Create the full payload based on user authentication status
+      // Create the full payload based on user authentication status and payment type
       const payload = user
         ? {
             // Logged in user payload
             ...basePayload,
             addressId: selectedAddressId,
-            cartItemIds: selectedCartItems,
+            ...(isDirectPayment && productId
+              ? { productId: productId } // For direct payment
+              : { cartItemIds: selectedCartItems }), // For cart payment
           }
         : {
             // Guest user payload
@@ -463,9 +469,13 @@ export default function Checkout({
             guestName: guestName,
             guestPhone: guestPhone,
             guestEmail: selectedAddress.email, // Add guestEmail field from selected address
-            productIds: reduxCartItems
-              .filter((item) => selectedCartItems.includes(item.id))
-              .map((item) => item.id),
+            ...(isDirectPayment && productId
+              ? { productId: productId } // For direct payment
+              : {
+                  productIds: reduxCartItems
+                    .filter((item) => selectedCartItems.includes(item.id))
+                    .map((item) => item.id),
+                }), // For cart payment
             guestAddress: {
               address: selectedAddress.address,
               province: selectedAddress.province,
