@@ -9,6 +9,7 @@ import {
   Space,
   Button,
   Tooltip,
+  message,
 } from "antd";
 import { SearchOutlined, FilterOutlined } from "@ant-design/icons";
 import "./styles.scss";
@@ -46,7 +47,7 @@ const ProductList: React.FC = () => {
   useEffect(() => {
     // Fetch products from API
     // For now using mock data
-    const mockProducts = [
+    const mockProducts: Product[] = [
       /* your mock data */
     ];
     setProducts(mockProducts);
@@ -61,7 +62,29 @@ const ProductList: React.FC = () => {
   const handleFilterChange = (type: string, value: string) => {
     const newFilters = { ...filters, [type]: value };
     setFilters(newFilters);
+
     filterProducts(searchText, newFilters);
+
+    // Show message based on filter type
+    if (type === "gender" && value !== "all") {
+      message.success(
+        `Đang lọc theo ${
+          value === "male" ? "Nam" : value === "female" ? "Nữ" : "Unisex"
+        }`
+      );
+    } else if (type === "status" && value !== "all") {
+      message.success(
+        `Đang lọc theo trạng thái: ${
+          value === "available" ? "Đang bán" : "Đã bán"
+        }`
+      );
+    } else if (type === "priceRange" && value !== "all") {
+      message.success("Đang lọc theo khoảng giá đã chọn");
+    } else if (type === "condition" && value !== "all") {
+      message.success("Đang lọc theo tình trạng sản phẩm");
+    } else if (value === "all") {
+      message.success("Đã hiển thị tất cả sản phẩm");
+    }
   };
 
   const filterProducts = (search: string, currentFilters: typeof filters) => {
@@ -120,6 +143,11 @@ const ProductList: React.FC = () => {
     }
 
     setFilteredProducts(filtered);
+
+    // Show a message if no products were found after filtering
+    if (filtered.length === 0) {
+      message.warning("Không tìm thấy sản phẩm phù hợp với bộ lọc đã chọn");
+    }
   };
 
   const formatPrice = (price: number) => {

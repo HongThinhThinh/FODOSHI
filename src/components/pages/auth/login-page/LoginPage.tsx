@@ -8,6 +8,7 @@ import { login } from "../../../../redux/features/userSlice";
 import InputComponent from "../../../atoms/input";
 import { useMediaQuery } from "react-responsive";
 import { toast } from "react-toastify";
+import { alertFail } from "../../../../hooks/useNotification";
 
 export default function LoginPage() {
   const [form] = Form.useForm();
@@ -43,7 +44,6 @@ export default function LoginPage() {
       }
     } catch (error) {
       console.error("Login failed", error);
-      messageApi.error("Login failed");
       // Xử lý thông báo lỗi cho người dùng...
     }
   };

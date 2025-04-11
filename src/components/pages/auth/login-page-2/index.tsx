@@ -9,8 +9,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { WarningFilled } from "@ant-design/icons";
 import api from "../../../../config/api";
 import { login } from "../../../../redux/features/userSlice";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import useApiService from "../../../../hooks/useApi";
+import { alertFail, alertSuccess } from "../../../../hooks/useNotification";
 const provider = new GoogleAuthProvider();
 
 function toArr(str) {
@@ -82,11 +83,7 @@ function Login() {
       const response = await callApi("post", "login", payload);
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("refreshToken", response.data.refreshToken);
-      toast.success("Login successful");
       dispatch(login(response.data));
-      // Update Redux store with user data
-      dispatch(login(response.data));
-
       // Simplify navigation logic
       if (response?.data.role === "ADMIN") {
         navigate("/admin/dashboard", { replace: true });
@@ -94,17 +91,15 @@ function Login() {
         navigate("/", { replace: true });
       }
     } catch (error) {
-      console.error("Lỗi đăng nhập:", error);
-      toast.error("Đăng nhập thất bại. Vui lòng thử lại.");
+      alertFail("Đăng nhập thất bại. Vui lòng thử lại.");
+      // console.error("");
+      // toast.error("Đăng nhập thất bại. Vui lòng thử lại.");
     }
   };
 
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
-
   return (
     <Row container className="login">
+      <ToastContainer />
       <Col md={24} lg={7} className="login__side-bar">
         <video
           muted
