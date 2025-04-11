@@ -179,6 +179,61 @@ function Dashboard() {
         // Cập nhật state doanh thu ngày hiện tại
         setTodayRevenue(todayRevenueValue);
 
+        // Đảm bảo format ngày nhất quán
+        // Kiểm tra dữ liệu để xem định dạng ngày trong revenueData
+        console.log(
+          "Revenue data keys:",
+          Object.keys(response.data.data.revenueData).slice(0, 3)
+        );
+
+        // Print the data to debug the format
+        if (Object.keys(response.data.data.revenueData).length > 0) {
+          // Get a sample key from revenueData
+          const sampleKey = Object.keys(response.data.data.revenueData)[0];
+          console.log("Sample data key format:", sampleKey);
+
+          // Try to find revenue with different date formats
+          const formattedToday = new Date().toLocaleDateString("en-CA"); // Gets YYYY-MM-DD format
+          const alternativeFormat = today.replace(/-/g, "/");
+
+          console.log("Alternative today formats:", {
+            isoFormat: today,
+            localeDateString: formattedToday,
+            slashFormat: alternativeFormat,
+          });
+
+          // Check if any of the formats match
+          console.log(
+            "Revenue for ISO format:",
+            response.data.data.revenueData[today]
+          );
+          console.log(
+            "Revenue for localeDate format:",
+            response.data.data.revenueData[formattedToday]
+          );
+          console.log(
+            "Revenue for slash format:",
+            response.data.data.revenueData[alternativeFormat]
+          );
+
+          // Determine which format works and use it
+          if (response.data.data.revenueData[formattedToday] !== undefined) {
+            setTodayRevenue(response.data.data.revenueData[formattedToday]);
+            console.log(
+              "Using localeDate format for today's revenue:",
+              formattedToday
+            );
+          } else if (
+            response.data.data.revenueData[alternativeFormat] !== undefined
+          ) {
+            setTodayRevenue(response.data.data.revenueData[alternativeFormat]);
+            console.log(
+              "Using slash format for today's revenue:",
+              alternativeFormat
+            );
+          }
+        }
+
         // Convert the revenue data object to array without filtering zero values
         const chartData = Object.entries(response.data.data.revenueData).map(
           ([name, value]) => ({

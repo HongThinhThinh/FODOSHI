@@ -18,6 +18,7 @@ import {
   Empty,
   Tooltip,
   Statistic,
+  Avatar,
 } from "antd";
 import {
   EyeOutlined,
@@ -63,15 +64,93 @@ const statusTranslations = {
   SHIPPING: "Đang giao hàng",
 };
 
+// Define TypeScript interfaces
+interface Address {
+  id: number;
+  address: string;
+  province: string;
+  district: string;
+  commune: string;
+  isDeleted: boolean;
+  guestName: string | null;
+  guestPhone: string | null;
+  guestEmail: string | null;
+}
+
+interface User {
+  id: string;
+  image: string | null;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  addresses: Address[];
+  role: string;
+  createdAt: string;
+  enabled: boolean;
+  username: string;
+  authorities: { authority: string }[];
+  accountNonExpired: boolean;
+  accountNonLocked: boolean;
+  credentialsNonExpired: boolean;
+}
+
+interface Product {
+  id: number;
+  name: string;
+  description: string;
+  brands: { id: number; name: string; image: string; isDeleted: boolean }[];
+  categories: { id: number; name: string; image: string; isDeleted: boolean }[];
+  productCondition: string;
+  size: string;
+  color: string;
+  imageUrls: { id: number; image: string }[];
+  mainImage: string;
+  tags: { id: number; tagName: string }[];
+  originalPrice: number;
+  sellingPrice: number;
+  status: string;
+  gender: string;
+  productHistories: { id: number; status: string; createdAt: string }[];
+  consignor: any;
+  createdAt: string;
+  deleted: boolean;
+}
+
+interface OrderItem {
+  id: string;
+  price: number;
+  product: Product;
+}
+
+interface OrderHistory {
+  id: number;
+  status: string;
+  image: string | null;
+  note: string | null;
+  createdAt: string;
+}
+
+interface Order {
+  id: string;
+  totalPrice: number;
+  createdAt: string;
+  status: string;
+  user: User | null;
+  address: Address | null;
+  orderItems: OrderItem[];
+  orderHistories: OrderHistory[];
+}
+
 const OrderList = () => {
-  const [orders, setOrders] = useState([]);
-  const [filteredOrders, setFilteredOrders] = useState([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
   const [showFilters, setShowFilters] = useState(true);
   const [filters, setFilters] = useState({
-    status: [],
-    dateRange: null,
+    status: [] as string[],
+    dateRange: null as any,
     priceRange: {
       min: "",
       max: "",
@@ -98,7 +177,7 @@ const OrderList = () => {
     calculateStats(orders);
   }, [orders, filters, searchText]);
 
-  const calculateStats = (orderData) => {
+  const calculateStats = (orderData: Order[]) => {
     const stats = {
       total: orderData.length,
       pending: orderData.filter((order) =>
@@ -182,21 +261,21 @@ const OrderList = () => {
     }
   };
 
-  const handleStatusFilterChange = (values) => {
+  const handleStatusFilterChange = (values: string[]) => {
     setFilters({
       ...filters,
       status: values,
     });
   };
 
-  const handleDateRangeChange = (dates) => {
+  const handleDateRangeChange = (dates: any) => {
     setFilters({
       ...filters,
       dateRange: dates,
     });
   };
 
-  const handlePriceRangeChange = (field, value) => {
+  const handlePriceRangeChange = (field: string, value: string) => {
     setFilters({
       ...filters,
       priceRange: {
@@ -206,7 +285,7 @@ const OrderList = () => {
     });
   };
 
-  const handleSearch = (e) => {
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(e.target.value);
   };
 
@@ -222,7 +301,7 @@ const OrderList = () => {
     });
   };
 
-  const viewOrderDetails = (orderId) => {
+  const viewOrderDetails = (orderId: string) => {
     if (!orderId) {
       console.error("Cannot navigate to undefined order ID");
       message.error("Không thể xem chi tiết đơn hàng này");
@@ -243,7 +322,7 @@ const OrderList = () => {
       title: "Mã đơn hàng",
       dataIndex: "id",
       key: "id",
-      render: (id) => (
+      render: (id: string) => (
         <Text copyable ellipsis style={{ maxWidth: 150 }}>
           {id}
         </Text>
@@ -253,32 +332,48 @@ const OrderList = () => {
       title: "Ngày tạo",
       dataIndex: "createdAt",
       key: "createdAt",
-      sorter: (a, b) => {
+      sorter: (a: Order, b: Order) => {
         const dateA = new Date(
           a.createdAt.split(" ")[0].split("/").reverse().join("-")
         );
         const dateB = new Date(
           b.createdAt.split(" ")[0].split("/").reverse().join("-")
         );
-        return dateA - dateB;
+        return dateA.getTime() - dateB.getTime();
       },
     },
     {
       title: "Khách hàng",
       key: "customer",
-      render: (_, record) => (
-        <span>
+      render: (_: any, record: Order) => (
+        <Space>
           {record.user ? (
-            <>
-              <div>
-                <strong>{record.user.name}</strong>
-              </div>
-              <div>{record.user.phoneNumber}</div>
-            </>
+            <Avatar src={record.user.image} icon={<UserOutlined />} size={40} />
+          ) : record.address && record.address.guestName ? (
+            <Avatar icon={<UserOutlined />} size={40} />
           ) : (
-            <span>Khách vãng lai</span>
+            <Avatar icon={<UserOutlined />} size={40} />
           )}
-        </span>
+          <span>
+            {record.user ? (
+              <>
+                <div>
+                  <strong>{record.user.name}</strong>
+                </div>
+                <div>{record.user.phoneNumber}</div>
+              </>
+            ) : record.address && record.address.guestName ? (
+              <>
+                <div>
+                  <strong>{record.address.guestName}</strong>
+                </div>
+                <div>{record.address.guestPhone}</div>
+              </>
+            ) : (
+              <span>Khách vãng lai</span>
+            )}
+          </span>
+        </Space>
       ),
       filterSearch: true,
     },
@@ -286,24 +381,24 @@ const OrderList = () => {
       title: "Trạng thái",
       key: "status",
       dataIndex: "status",
-      render: (status) => (
+      render: (status: keyof typeof statusColors) => (
         <Tag color={statusColors[status] || "default"}>
           {statusTranslations[status] || status}
         </Tag>
       ),
-      sorter: (a, b) => a.status.localeCompare(b.status),
+      sorter: (a: Order, b: Order) => a.status.localeCompare(b.status),
     },
     {
       title: "Tổng tiền",
       dataIndex: "totalPrice",
       key: "totalPrice",
-      render: (price) => formatMoney(price) + " VND",
-      sorter: (a, b) => a.totalPrice - b.totalPrice,
+      render: (price: number) => formatMoney(price) + " VND",
+      sorter: (a: Order, b: Order) => a.totalPrice - b.totalPrice,
     },
     {
       title: "Thao tác",
       key: "action",
-      render: (_, record) => (
+      render: (_: any, record: Order) => (
         <Space size="middle">
           <Button
             type="primary"
@@ -317,7 +412,7 @@ const OrderList = () => {
     },
   ];
 
-  const expandedRowRender = (record) => (
+  const expandedRowRender = (record: Order) => (
     <div className="order-expanded-row">
       <Card title="Sản phẩm trong đơn hàng" bordered={false}>
         {record.orderItems.map((item) => (
@@ -334,9 +429,7 @@ const OrderList = () => {
             </div>
             <div className="order-item-details">
               <div className="order-item-name">{item.product.name}</div>
-              <div className="order-item-price">
-                {formatMoney(item.price)} VND
-              </div>
+              <div className="order-item-price">{formatMoney(item.price)}</div>
               <div className="order-item-categories">
                 {item.product.categories.map((cat) => (
                   <Tag key={cat.id}>{cat.name}</Tag>
