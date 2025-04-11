@@ -102,21 +102,27 @@ const UserAvatar = () => {
     );
   }
 
+  const handleProfileClick = (e: React.MouseEvent) => {
+    // Chỉ chuyển hướng khi click vào avatar hoặc tên, không phải dropdown item
+    if (!(e.target as HTMLElement).closest(".ant-dropdown-menu-item")) {
+      navigate("/profile");
+    }
+  };
+
   return (
     <div
       className="user-avatar-container"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onClick={() => navigate("/profile")}
     >
       <Dropdown
         menu={{ items }}
-        trigger={["hover"]}
+        trigger={["click"]}
         placement="bottomRight"
         open={isHovered}
         overlayStyle={{ minWidth: 200 }}
       >
-        <div className="avatar-wrapper">
+        <div className="avatar-wrapper" onClick={handleProfileClick}>
           <Avatar
             size={40}
             icon={<UserOutlined />}
