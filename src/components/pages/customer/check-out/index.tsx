@@ -10,6 +10,7 @@ import {
   CloseOutlined,
   PlusOutlined,
   UserOutlined,
+  MailOutlined,
   PhoneOutlined,
   EditOutlined,
 } from "@ant-design/icons";
@@ -33,6 +34,7 @@ interface Address {
   isDefault?: boolean;
   guestName?: string; // Add this
   guestPhone?: string; // Add this
+  email?: string; // Add this for guest email
 }
 
 export interface CheckoutProps {
@@ -89,6 +91,7 @@ export default function Checkout({
       isDefault: address.isDefault,
       name: address.guestName,
       phone: address.guestPhone,
+      email: address.email, // Add email field
     });
 
     setIsAddressModalVisible(true);
@@ -127,7 +130,7 @@ export default function Checkout({
     },
     {
       id: "NhanHangTaiCuaHang",
-      label: "Nhận hàng tại cửa hàng ( Vinhome Grandpart S6.05 )",
+      label: "Nhận hàng tại cửa hàng ( Vinhome Grandpark S6.05 )",
       value: "Nhận hàng tại cửa hàng",
       img: "https://cdn-icons-png.flaticon.com/512/126/126122.png",
     },
@@ -327,6 +330,7 @@ export default function Checkout({
             isDefault: values.isDefault,
             guestName: guestName, // Include guest info
             guestPhone: guestPhone,
+            email: values.email, // Include email
           };
 
           const updatedAddresses = addresses.map((addr) =>
@@ -355,6 +359,7 @@ export default function Checkout({
             isDefault: values.isDefault || addresses.length === 0,
             guestName: guestName, // Include guest info
             guestPhone: guestPhone,
+            email: values.email, // Include email
           };
 
           // Handle default address logic
@@ -457,6 +462,7 @@ export default function Checkout({
             guest: true,
             guestName: guestName,
             guestPhone: guestPhone,
+            guestEmail: selectedAddress.email, // Add guestEmail field from selected address
             productIds: reduxCartItems
               .filter((item) => selectedCartItems.includes(item.id))
               .map((item) => item.id),
@@ -467,6 +473,7 @@ export default function Checkout({
               commune: selectedAddress.commune,
               guestName: guestName,
               guestPhone: guestPhone,
+              guestEmail: selectedAddress.email, // Add guestEmail to the address object too
             },
           };
 
@@ -581,6 +588,9 @@ export default function Checkout({
                         <div className="checkout__address__items__item__content__contact">
                           <div className="checkout__address__items__item__content__contact__name">
                             <UserOutlined /> {address.guestName}
+                          </div>
+                          <div className="checkout__address__items__item__content__contact__name">
+                            <MailOutlined /> {address.email}
                           </div>
                           <div className="checkout__address__items__item__content__contact__phone">
                             <PhoneOutlined /> {address.guestPhone}
@@ -849,6 +859,16 @@ export default function Checkout({
                   <Input
                     placeholder="Nhập họ tên khách hàng"
                     prefix={<UserOutlined />}
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="email"
+                  label="Email"
+                  rules={[{ required: true, message: "Vui lòng nhập email" }]}
+                >
+                  <Input
+                    placeholder="Nhập email khách hàng"
+                    prefix={<MailOutlined />}
                   />
                 </Form.Item>
 

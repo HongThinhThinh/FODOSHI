@@ -468,7 +468,7 @@ const OrderHistoryPage: React.FC = () => {
               </div>
 
               {/* Thanh trạng thái đơn hàng */}
-              {selectedOrder.status !== "CANCELLED" ? (
+              {/* {selectedOrder.status !== "CANCELLED" ? (
                 <div className="status-timeline mt-4">
                   <Steps
                     current={getStatusSteps(selectedOrder.status).currentStep}
@@ -484,7 +484,7 @@ const OrderHistoryPage: React.FC = () => {
                 <div className="bg-red-50 p-3 rounded-lg border border-red-100 text-red-600 text-center mt-3">
                   Đơn hàng đã bị hủy
                 </div>
-              )}
+              )} */}
             </div>
 
             <Divider orientation="left" className="text-gray-500 text-sm">
@@ -530,7 +530,7 @@ const OrderHistoryPage: React.FC = () => {
                       <span className="font-bold text-amber-700">
                         {item.price.toLocaleString()} VNĐ
                       </span>
-                      <Button
+                      {/* <Button
                         type="link"
                         size="small"
                         className="text-amber-600 p-0 border-0"
@@ -539,7 +539,7 @@ const OrderHistoryPage: React.FC = () => {
                         }
                       >
                         Xem sản phẩm
-                      </Button>
+                      </Button> */}
                     </div>
                   </div>
                 </div>
@@ -573,70 +573,6 @@ const OrderHistoryPage: React.FC = () => {
                 <span className="text-xl font-bold text-amber-700">
                   {selectedOrder.totalPrice.toLocaleString()} VNĐ
                 </span>
-              </div>
-            </div>
-          </TabPane>
-
-          <TabPane
-            tab={
-              <span>
-                <EnvironmentOutlined /> Thông tin giao hàng
-              </span>
-            }
-            key="2"
-          >
-            <div className="shipping-info">
-              <div className="customer-info mb-6 bg-amber-50 p-5 rounded-lg border border-amber-100">
-                <h3 className="text-md font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                  <UserOutlined className="text-amber-600" /> Thông tin người
-                  nhận
-                </h3>
-
-                <div className="flex flex-col md:flex-row gap-4">
-                  <div className="flex-grow">
-                    <p className="text-gray-800 font-medium">
-                      {address.guestName}
-                    </p>
-                    <p className="text-gray-600 flex items-center gap-1 mt-1">
-                      <PhoneOutlined /> {address.guestPhone}
-                    </p>
-                    {address.guestEmail && (
-                      <p className="text-gray-600 flex items-center gap-1 mt-1">
-                        <MailOutlined /> {address.guestEmail}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="shipping-method">
-                    <Tag
-                      color="orange"
-                      icon={
-                        selectedOrder.shippingType === "HOME_DELIVERY" ? (
-                          <CarOutlined />
-                        ) : (
-                          <ShoppingOutlined />
-                        )
-                      }
-                    >
-                      {getShippingTypeName(selectedOrder.shippingType)}
-                    </Tag>
-                  </div>
-                </div>
-              </div>
-
-              <div className="address-info bg-green-50 p-5 rounded-lg border border-green-100">
-                <h3 className="text-md font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                  <EnvironmentOutlined className="text-green-600" /> Địa chỉ
-                  giao hàng
-                </h3>
-
-                <div className="bg-white p-4 rounded-lg border border-gray-200">
-                  <p className="mb-1">{address.address}</p>
-                  <p className="mb-1">
-                    {address.commune}, {address.district}
-                  </p>
-                  <p>{address.province}</p>
-                </div>
               </div>
             </div>
           </TabPane>

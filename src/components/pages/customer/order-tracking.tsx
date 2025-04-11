@@ -15,7 +15,6 @@ import {
 } from "@ant-design/icons";
 import api from "../../../config/api";
 import { DatePicker, Select, Slider, Tag, Empty, Spin, Collapse } from "antd";
-import type { DatePickerProps } from "antd";
 import dayjs from "dayjs";
 
 // Interfaces remain the same
@@ -33,19 +32,69 @@ interface Address {
   province: string;
   district: string;
   commune: string;
-  guestName: string;
-  guestPhone: string;
+  isDeleted: boolean;
+  guestName: string | null;
+  guestPhone: string | null;
   guestEmail: string | null;
+}
+
+interface Brand {
+  id: number;
+  name: string;
+  image: string;
+  isDeleted: boolean;
+}
+
+interface Category {
+  id: number;
+  name: string;
+  image: string;
+  isDeleted: boolean;
+}
+
+interface Tag {
+  id: number;
+  tagName: string;
+}
+
+interface ProductHistory {
+  id: number;
+  status: string;
+  createdAt: string;
+}
+
+interface Consignor {
+  id: string;
+  image: string | null;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  role: string;
+  createdAt: string;
+  enabled: boolean;
+  username: string;
 }
 
 interface Product {
   id: number;
   name: string;
-  imageUrls?: { id: number; image: string }[];
+  description: string;
+  brands: Brand[];
+  categories: Category[];
+  productCondition: string;
+  size: string;
+  color: string;
+  imageUrls: { id: number; image: string }[];
   mainImage: string;
+  tags: Tag[];
+  originalPrice: number;
   sellingPrice: number;
-  brands?: { id: number; name: string }[];
-  categories?: { id: number; name: string }[];
+  status: string;
+  gender: string;
+  productHistories: ProductHistory[];
+  consignor: Consignor;
+  createdAt: string;
+  deleted: boolean;
 }
 
 interface OrderItem {
@@ -54,12 +103,25 @@ interface OrderItem {
   product: Product;
 }
 
+interface User {
+  id: string;
+  image: string | null;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  addresses: Address[];
+  role: string;
+  createdAt: string;
+  enabled: boolean;
+  username: string;
+}
+
 interface Order {
   id: string;
   totalPrice: number;
   createdAt: string;
   status: string;
-  shippingType: string | null;
+  user: User;
   address: Address;
   orderItems: OrderItem[];
   orderHistories: OrderHistoryItem[];
@@ -68,7 +130,7 @@ interface Order {
 interface ApiResponse {
   statusCode: number;
   message: string;
-  data: Order[];
+  data: Order | Order[];
 }
 
 const { RangePicker } = DatePicker;
@@ -99,6 +161,7 @@ const OrderTrackingPage: React.FC = () => {
     { value: "CANCELLED", label: "Đã hủy" },
     { value: "COMPLETED", label: "Hoàn thành" },
     { value: "PAID", label: "Đã thanh toán" },
+    { value: "SOLD", label: "Đã bán" },
   ];
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -116,10 +179,24 @@ const OrderTrackingPage: React.FC = () => {
 
     try {
       const response = await api.get<ApiResponse>(
-        `/order/phone-email?searchTerm=${encodeURIComponent(searchTerm)}`
+        `/order/guess/${encodeURIComponent(searchTerm)}`
       );
+      console.log("API Response:", response.data);
 
-      const ordersData = response.data.data || [];
+      // Handle different response formats
+      let ordersData: Order[] = [];
+
+      if (response.data && response.data.data) {
+        // Check if data is an array or a single object
+        if (Array.isArray(response.data.data)) {
+          ordersData = response.data.data;
+        } else if (typeof response.data.data === "object") {
+          // If data is a single order object, wrap it in an array
+          ordersData = [response.data.data];
+        }
+      }
+
+      console.log("Orders data:", ordersData);
       setOrders(ordersData);
       setFilteredOrders(ordersData);
       setHasSearched(true);
@@ -132,6 +209,7 @@ const OrderTrackingPage: React.FC = () => {
         setPriceRange([0, Math.ceil(maxPrice / 10000) * 10000]);
       }
     } catch (err) {
+      console.error("API Error:", err);
       setError("Có lỗi xảy ra khi tìm kiếm đơn hàng");
       setOrders([]);
       setFilteredOrders([]);
@@ -144,6 +222,11 @@ const OrderTrackingPage: React.FC = () => {
   useEffect(() => {
     if (!orders.length || !hasSearched) return;
 
+    console.log("Filtering orders:", orders);
+    console.log("Status filter:", statusFilter);
+    console.log("Date range:", dateRange);
+    console.log("Price range:", priceRange);
+
     let filtered = [...orders];
 
     // Filter by status
@@ -151,6 +234,7 @@ const OrderTrackingPage: React.FC = () => {
       filtered = filtered.filter((order) =>
         statusFilter.includes(order.status)
       );
+      console.log("After status filter:", filtered);
     }
 
     // Filter by date range
@@ -162,6 +246,7 @@ const OrderTrackingPage: React.FC = () => {
         const orderDate = dayjs(order.createdAt);
         return orderDate.isAfter(startDate) && orderDate.isBefore(endDate);
       });
+      console.log("After date filter:", filtered);
     }
 
     // Filter by price range
@@ -169,6 +254,7 @@ const OrderTrackingPage: React.FC = () => {
       (order) =>
         order.totalPrice >= priceRange[0] && order.totalPrice <= priceRange[1]
     );
+    console.log("After price filter:", filtered);
 
     setFilteredOrders(filtered);
   }, [orders, statusFilter, dateRange, priceRange, hasSearched]);
@@ -200,6 +286,7 @@ const OrderTrackingPage: React.FC = () => {
       CANCELLED: "Đã hủy",
       COMPLETED: "Hoàn thành",
       PAID: "Đã thanh toán",
+      SOLD: "Đã bán",
     };
     return statusMap[status] || status;
   };
@@ -213,6 +300,7 @@ const OrderTrackingPage: React.FC = () => {
       CANCELLED: "bg-red-100 text-red-800",
       COMPLETED: "bg-green-100 text-green-800",
       PAID: "bg-emerald-100 text-emerald-800",
+      SOLD: "bg-teal-100 text-teal-800",
     };
     return statusColorMap[status] || "bg-gray-100 text-gray-800";
   };
@@ -363,9 +451,11 @@ const OrderTrackingPage: React.FC = () => {
                     min={0}
                     max={priceRange[1]}
                     value={[priceRange[0], priceRange[1]]}
-                    onChange={(values: [number, number]) =>
-                      setPriceRange(values)
-                    }
+                    onChange={(values) => {
+                      if (Array.isArray(values) && values.length === 2) {
+                        setPriceRange([values[0], values[1]]);
+                      }
+                    }}
                     step={10000}
                   />
                   <div className="flex justify-between text-sm text-gray-600 mt-1">
@@ -436,18 +526,28 @@ const OrderTrackingPage: React.FC = () => {
           )}
 
           {/* Results */}
-          {filteredOrders.length === 0 ? (
+          {loading ? (
+            <div className="flex justify-center items-center py-8">
+              <Spin size="large" />
+            </div>
+          ) : filteredOrders.length === 0 ? (
             <div className="bg-white rounded-lg shadow-md p-10 text-center">
               <Empty
                 description={
                   <span className="text-gray-500">
-                    Không tìm thấy đơn hàng phù hợp với điều kiện tìm kiếm
+                    {hasSearched
+                      ? "Không tìm thấy đơn hàng phù hợp với điều kiện tìm kiếm"
+                      : "Vui lòng nhập số điện thoại hoặc email để tìm kiếm đơn hàng"}
                   </span>
                 }
               />
             </div>
           ) : (
             <div className="space-y-6">
+              {(() => {
+                console.log("Rendering orders:", filteredOrders);
+                return null;
+              })()}
               {filteredOrders.map((order) => (
                 <div
                   key={order.id}
@@ -472,10 +572,6 @@ const OrderTrackingPage: React.FC = () => {
                         <div className="flex items-center gap-1 mb-1 md:mb-0">
                           <ClockCircleOutlined /> Ngày đặt:{" "}
                           {formatDate(order.createdAt)}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <ShoppingOutlined /> Phương thức giao hàng:{" "}
-                          {getShippingTypeName(order.shippingType)}
                         </div>
                       </div>
                     </div>
@@ -502,15 +598,13 @@ const OrderTrackingPage: React.FC = () => {
                           <div className="flex items-start gap-2">
                             <UserOutlined className="mt-1 text-gray-500" />
                             <div>
-                              <p className="font-medium">
-                                {order.address.guestName}
-                              </p>
+                              <p className="font-medium">{order.user.name}</p>
                               <p className="text-gray-600 flex items-center gap-1">
-                                <PhoneOutlined /> {order.address.guestPhone}
+                                <PhoneOutlined /> {order.user.phoneNumber}
                               </p>
-                              {order.address.guestEmail && (
+                              {order.user.email && (
                                 <p className="text-gray-600">
-                                  {order.address.guestEmail}
+                                  {order.user.email}
                                 </p>
                               )}
                             </div>
@@ -554,7 +648,7 @@ const OrderTrackingPage: React.FC = () => {
                                 {item.product.name}
                               </h5>
                               <div className="mt-1 flex flex-wrap gap-2">
-                                {item.product.brands?.map((brand) => (
+                                {item.product.brands.map((brand) => (
                                   <span
                                     key={brand.id}
                                     className="inline-block px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
@@ -562,7 +656,7 @@ const OrderTrackingPage: React.FC = () => {
                                     {brand.name}
                                   </span>
                                 ))}
-                                {item.product.categories?.map((category) => (
+                                {item.product.categories.map((category) => (
                                   <span
                                     key={category.id}
                                     className="inline-block px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full"
@@ -570,6 +664,12 @@ const OrderTrackingPage: React.FC = () => {
                                     {category.name}
                                   </span>
                                 ))}
+                                <span className="inline-block px-2 py-1 bg-purple-50 text-purple-700 text-xs rounded-full">
+                                  {item.product.size}
+                                </span>
+                                <span className="inline-block px-2 py-1 bg-green-50 text-green-700 text-xs rounded-full">
+                                  {item.product.gender}
+                                </span>
                               </div>
                               <p className="mt-2 font-bold text-blue-600">
                                 {item.price.toLocaleString()} VNĐ
