@@ -305,15 +305,6 @@ const OrderTrackingPage: React.FC = () => {
     return statusColorMap[status] || "bg-gray-100 text-gray-800";
   };
 
-  const getShippingTypeName = (type: string | null) => {
-    if (!type) return "Không xác định";
-    const shippingMap: Record<string, string> = {
-      HOME_DELIVERY: "Giao hàng tận nơi",
-      IN_STORE_PICKUP: "Nhận tại cửa hàng",
-    };
-    return shippingMap[type] || type;
-  };
-
   const getProductImageUrl = (product: Product) => {
     if (product.mainImage && product.mainImage !== "") return product.mainImage;
     if (product.imageUrls && product.imageUrls.length > 0)
