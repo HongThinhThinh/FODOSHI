@@ -21,6 +21,7 @@ import InfoPersonal from "../components/pages/infomation-page/info-personal";
 import InfomationTabLayout from "../layouts/InfomationTabLayout";
 import AdminLayoutCustom from "../layouts/admin/AdminLayout";
 import { mockAdminRouteData } from "../dummy-data/mockAdminRouteData";
+import ProductSearchPage from "../components/pages/product-search-page";
 
 import DeliveryAddress from "../components/pages/infomation-page/delivery-address";
 import PaymentMethod from "../components/pages/infomation-page/payment-method";
@@ -80,6 +81,10 @@ export const router = createBrowserRouter([
       {
         path: "",
         element: <HomePage />,
+      },
+      {
+        path: "search",
+        element: <ProductSearchPage />,
       },
       {
         path: "infomation",
