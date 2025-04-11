@@ -8,12 +8,20 @@
 }
 .header-input {
   width: 28%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+.header-input:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 .header-logo {
   width: 44%;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-left: 99px;
+  margin-top: 3px;
 }
 .header-sidebar {
   width: 32%;
@@ -31,13 +39,21 @@
     padding: 20px 20px 30px 20px;
   }
   .header-input {
-    width: 28%;
+    width: 100%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+  .header-input:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   }
   .header-logo {
     width: 44%;
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-left: 0px;
+    margin-top: 10px;
   }
   .header-sidebar {
     width: 32%;

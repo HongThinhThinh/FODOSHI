@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
+import ProtectedRoute from "../components/atoms/protected-route";
 
 import Dashboard from "../components/pages/admin/manage-overview";
 import ProductDetail from "../components/pages/admin/product-detail";
@@ -82,7 +83,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "infomation",
-        element: <InfomationLayout />,
+        element: (
+          <ProtectedRoute>
+            <InfomationLayout />
+          </ProtectedRoute>
+        ),
         children: [
           {
             path: "infomationPersonal",
@@ -218,18 +223,24 @@ export const router = createBrowserRouter([
         element: <ProductDetails />,
       },
       {
-        path: "/my-orders",
-        element: <OrderHistoryPage />,
+        path: "/orders",
+        element: (
+          <ProtectedRoute>
+            <OrderHistoryPage />
+          </ProtectedRoute>
+        ),
       },
     ],
   },
   {
     path: "/profile",
     element: (
-      <>
-        <Header />
-        <ProfilePage />
-      </>
+      <ProtectedRoute>
+        <>
+          <Header />
+          <ProfilePage />
+        </>
+      </ProtectedRoute>
     ),
   },
   {

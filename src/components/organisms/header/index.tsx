@@ -7,17 +7,21 @@ import "./styles.scss";
 import { HiBars3 } from "react-icons/hi2";
 import { Link, useNavigate } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
-import { Button, Drawer } from "antd";
+import { Drawer, Divider } from "antd";
 import { useEffect, useState } from "react";
 import { GrClose } from "react-icons/gr";
 import ButtonComponent from "../../atoms/button";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../../redux/features/userSlice";
 import { toast } from "react-toastify";
+import { RootState } from "../../../redux/store";
+import UserAvatar from "../../molecules/user-avatar";
+
 function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const isBigScreen = useMediaQuery({ query: "(min-width: 1150px)" });
+  const user = useSelector((state: RootState) => state.user);
 
   const dispatch = useDispatch();
 
@@ -37,11 +41,12 @@ function Header() {
         <div className="header-container">
           {isBigScreen && (
             <InputComponent
-              bgColor="#dac1bd"
-              prefix={<FaSearch />}
+              bgColor="#fff"
+              prefix={<FaSearch className="text-[#852f1f]" />}
               shape="round"
               className="header-input"
               placeholder="Tìm kiếm sản phẩm ..."
+              size="large"
             />
           )}
 
@@ -73,16 +78,23 @@ function Header() {
         onClose={() => setIsOpen(false)}
         open={isOpen}
       >
+        {user && (
+          <div className="mb-5">
+            <UserAvatar />
+            <Divider style={{ margin: "10px 0" }} />
+          </div>
+        )}
         <InputComponent
-          bgColor="#dac1bd"
-          prefix={<FaSearch />}
+          bgColor="#fff"
+          prefix={<FaSearch className="text-[#852f1f]" />}
           shape="round"
           className="header-input w-full mb-5"
           placeholder="Tìm kiếm sản phẩm ..."
+          size="large"
         />
         <ul className="flex flex-col">
           {navbar.map((item, index) => (
-            <li className="navbar-item py-4  border-b-2" key={index}>
+            <li className="navbar-item py-4 border-b-2" key={index}>
               <Link
                 onClick={() => setIsOpen(false)}
                 className="w-full inline-block hover:text-[#852f1f]"
@@ -93,16 +105,29 @@ function Header() {
             </li>
           ))}
         </ul>
-        <ButtonComponent
-          className="mt-7 w-full"
-          shape="round"
-          bgColor="#852f1f"
-          color="white"
-          size="large"
-          onClick={() => handleLogout()}
-        >
-          Đăng xuất
-        </ButtonComponent>
+        {user ? (
+          <ButtonComponent
+            className="mt-7 w-full"
+            shape="round"
+            bgColor="#852f1f"
+            color="white"
+            size="large"
+            onClick={() => handleLogout()}
+          >
+            Đăng xuất
+          </ButtonComponent>
+        ) : (
+          <ButtonComponent
+            className="mt-7 w-full"
+            shape="round"
+            bgColor="#852f1f"
+            color="white"
+            size="large"
+            onClick={() => navigate("/login")}
+          >
+            Đăng nhập
+          </ButtonComponent>
+        )}
       </Drawer>
     </>
   );

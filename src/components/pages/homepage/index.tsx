@@ -51,7 +51,7 @@ function HomePage() {
           className="homepage-banner__img "
           src={bannerHomepage2}
           alt=""
-        />
+        />  
         {/* {isBigScreen && (
           <div
             className="homepage-banner__content"

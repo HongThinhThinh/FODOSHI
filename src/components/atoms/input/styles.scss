@@ -3,8 +3,22 @@
 .input-fodoshi:valid {
   background-color: var(--bg-color, transparent) !important;
   border-radius: var(--border-radius) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  padding: 10px 15px !important;
+  font-size: 14px !important;
+  color: #333 !important;
 }
 .input-fodoshi {
   width: var(--width, 100%);
   height: var(--height);
+  transition: all 0.3s ease !important;
+}
+.input-fodoshi:focus {
+  border-color: #852f1f !important;
+  box-shadow: 0 0 0 2px rgba(133, 47, 31, 0.2) !important;
+  outline: none !important;
+}
+.input-fodoshi::placeholder {
+  color: #999 !important;
+  opacity: 0.8 !important;
 }

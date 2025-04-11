@@ -13,10 +13,4 @@ export const shippingVouchers: ShippingVoucher[] = [
     discount: 20,
     description: "Giảm giá 20% phí vận chuyển",
   },
-  {
-    id: 3,
-    code: "FREESHIP",
-    discount: 100,
-    description: "Miễn phí vận chuyển toàn bộ đơn hàng",
-  },
 ];

@@ -1,4 +1,3 @@
-import { FaRegUser } from "react-icons/fa6";
 import { FiShoppingCart } from "react-icons/fi";
 interface SideBarHeaderProps {
   name?: string;
@@ -6,10 +5,11 @@ interface SideBarHeaderProps {
 }
 import "./styles.scss";
 import { Link, useNavigate } from "react-router-dom";
-import { Badge } from "antd";
+import { Badge, Tooltip } from "antd";
 import { RootState } from "../../../redux/store";
 import { useSelector } from "react-redux";
 import { useGetCart } from "../../../services/cartService";
+import UserAvatar from "../user-avatar";
 
 function SideBarHeader({ className, ...rest }: SideBarHeaderProps) {
   const state = useSelector((state: RootState) => state);
@@ -31,55 +31,31 @@ function SideBarHeader({ className, ...rest }: SideBarHeaderProps) {
   return (
     <nav className={`sidebar_header ${className}`} {...rest}>
       <ul className="sidebar_header-container">
-        {/* <div
-          onClick={() => {
-            if (user) {
-              navigate("/consignment");
-            } else {
-              navigate("/login", {
-                state: {
-                  from: "/consignment",
-                  message: "Vui lòng đăng nhập để sử dụng tính năng ký gửi",
-                },
-              });
-            }
-          }}
-          className="sidebar_header__item sidebar_header__item--text cursor-pointer"
-        >
-          Ký gửi
-        </div> */}
+        <li className="sidebar_header__item">
+          <Tooltip title="Giỏ hàng">
+            <Badge count={cartCount} color="#852f1f">
+              <FiShoppingCart
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  navigate("/cart");
+                }}
+                fontSize={24}
+              />
+            </Badge>
+          </Tooltip>
+        </li>
         {user ? (
-          <li
-            onClick={() => navigate("/profile")}
-            className="sidebar_header__item sidebar_header__item--text cursor-pointer"
-          >
-            <span>
-              Chào,{" "}
-              {user?.name?.includes(" ")
-                ? user?.name?.split(" ").pop()
-                : user?.name}
-            </span>
-            <FaRegUser />
+          <li className="sidebar_header__item">
+            <UserAvatar />
           </li>
         ) : (
           <Link
             to="/login"
-            className="sidebar_header__item sidebar_header__item--text "
+            className="sidebar_header__item sidebar_header__item--text"
           >
             Đăng nhập
           </Link>
         )}
-        <li className="sidebar_header__item">
-          <Badge count={cartCount}>
-            <FiShoppingCart
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                navigate("/cart");
-              }}
-              fontSize={24}
-            />
-          </Badge>
-        </li>
       </ul>
     </nav>
   );

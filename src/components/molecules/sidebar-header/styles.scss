@@ -2,8 +2,8 @@
   &-container {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 30px;
+    justify-content: flex-end;
+    gap: 25px;
   }
   &__item {
     font-size: 18px;
@@ -13,8 +13,18 @@
     justify-content: center;
     gap: 10px;
     &--text {
-      background-color: rgba(217, 144, 65, 1);
-      padding: 5px 8px;
+      background-color: rgba(133, 47, 31, 0.9);
+      padding: 5px 14px;
+      border-radius: 20px;
+      color: white;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(133, 47, 31, 0.2);
+
+      &:hover {
+        background-color: #852f1f;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
     }
   }
 }
