@@ -117,6 +117,7 @@ const UserAvatar = () => {
       >
         <div className="avatar-wrapper">
           <Avatar
+            onClick={() => navigate("/profile")}
             size={40}
             icon={<UserOutlined />}
             src={user?.image}
