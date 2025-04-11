@@ -172,9 +172,69 @@ function Dashboard() {
         const today = new Date().toISOString().split("T")[0];
         console.log("Today's date:", today);
 
-        // Lấy doanh thu của ngày hiện tại từ dữ liệu API
-        const todayRevenueValue = response.data.data.revenueData[today] || 0;
-        console.log("Today's revenue:", todayRevenueValue);
+        // Kiểm tra format của keys trong revenueData
+        const revenueDataKeys = Object.keys(response.data.data.revenueData);
+        console.log(
+          "Revenue data keys format sample:",
+          revenueDataKeys.slice(0, 3)
+        );
+
+        // Phân tích format ngày từ dữ liệu
+        let todayRevenueValue = 0;
+        if (revenueDataKeys.length > 0) {
+          // Lấy mẫu định dạng ngày từ API trả về
+          const sampleKey = revenueDataKeys[0];
+          console.log("Sample date format from API:", sampleKey);
+
+          // Các định dạng ngày phổ biến có thể có
+          const dateFormats = [
+            today, // Format từ ISO - YYYY-MM-DD
+            today.replace(/-/g, "/"), // Format YYYY/MM/DD
+            new Date().toLocaleDateString("en-CA"), // Format YYYY-MM-DD theo locale
+            new Date().toLocaleDateString(), // Format theo locale mặc định (MM/DD/YYYY hoặc DD/MM/YYYY)
+          ];
+
+          // Kiểm tra xem định dạng nào khớp với dữ liệu
+          for (const format of dateFormats) {
+            if (response.data.data.revenueData[format] !== undefined) {
+              todayRevenueValue = response.data.data.revenueData[format];
+              console.log(
+                `Found today's revenue using format: ${format}`,
+                todayRevenueValue
+              );
+              break;
+            }
+          }
+
+          // Nếu không tìm thấy, hiển thị cảnh báo và sử dụng giá trị 0
+          if (todayRevenueValue === 0) {
+            console.warn(
+              "Could not find today's revenue with any standard format. Check API date format."
+            );
+            // Thử kiểm tra thêm bằng cách so sánh ngày
+            const today = new Date();
+            for (const key of revenueDataKeys) {
+              // Thử chuyển đổi key thành Date và so sánh
+              try {
+                const keyDate = new Date(key);
+                if (
+                  keyDate.getDate() === today.getDate() &&
+                  keyDate.getMonth() === today.getMonth() &&
+                  keyDate.getFullYear() === today.getFullYear()
+                ) {
+                  todayRevenueValue = response.data.data.revenueData[key];
+                  console.log(
+                    `Found today's revenue by date comparison: ${key}`,
+                    todayRevenueValue
+                  );
+                  break;
+                }
+              } catch (_) {
+                // Bỏ qua lỗi nếu không thể chuyển đổi key thành date
+              }
+            }
+          }
+        }
 
         // Cập nhật state doanh thu ngày hiện tại
         setTodayRevenue(todayRevenueValue);
