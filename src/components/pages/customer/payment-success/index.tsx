@@ -13,31 +13,6 @@ import { RootState } from "../../../../redux/store"; // Add this import
 
 const { Title, Paragraph, Text } = Typography;
 
-<<<<<<< HEAD
-// Type for order details
-interface OrderDetails {
-  id: string;
-  createdAt: string;
-  status: OrderStatus;
-  totalPrice: number;
-  // Add any other fields the order details might contain
-  products?: Array<{
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-  }>;
-  shippingAddress?: string;
-  customerName?: string;
-  customerPhone?: string;
-  customerEmail?: string;
-}
-
-// Order status type
-type OrderStatus = "PAID" | "PENDING_PAYMENT" | "COMPLETED" | "CANCELLED";
-
-=======
->>>>>>> parent of deecc53 (feat: enhance login page styling and functionality with improved layout, responsive design, and updated form elements for better user experience)
 // Mapping for status translations
 const statusTranslations = {
   PAID: "Đã Thanh Toán",
@@ -150,21 +125,6 @@ const PaymentSuccess = () => {
                 được thanh toán thành công.
               </Text>
               {orderId && <Text strong>Mã đơn hàng: {orderId}</Text>}
-<<<<<<< HEAD
-              <div className="track-order-link">
-                <Text>
-                  Bạn có thể theo dõi đơn hàng tại:{" "}
-                  <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: "#1890ff", fontWeight: "bold" }}
-                  >
-                    FODOSHI Theo Dõi Đơn Hàng
-                  </a>
-                </Text>
-              </div>
-=======
->>>>>>> parent of deecc53 (feat: enhance login page styling and functionality with improved layout, responsive design, and updated form elements for better user experience)
             </div>
           }
           extra={
