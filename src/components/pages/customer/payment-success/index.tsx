@@ -125,6 +125,18 @@ const PaymentSuccess = () => {
                 được thanh toán thành công.
               </Text>
               {orderId && <Text strong>Mã đơn hàng: {orderId}</Text>}
+              <div className="track-order-link">
+                <Text>
+                  Bạn có thể theo dõi đơn hàng tại:{" "}
+                  <a
+                    target="_blank"
+                    href="https://fodoshi.shop/track-order"
+                    style={{ color: "#1890ff", fontWeight: "bold" }}
+                  >
+                    FODOSHI Theo Dõi Đơn Hàng
+                  </a>
+                </Text>
+              </div>
             </div>
           }
           extra={

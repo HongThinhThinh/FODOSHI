@@ -413,7 +413,7 @@ export default function Checkout({
   // Updated handleCreateOrder function with the correct endpoint for guest users
   const handleCreateOrder = async () => {
     // Validation checks remain the same...
-    if (!selectedAddressId || !selectedPayment || !selectedShipping) {
+    if (!selectedAddressId || !selectedShipping) {
       message.error("Vui lòng chọn đầy đủ thông tin giao hàng");
       return;
     }
@@ -445,7 +445,7 @@ export default function Checkout({
       const basePayload = {
         description: `FODOSH xin cảm ơn`,
         shippingMethod: selectedShipping,
-        paymentMethod: selectedPayment,
+        paymentMethod: "Credit_Card",
         returnUrl: `${window.location.origin}/payment-success`,
         cancelUrl: `${window.location.origin}/payment-cancel`,
         shippingType: getShippingType(selectedShipping), // Thêm shippingType
@@ -640,34 +640,7 @@ export default function Checkout({
               </div>
             </div>
           </div>
-          <div className="checkout__payment">
-            <div className="checkout__payment__title">
-              Phương thức thanh toán
-            </div>
-            <div className="checkout__payment__items">
-              {paymentMethods.map((pMethod) => (
-                <div
-                  key={pMethod.id}
-                  className="checkout__payment__items__icon"
-                >
-                  <div className="checkout__payment__items__icon__upper">
-                    <label htmlFor={pMethod.id}>{pMethod.label}</label>
-                    <input
-                      id={pMethod.id}
-                      name="paymentMethod"
-                      value={pMethod.value}
-                      type="radio"
-                      checked={selectedPayment === pMethod.value}
-                      onChange={handlePaymentChange}
-                    />
-                  </div>
-                  <div className="checkout__payment__items__icon__lower">
-                    <img src={pMethod.img} alt={pMethod.label} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <div className="checkout__payment"></div>
           <div className="checkout__shipping">
             <div className="checkout__shipping__title">
               Phương thức vận chuyển
@@ -801,7 +774,7 @@ export default function Checkout({
             </div>
           </div>
           <div className="checkout__confirm">
-            {selectedPayment && selectedShipping && (
+            {selectedShipping && (
               <ButtonComponent
                 onClick={() => setOpenConfirmModal(true)}
                 isActive
