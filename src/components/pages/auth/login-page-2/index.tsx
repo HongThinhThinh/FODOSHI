@@ -98,27 +98,29 @@ function Login() {
   };
 
   return (
-    <Row container className="login">
+    <Row className="login">
       <ToastContainer />
-      <Col md={24} lg={7} className="login__side-bar">
+      <Col span={24} className="login__side-bar">
         <video
           muted
           autoPlay
           loop
-          preload="auto"
+          playsInline
+          disablePictureInPicture
+          preload="metadata"
           className="login__side-bar__media"
           src={videoSource}
         ></video>
       </Col>
-      <Col md={24} lg={17} className="login__form">
-        <Col lg={14} className="login__form__container">
+      <Col span={24} className="login__form">
+        <div className="login__form__container">
           <h3 className="font-semibold">Đăng nhập vào FODOSHI</h3>
           <Button
             onClick={handleLoginGoogle}
             className="login__form__container__gg-btn"
           >
-            <img src={ggIcon} />
-            Đăng nhập với google
+            <img src={ggIcon} alt="Google icon" />
+            Đăng nhập với Google
           </Button>
           <Divider className="login__form__container__divider" plain>
             Hoặc đăng nhập bằng số điện thoại
@@ -129,85 +131,79 @@ function Login() {
             layout="vertical"
             onFinish={onFinish}
           >
-            <MyFormItemGroup className="login__form__container__namepass__group-form">
-              <Form.Item
-                label="Số điện thoại"
-                name="phoneNumber"
-                className="login__form__container__namepass__group-form"
-                rules={[
-                  {
-                    required: true,
-                    message: (
-                      <div>
-                        <WarningFilled /> Hãy nhập số điện thoại của bạn!
-                      </div>
-                    ),
-                  },
-                ]}
-              >
-                <Input className="login__form__container__namepass__group-form__input" />
-              </Form.Item>
-              <Form.Item
-                label={
-                  <label
-                    style={{
-                      width: "100%",
-                      display: "flex",
-                      justifyContent: "space-between",
-                    }}
+            <Form.Item
+              label="Số điện thoại"
+              name="phoneNumber"
+              className="login__form__container__namepass__group-form"
+              rules={[
+                {
+                  required: true,
+                  message: (
+                    <div>
+                      <WarningFilled /> Hãy nhập số điện thoại của bạn!
+                    </div>
+                  ),
+                },
+              ]}
+            >
+              <Input className="login__form__container__namepass__group-form__input" />
+            </Form.Item>
+            <Form.Item
+              label={
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <span>Mật khẩu</span>
+                  <Link
+                    to="/password_resets/new"
+                    className="login__form__container__linkToSignUp__signUp"
                   >
-                    <p>Mật khẩu</p>
-                    <Link
-                      to="/password_resets/new"
-                      className="login__form__container__linkToSignUp__signUp"
-                    >
-                      Quên mật khẩu?
-                    </Link>
-                  </label>
-                }
-                name="password"
-                className="login__form__container__namepass__group-form"
-                rules={[
-                  {
-                    validator: (_, value) => {
-                      if (/\s/.test(value)) {
-                        return Promise.reject(
-                          <div>
-                            <WarningFilled /> Password must not contain
-                            whitespace
-                          </div>
-                        );
-                      }
-                      return Promise.resolve();
-                    },
+                    Quên mật khẩu?
+                  </Link>
+                </div>
+              }
+              name="password"
+              className="login__form__container__namepass__group-form"
+              rules={[
+                {
+                  validator: (_, value) => {
+                    if (value && /\s/.test(value)) {
+                      return Promise.reject(
+                        <div>
+                          <WarningFilled /> Mật khẩu không được chứa khoảng
+                          trắng
+                        </div>
+                      );
+                    }
+                    return Promise.resolve();
                   },
-
-                  {
-                    required: true,
-                    message: (
-                      <div>
-                        <WarningFilled /> Hãy nhập mật khẩu của bạn!
-                      </div>
-                    ),
-                  },
-                ]}
-              >
-                <Input.Password className="login__form__container__namepass__group-form__input" />
-              </Form.Item>
-            </MyFormItemGroup>
+                },
+                {
+                  required: true,
+                  message: (
+                    <div>
+                      <WarningFilled /> Hãy nhập mật khẩu của bạn!
+                    </div>
+                  ),
+                },
+              ]}
+            >
+              <Input.Password className="login__form__container__namepass__group-form__input" />
+            </Form.Item>
             <Button
               className="login__form__container__namepass__submit"
               htmlType="submit"
               loading={loading}
-              style={{
-                color: "#fff",
-              }}
             >
               Đăng nhập
             </Button>
           </Form>
           <h5 className="login__form__container__linkToSignUp">
-            Chưa có tài khoản {""}
+            Chưa có tài khoản?{" "}
             <Link
               to="/register"
               className="login__form__container__linkToSignUp__signUp"
@@ -215,7 +211,7 @@ function Login() {
               Đăng ký ngay
             </Link>
           </h5>
-        </Col>
+        </div>
       </Col>
     </Row>
   );

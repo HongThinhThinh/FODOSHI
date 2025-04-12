@@ -8,13 +8,25 @@ import {
 import { Button, Result, Spin, Typography, Space, message } from "antd";
 import api from "../../../../config/api";
 import "./index.scss";
-import { useSelector } from "react-redux"; // Add this import
-import { RootState } from "../../../../redux/store"; // Add this import
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../redux/store";
 
 const { Title, Paragraph, Text } = Typography;
 
+// Type for order details
+interface OrderDetails {
+  id: string;
+  createdAt: string;
+  status: OrderStatus;
+  totalPrice: number;
+  [key: string]: any;
+}
+
+// Order status type
+type OrderStatus = "PAID" | "PENDING_PAYMENT" | "COMPLETED" | "CANCELLED";
+
 // Mapping for status translations
-const statusTranslations = {
+const statusTranslations: Record<OrderStatus, string> = {
   PAID: "Đã Thanh Toán",
   PENDING_PAYMENT: "Chờ Thanh Toán",
   COMPLETED: "Hoàn Thành",
@@ -24,7 +36,7 @@ const statusTranslations = {
 const PaymentSuccess = () => {
   const [orderId, setOrderId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [orderDetails, setOrderDetails] = useState<any>(null);
+  const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
   const [statusUpdated, setStatusUpdated] = useState(false);
   const location = useLocation();
 
@@ -102,7 +114,7 @@ const PaymentSuccess = () => {
   };
 
   // Format the status in Vietnamese
-  const getVietnameseStatus = (status) => {
+  const getVietnameseStatus = (status: OrderStatus): string => {
     return statusTranslations[status] || status;
   };
 
@@ -125,6 +137,19 @@ const PaymentSuccess = () => {
                 được thanh toán thành công.
               </Text>
               {orderId && <Text strong>Mã đơn hàng: {orderId}</Text>}
+              <div className="track-order-link">
+                <Text>
+                  Bạn có thể theo dõi đơn hàng tại:{" "}
+                  <a
+                    href="http://fodoshi.shop/track-order"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: "#1890ff", fontWeight: "bold" }}
+                  >
+                    FODOSHI Theo Dõi Đơn Hàng
+                  </a>
+                </Text>
+              </div>
             </div>
           }
           extra={
