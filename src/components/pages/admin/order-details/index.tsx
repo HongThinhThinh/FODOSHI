@@ -10,6 +10,18 @@ import {
   PhoneOutlined,
   MailOutlined,
   HomeOutlined,
+  CreditCardOutlined,
+  DollarOutlined,
+  ClockCircleOutlined,
+  TagOutlined,
+  FileTextOutlined,
+  CarOutlined,
+  EnvironmentOutlined,
+  ShopOutlined,
+  InfoCircleOutlined,
+  CheckCircleOutlined,
+  HistoryOutlined,
+  CloseCircleOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -172,7 +184,7 @@ interface ProductRecord {
 }
 
 export default function OrderDetails() {
-  const [status, setStatus] = useState<string>("Change Status");
+  const [status, setStatus] = useState<string>("Thay Đổi Trạng Thái");
   const [loading, setLoading] = useState<boolean>(true);
   const [orderData, setOrderData] = useState<ApiOrder | null>(null);
   const [orderItems, setOrderItems] = useState<ProductRecord[]>([]);
@@ -200,11 +212,25 @@ export default function OrderDetails() {
   const fetchOrderDetails = async () => {
     setLoading(true);
     try {
-      const response = await api.get(`/orders/${orderId}`);
+      const response = await api.get(`/order/${orderId}`);
       if (response.data && response.data.data) {
         const orderData = response.data.data;
         setOrderData(orderData);
-        setCustomerInfo(orderData.user);
+
+        // Handle the customer info appropriately
+        // If guest order, construct customer info from address
+        if (!orderData.user && orderData.address) {
+          setCustomerInfo({
+            name: orderData.address.guestName || "Khách vãng lai",
+            email: orderData.address.guestEmail || "Không cung cấp email",
+            phoneNumber:
+              orderData.address.guestPhone || "Không cung cấp số điện thoại",
+            isGuest: true,
+          });
+        } else {
+          setCustomerInfo(orderData.user);
+        }
+
         setCustomerAddress(orderData.address);
 
         // Transform order items to match OrderItem interface
@@ -228,8 +254,8 @@ export default function OrderDetails() {
         setOrderItems(items);
       }
     } catch (error) {
-      message.error("Failed to fetch order details");
-      console.error("Error fetching order details:", error);
+      message.error("Không thể lấy thông tin chi tiết đơn hàng");
+      console.error("Lỗi khi lấy thông tin chi tiết đơn hàng:", error);
     } finally {
       setLoading(false);
     }
@@ -238,7 +264,7 @@ export default function OrderDetails() {
   const handleStatusChange = (newStatus: string) => {
     setStatus(newStatus);
     // Implement status update API call here
-    message.success(`Order status updated to ${newStatus}`);
+    message.success(`Trạng thái đơn hàng đã được cập nhật thành ${newStatus}`);
   };
 
   const handleCustomerDetailClick = () => {
@@ -254,24 +280,54 @@ export default function OrderDetails() {
   };
 
   const getStatusTag = (status: string) => {
-    const statusMap: Record<string, { color: string; text: string }> = {
-      PENDING: { color: "gold", text: "Pending" },
-      PROCESSING: { color: "blue", text: "Processing" },
-      SHIPPED: { color: "cyan", text: "Shipped" },
-      DELIVERED: { color: "green", text: "Delivered" },
-      CANCELED: { color: "red", text: "Canceled" },
+    const statusMap: Record<
+      string,
+      { color: string; text: string; icon: React.ReactNode }
+    > = {
+      PENDING: {
+        color: "gold",
+        text: "Đang chờ",
+        icon: <ClockCircleOutlined />,
+      },
+      PENDING_PAYMENT: {
+        color: "orange",
+        text: "Chờ thanh toán",
+        icon: <DollarOutlined />,
+      },
+      PROCESSING: {
+        color: "blue",
+        text: "Đang xử lý",
+        icon: <LoadingOutlined />,
+      },
+      SHIPPED: { color: "cyan", text: "Đã gửi hàng", icon: <CarOutlined /> },
+      PAID: {
+        color: "green",
+        text: "Đã thanh toán",
+        icon: <CheckCircleOutlined />,
+      },
+      DELIVERED: {
+        color: "green",
+        text: "Đã giao hàng",
+        icon: <ShopOutlined />,
+      },
+      CANCELED: { color: "red", text: "Đã hủy", icon: <CloseCircleOutlined /> },
     };
 
     const statusInfo = statusMap[status] || {
       color: "default",
       text: toTitle(status),
+      icon: <InfoCircleOutlined />,
     };
-    return <Tag color={statusInfo.color}>{statusInfo.text}</Tag>;
+    return (
+      <Tag color={statusInfo.color}>
+        {statusInfo.icon} {statusInfo.text}
+      </Tag>
+    );
   };
 
   const columns: ColumnType<ProductRecord>[] = [
     {
-      title: "Product",
+      title: "Sản phẩm",
       dataIndex: "name",
       key: "name",
       render: (text: string, record: ProductRecord) => (
@@ -284,18 +340,18 @@ export default function OrderDetails() {
       ),
     },
     {
-      title: "Price",
+      title: "Giá",
       dataIndex: "price",
       key: "price",
       render: (price: number) => formatMoney(price),
     },
     {
-      title: "Category",
+      title: "Danh mục",
       dataIndex: "category",
       key: "category",
     },
     {
-      title: "Brand",
+      title: "Thương hiệu",
       dataIndex: "brand",
       key: "brand",
     },
@@ -303,11 +359,27 @@ export default function OrderDetails() {
 
   const statusMenu = (
     <Menu onClick={({ key }) => handleStatusChange(key as string)}>
-      <Menu.Item key="PENDING">Pending</Menu.Item>
-      <Menu.Item key="PROCESSING">Processing</Menu.Item>
-      <Menu.Item key="SHIPPED">Shipped</Menu.Item>
-      <Menu.Item key="DELIVERED">Delivered</Menu.Item>
-      <Menu.Item key="CANCELED">Canceled</Menu.Item>
+      <Menu.Item key="PENDING">
+        <ClockCircleOutlined /> Đang chờ
+      </Menu.Item>
+      <Menu.Item key="PENDING_PAYMENT">
+        <DollarOutlined /> Chờ thanh toán
+      </Menu.Item>
+      <Menu.Item key="PROCESSING">
+        <LoadingOutlined /> Đang xử lý
+      </Menu.Item>
+      <Menu.Item key="PAID">
+        <CheckCircleOutlined /> Đã thanh toán
+      </Menu.Item>
+      <Menu.Item key="SHIPPED">
+        <CarOutlined /> Đã gửi hàng
+      </Menu.Item>
+      <Menu.Item key="DELIVERED">
+        <ShopOutlined /> Đã giao hàng
+      </Menu.Item>
+      <Menu.Item key="CANCELED">
+        <CloseCircleOutlined /> Đã hủy
+      </Menu.Item>
     </Menu>
   );
 
@@ -315,26 +387,28 @@ export default function OrderDetails() {
     return (
       <div className="loading-container">
         <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
-        <p>Loading order details...</p>
+        <p>Đang tải thông tin đơn hàng...</p>
       </div>
     );
   }
 
   if (!orderData) {
-    return <Empty description="Order not found" />;
+    return <Empty description="Không tìm thấy đơn hàng" />;
   }
 
   return (
     <div className="order-details-container">
       <div className="order-header">
-        <h1>Order #{orderData.id}</h1>
+        <h1>
+          <FileTextOutlined /> Đơn hàng #{orderData.id}
+        </h1>
         <div className="order-actions">
           <Button icon={<PrinterOutlined />} onClick={() => window.print()}>
-            Print
+            In
           </Button>
           <Dropdown overlay={statusMenu} trigger={["click"]}>
             <Button>
-              {status} <DownOutlined />
+              <TagOutlined /> {status} <DownOutlined />
             </Button>
           </Dropdown>
         </div>
@@ -345,9 +419,9 @@ export default function OrderDetails() {
           <Card
             title={
               <div className="card-title">
-                <UserOutlined /> Customer Information
+                <UserOutlined /> Thông tin khách hàng
                 <Button type="link" onClick={handleCustomerDetailClick}>
-                  View Details
+                  <InfoCircleOutlined /> Xem chi tiết
                 </Button>
               </div>
             }
@@ -379,16 +453,18 @@ export default function OrderDetails() {
           <Card
             title={
               <div className="card-title">
-                <HomeOutlined /> Shipping Address
+                <HomeOutlined /> Địa chỉ giao hàng
                 <Button type="link" onClick={handleAddressDetailClick}>
-                  View Details
+                  <InfoCircleOutlined /> Xem chi tiết
                 </Button>
               </div>
             }
           >
             {customerAddress && (
               <div className="address-info">
-                <p>{customerAddress.address}</p>
+                <p>
+                  <EnvironmentOutlined /> {customerAddress.address}
+                </p>
                 <p>
                   {customerAddress.commune}, {customerAddress.district}
                 </p>
@@ -396,7 +472,10 @@ export default function OrderDetails() {
                 {customerAddress.guestName && (
                   <div className="guest-info">
                     <p>
-                      <b>Recipient:</b> {customerAddress.guestName}
+                      <b>
+                        <UserOutlined /> Người nhận:
+                      </b>{" "}
+                      {customerAddress.guestName}
                     </p>
                     <p>
                       <PhoneOutlined /> {customerAddress.guestPhone}
@@ -412,29 +491,38 @@ export default function OrderDetails() {
           <Card
             title={
               <div className="card-title">
-                <ShoppingOutlined /> Order Summary
+                <ShoppingOutlined /> Tổng quan đơn hàng
                 <Button type="link" onClick={handleOrderInfoDetailClick}>
-                  View Details
+                  <InfoCircleOutlined /> Xem chi tiết
                 </Button>
               </div>
             }
           >
             <div className="order-summary">
               <p>
-                <b>Status:</b> {getStatusTag(orderData.status)}
+                <b>
+                  <TagOutlined /> Trạng thái:
+                </b>{" "}
+                {getStatusTag(orderData.status)}
               </p>
               <p>
-                <b>Date:</b> <CalendarOutlined />{" "}
+                <b>
+                  <CalendarOutlined /> Ngày đặt:
+                </b>{" "}
                 {new Date(orderData.createdAt).toLocaleString()}
               </p>
               <p>
-                <b>Payment Method:</b> {orderData.paymentMethod || "N/A"}
+                <b>
+                  <CreditCardOutlined /> Phương thức thanh toán:
+                </b>{" "}
+                Credit Card
               </p>
-              <p>
-                <b>Shipping Method:</b> {orderData.shippingMethod || "N/A"}
-              </p>
+
               <p className="total-price">
-                <b>Total:</b> {formatMoney(orderData.totalPrice)}
+                <b>
+                  <DollarOutlined /> Tổng cộng:
+                </b>{" "}
+                {formatMoney(orderData.totalPrice)}
               </p>
             </div>
           </Card>
@@ -442,38 +530,78 @@ export default function OrderDetails() {
       </Row>
 
       <div className="order-items-section">
-        <Card title="Order Items">
+        <Card
+          title={
+            <>
+              <ShoppingOutlined /> Các mặt hàng trong đơn
+            </>
+          }
+        >
           <GenericTable<ProductRecord> columns={columns} data={orderItems} />
         </Card>
       </div>
 
       {/* Customer Modal */}
       <Modal
-        title="Customer Details"
+        title={
+          <>
+            <UserOutlined /> Chi tiết khách hàng
+          </>
+        }
         visible={customerModalVisible}
         onCancel={() => setCustomerModalVisible(false)}
         footer={[
           <Button key="close" onClick={() => setCustomerModalVisible(false)}>
-            Close
+            Đóng
           </Button>,
         ]}
       >
         {customerInfo && (
           <Descriptions bordered column={1}>
-            <Descriptions.Item label="Name">
+            <Descriptions.Item
+              label={
+                <>
+                  <UserOutlined /> Tên
+                </>
+              }
+            >
               {customerInfo.name}
             </Descriptions.Item>
-            <Descriptions.Item label="Email">
+            <Descriptions.Item
+              label={
+                <>
+                  <MailOutlined /> Email
+                </>
+              }
+            >
               {customerInfo.email}
             </Descriptions.Item>
-            <Descriptions.Item label="Phone">
+            <Descriptions.Item
+              label={
+                <>
+                  <PhoneOutlined /> Số điện thoại
+                </>
+              }
+            >
               {customerInfo.phoneNumber}
             </Descriptions.Item>
-            <Descriptions.Item label="User Type">
-              {customerInfo.isGuest ? "Guest" : "Registered"}
+            <Descriptions.Item
+              label={
+                <>
+                  <TagOutlined /> Loại tài khoản
+                </>
+              }
+            >
+              {customerInfo.isGuest ? "Khách vãng lai" : "Đã đăng ký"}
             </Descriptions.Item>
             {customerInfo.createdAt && (
-              <Descriptions.Item label="Registered On">
+              <Descriptions.Item
+                label={
+                  <>
+                    <CalendarOutlined /> Ngày đăng ký
+                  </>
+                }
+              >
                 {new Date(customerInfo.createdAt).toLocaleDateString()}
               </Descriptions.Item>
             )}
@@ -483,38 +611,84 @@ export default function OrderDetails() {
 
       {/* Address Modal */}
       <Modal
-        title="Shipping Address Details"
+        title={
+          <>
+            <HomeOutlined /> Chi tiết địa chỉ giao hàng
+          </>
+        }
         visible={addressModalVisible}
         onCancel={() => setAddressModalVisible(false)}
         footer={[
           <Button key="close" onClick={() => setAddressModalVisible(false)}>
-            Close
+            Đóng
           </Button>,
         ]}
       >
         {customerAddress && (
           <Descriptions bordered column={1}>
-            <Descriptions.Item label="Address">
+            <Descriptions.Item
+              label={
+                <>
+                  <EnvironmentOutlined /> Địa chỉ
+                </>
+              }
+            >
               {customerAddress.address}
             </Descriptions.Item>
-            <Descriptions.Item label="Commune">
+            <Descriptions.Item
+              label={
+                <>
+                  <EnvironmentOutlined /> Phường/Xã
+                </>
+              }
+            >
               {customerAddress.commune}
             </Descriptions.Item>
-            <Descriptions.Item label="District">
+            <Descriptions.Item
+              label={
+                <>
+                  <EnvironmentOutlined /> Quận/Huyện
+                </>
+              }
+            >
               {customerAddress.district}
             </Descriptions.Item>
-            <Descriptions.Item label="Province">
+            <Descriptions.Item
+              label={
+                <>
+                  <EnvironmentOutlined /> Tỉnh/Thành phố
+                </>
+              }
+            >
               {customerAddress.province}
             </Descriptions.Item>
             {customerAddress.guestName && (
               <>
-                <Descriptions.Item label="Recipient Name">
+                <Descriptions.Item
+                  label={
+                    <>
+                      <UserOutlined /> Tên người nhận
+                    </>
+                  }
+                >
                   {customerAddress.guestName}
                 </Descriptions.Item>
-                <Descriptions.Item label="Recipient Phone">
+                <Descriptions.Item
+                  label={
+                    <>
+                      <PhoneOutlined /> Số điện thoại người nhận
+                    </>
+                  }
+                >
                   {customerAddress.guestPhone}
                 </Descriptions.Item>
-                <Descriptions.Item label="Recipient Email">
+                <Descriptions.Item
+                  label={
+                    <>
+                      <MailOutlined /> Email người nhận
+                    </>
+                  }
+                >
                   {customerAddress.guestEmail}
                 </Descriptions.Item>
               </>
@@ -525,42 +699,71 @@ export default function OrderDetails() {
 
       {/* Order Info Modal */}
       <Modal
-        title="Order Information"
+        title={
+          <>
+            <FileTextOutlined /> Thông tin đơn hàng
+          </>
+        }
         visible={orderInfoModalVisible}
         onCancel={() => setOrderInfoModalVisible(false)}
         footer={[
           <Button key="close" onClick={() => setOrderInfoModalVisible(false)}>
-            Close
+            Đóng
           </Button>,
         ]}
       >
         {orderData && (
           <Descriptions bordered column={1}>
-            <Descriptions.Item label="Order ID">
+            <Descriptions.Item
+              label={
+                <>
+                  <FileTextOutlined /> Mã đơn hàng
+                </>
+              }
+            >
               {orderData.id}
             </Descriptions.Item>
-            <Descriptions.Item label="Date Created">
+            <Descriptions.Item
+              label={
+                <>
+                  <CalendarOutlined /> Ngày tạo
+                </>
+              }
+            >
               {new Date(orderData.createdAt).toLocaleString()}
             </Descriptions.Item>
-            <Descriptions.Item label="Status">
+            <Descriptions.Item
+              label={
+                <>
+                  <TagOutlined /> Trạng thái
+                </>
+              }
+            >
               {getStatusTag(orderData.status)}
             </Descriptions.Item>
-            <Descriptions.Item label="Payment Method">
-              {orderData.paymentMethod || "N/A"}
-            </Descriptions.Item>
-            <Descriptions.Item label="Shipping Method">
-              {orderData.shippingMethod || "N/A"}
-            </Descriptions.Item>
-            <Descriptions.Item label="Total Amount">
+
+            <Descriptions.Item
+              label={
+                <>
+                  <DollarOutlined /> Tổng
+                </>
+              }
+            >
               {formatMoney(orderData.totalPrice)}
             </Descriptions.Item>
             {orderData.orderHistories &&
               orderData.orderHistories.length > 0 && (
-                <Descriptions.Item label="Order History">
+                <Descriptions.Item
+                  label={
+                    <>
+                      <HistoryOutlined /> Lịch sử đơn
+                    </>
+                  }
+                >
                   {orderData.orderHistories.map((history, index) => (
                     <div key={index} className="order-history-item">
                       <p>
-                        <b>{toTitle(history.status)}</b> -{" "}
+                        <b>{getStatusTag(history.status)}</b> -{" "}
                         {new Date(history.createdAt).toLocaleString()}
                       </p>
                       {history.note && (

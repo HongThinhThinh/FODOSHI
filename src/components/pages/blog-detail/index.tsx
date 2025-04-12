@@ -89,7 +89,7 @@ const mockBlogData = {
     <p>Thời trang bền vững không phải là một xu hướng nhất thời mà là một hướng đi lâu dài cần được chúng ta hỗ trợ và phát triển. Mỗi hành động nhỏ đều có thể tạo ra sự khác biệt lớn đối với môi trường và tương lai của ngành công nghiệp thời trang.</p>
   `,
   author: {
-    name: "Nguyễn Văn A",
+    name: "Nguyễn Hồng Thịnh",
     avatar: "https://randomuser.me/api/portraits/men/32.jpg",
     bio: "Chuyên gia thời trang bền vững với hơn 10 năm kinh nghiệm trong ngành công nghiệp thời trang. Tốt nghiệp Đại học Thời trang London và hiện là cố vấn cho nhiều thương hiệu bền vững tại Việt Nam.",
   },
@@ -127,7 +127,7 @@ const mockBlogData = {
       replies: [
         {
           id: "r1",
-          author: "Nguyễn Văn A",
+          author: "Nguyễn Hồng Thịnh",
           avatar: "https://randomuser.me/api/portraits/men/32.jpg",
           content:
             "Cảm ơn bạn đã quan tâm! Một số thương hiệu Việt Nam có thể kể đến như VIET TIEN, CANIFA, và một số brand nhỏ như MUTAN, CHULA,...",
@@ -278,7 +278,7 @@ const BlogDetail: React.FC = () => {
           <p>Thời trang bền vững không phải là một xu hướng nhất thời mà là một hướng đi lâu dài cần được chúng ta hỗ trợ và phát triển. Mỗi hành động nhỏ đều có thể tạo ra sự khác biệt lớn đối với môi trường và tương lai của ngành công nghiệp thời trang.</p>
         `,
         author: {
-          name: "Nguyễn Văn A",
+          name: "Nguyễn Hồng Thịnh",
           avatar: "https://randomuser.me/api/portraits/men/32.jpg",
           bio: "Chuyên gia thời trang bền vững với hơn 10 năm kinh nghiệm trong ngành công nghiệp thời trang. Tốt nghiệp Đại học Thời trang London và hiện là cố vấn cho nhiều thương hiệu bền vững tại Việt Nam.",
         },
@@ -431,7 +431,7 @@ const BlogDetail: React.FC = () => {
           {
             id: "1",
             title: "Thời trang bền vững: Xu hướng thời trang của tương lai",
-            author: "Nguyễn Văn A",
+            author: "Nguyễn Hồng Thịnh",
             category: "Thời trang bền vững",
             created_at: "1 ngày trước",
             image: "https://aglobal.vn/upload/images/9%285%29.jpg",
