@@ -178,8 +178,11 @@ const OrderTrackingPage: React.FC = () => {
     setPriceRange([0, 1000000]);
 
     try {
+      // const response = await api.get<ApiResponse>(
+      //   `/order/guess/${encodeURIComponent(searchTerm)}`
+      // );
       const response = await api.get<ApiResponse>(
-        `/order/guess/${encodeURIComponent(searchTerm)}`
+        `/order/phone-email?searchTerm=${encodeURIComponent(searchTerm)}`
       );
       console.log("API Response:", response.data);
 
