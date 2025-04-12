@@ -8,6 +8,9 @@ import social1 from "../../public/soical-card/Frame 2609149.png";
 import social2 from "../../public/soical-card/Frame 2609149 (1).png";
 import social3 from "../../public/soical-card/Frame 2609149 (2).png";
 import banner2 from "../../public/banner (6).jpg";
+import thanthien from "../assets/images/thanthien.jpg";
+import hienDai from "../assets/images/hienDai.jpg";
+import nhanhChong from "../assets/images/nhanhChong.jpg";
 export const imageGirl = image8;
 export const footerBackground = background;
 export const bannerHomepage = banner;
@@ -130,18 +133,15 @@ export const linkInfomation = [
 
 export const reasonCard = [
   {
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdVA2l2F6HIuR9VpdBqKnANH6QOcDp7zFqzA&s",
+    image: thanthien,
     content: "Chất liệu thân thiện với môi trường",
   },
   {
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdVA2l2F6HIuR9VpdBqKnANH6QOcDp7zFqzA&s",
+    image: nhanhChong,
     content: "Giá cả hợp lý, giao hàng nhanh chóng",
   },
   {
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdVA2l2F6HIuR9VpdBqKnANH6QOcDp7zFqzA&s",
+    image: hienDai,
     content: "Phong cách hiện đại, dễ phối đồ",
   },
 ];
