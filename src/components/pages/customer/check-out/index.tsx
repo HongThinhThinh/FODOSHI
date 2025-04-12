@@ -164,7 +164,7 @@ export default function Checkout({
     const value = event.target.value;
     setSelectedShipping(value);
     if (value === "Giao hàng tận nơi") {
-      setShippingCost(20000); // Giá cố định 20.000₫
+      setShippingCost(30000); // Giá cố định 20.000₫
     } else {
       setShippingCost(0);
     }

@@ -27,8 +27,6 @@ import PaymentMethod from "../components/pages/infomation-page/payment-method";
 import DepositPolicy from "../components/pages/infomation-page/deposit/policy";
 import ProductDetails from "../components/pages/customer/product-details";
 import AuthenticationLayout from "../layouts/auth/AuthenticationLayout";
-import RegisterPage from "../components/pages/auth/register-page/RegisterPage";
-import LoginPage from "../components/pages/auth/login-page/LoginPage";
 import ConsignmentPage from "../components/pages/consignment";
 import MalePage from "../components/pages/male-page";
 import Error404 from "../components/pages/404";
