@@ -5,7 +5,7 @@ import {
   HomeOutlined,
   ShoppingOutlined,
 } from "@ant-design/icons";
-import { Button, Result, Spin, Typography, Space, message } from "antd";
+import { Button, Result, Spin, Typography, Space } from "antd";
 import api from "../../../../config/api";
 import "./index.scss";
 import { useSelector } from "react-redux";
@@ -19,7 +19,17 @@ interface OrderDetails {
   createdAt: string;
   status: OrderStatus;
   totalPrice: number;
-  [key: string]: any;
+  // Add any other fields the order details might contain
+  products?: Array<{
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+  }>;
+  shippingAddress?: string;
+  customerName?: string;
+  customerPhone?: string;
+  customerEmail?: string;
 }
 
 // Order status type
@@ -141,7 +151,6 @@ const PaymentSuccess = () => {
                 <Text>
                   Bạn có thể theo dõi đơn hàng tại:{" "}
                   <a
-                    href="http://fodoshi.shop/track-order"
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ color: "#1890ff", fontWeight: "bold" }}
