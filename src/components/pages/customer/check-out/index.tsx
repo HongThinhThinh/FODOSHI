@@ -139,6 +139,20 @@ export default function Checkout({
       img: "https://cdn-icons-png.flaticon.com/512/126/126122.png",
     },
   ];
+  const paymentMethods = [
+    {
+      id: "credit-card",
+      label: "Thanh toán online",
+      value: "Credit Card",
+      img: "https://cdn-icons-png.flaticon.com/512/6963/6963703.png",
+    },
+    {
+      id: "cod",
+      label: "COD (thanh toán khi nhận hàng)",
+      value: "COD",
+      img: "https://cdn0.iconfinder.com/data/icons/business-and-finance-outline-icons/50/Business-icons-06-512.png",
+    },
+  ];
 
   const openModal = () => setIsModalVisible(true);
   const closeModal = () => setIsModalVisible(false);
@@ -399,7 +413,7 @@ export default function Checkout({
   // Updated handleCreateOrder function with the correct endpoint for guest users
   const handleCreateOrder = async () => {
     // Validation checks remain the same...
-    if (!selectedAddressId || !selectedShipping) {
+    if (!selectedAddressId || !selectedPayment || !selectedShipping) {
       message.error("Vui lòng chọn đầy đủ thông tin giao hàng");
       return;
     }
@@ -626,7 +640,34 @@ export default function Checkout({
               </div>
             </div>
           </div>
-          <div className="checkout__payment"></div>
+          <div className="checkout__payment">
+            <div className="checkout__payment__title">
+              Phương thức thanh toán
+            </div>
+            <div className="checkout__payment__items">
+              {paymentMethods.map((pMethod) => (
+                <div
+                  key={pMethod.id}
+                  className="checkout__payment__items__icon"
+                >
+                  <div className="checkout__payment__items__icon__upper">
+                    <label htmlFor={pMethod.id}>{pMethod.label}</label>
+                    <input
+                      id={pMethod.id}
+                      name="paymentMethod"
+                      value={pMethod.value}
+                      type="radio"
+                      checked={selectedPayment === pMethod.value}
+                      onChange={handlePaymentChange}
+                    />
+                  </div>
+                  <div className="checkout__payment__items__icon__lower">
+                    <img src={pMethod.img} alt={pMethod.label} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
           <div className="checkout__shipping">
             <div className="checkout__shipping__title">
               Phương thức vận chuyển
@@ -760,7 +801,7 @@ export default function Checkout({
             </div>
           </div>
           <div className="checkout__confirm">
-            {selectedShipping && (
+            {selectedPayment && selectedShipping && (
               <ButtonComponent
                 onClick={() => setOpenConfirmModal(true)}
                 isActive

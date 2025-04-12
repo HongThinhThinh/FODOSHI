@@ -8,11 +8,12 @@ import {
 import { Button, Result, Spin, Typography, Space } from "antd";
 import api from "../../../../config/api";
 import "./index.scss";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../../redux/store";
+import { useSelector } from "react-redux"; // Add this import
+import { RootState } from "../../../../redux/store"; // Add this import
 
 const { Title, Paragraph, Text } = Typography;
 
+<<<<<<< HEAD
 // Type for order details
 interface OrderDetails {
   id: string;
@@ -35,8 +36,10 @@ interface OrderDetails {
 // Order status type
 type OrderStatus = "PAID" | "PENDING_PAYMENT" | "COMPLETED" | "CANCELLED";
 
+=======
+>>>>>>> parent of deecc53 (feat: enhance login page styling and functionality with improved layout, responsive design, and updated form elements for better user experience)
 // Mapping for status translations
-const statusTranslations: Record<OrderStatus, string> = {
+const statusTranslations = {
   PAID: "Đã Thanh Toán",
   PENDING_PAYMENT: "Chờ Thanh Toán",
   COMPLETED: "Hoàn Thành",
@@ -46,7 +49,7 @@ const statusTranslations: Record<OrderStatus, string> = {
 const PaymentSuccess = () => {
   const [orderId, setOrderId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
+  const [orderDetails, setOrderDetails] = useState<any>(null);
   const [statusUpdated, setStatusUpdated] = useState(false);
   const location = useLocation();
 
@@ -124,7 +127,7 @@ const PaymentSuccess = () => {
   };
 
   // Format the status in Vietnamese
-  const getVietnameseStatus = (status: OrderStatus): string => {
+  const getVietnameseStatus = (status) => {
     return statusTranslations[status] || status;
   };
 
@@ -147,6 +150,7 @@ const PaymentSuccess = () => {
                 được thanh toán thành công.
               </Text>
               {orderId && <Text strong>Mã đơn hàng: {orderId}</Text>}
+<<<<<<< HEAD
               <div className="track-order-link">
                 <Text>
                   Bạn có thể theo dõi đơn hàng tại:{" "}
@@ -159,6 +163,8 @@ const PaymentSuccess = () => {
                   </a>
                 </Text>
               </div>
+=======
+>>>>>>> parent of deecc53 (feat: enhance login page styling and functionality with improved layout, responsive design, and updated form elements for better user experience)
             </div>
           }
           extra={
