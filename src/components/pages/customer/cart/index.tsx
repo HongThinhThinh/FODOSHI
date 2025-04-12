@@ -15,7 +15,7 @@ import api from "../../../../config/api";
 
 export default function Cart() {
   const [subtotal, setSubtotal] = useState(0);
-  const [shippingFee, setShippingFee] = useState(20000);
+  const [shippingFee, setShippingFee] = useState(30000);
   const [discount, setDiscount] = useState(0);
   const [grandTotal, setGrandTotal] = useState(0);
   const [openCheckout, setOpenCheckout] = useState(false);
