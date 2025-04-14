@@ -164,7 +164,7 @@ export default function Checkout({
     const value = event.target.value;
     setSelectedShipping(value);
     if (value === "Giao hàng tận nơi") {
-      setShippingCost(30000); // Giá cố định 20.000₫
+      setShippingCost(30000); // Fixed cost of 30,000₫
     } else {
       setShippingCost(0);
     }
@@ -398,7 +398,7 @@ export default function Checkout({
       // Set shipping method if first address
       if (addresses.length === 0) {
         setSelectedShipping("Giao hàng tận nơi");
-        setShippingCost(grandTotalBeforeShipping * 0.1);
+        setShippingCost(30000);
       }
     } catch (error) {
       console.error("Lỗi khi xử lý địa chỉ:", error);
