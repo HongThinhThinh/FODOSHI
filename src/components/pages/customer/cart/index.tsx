@@ -289,37 +289,40 @@ export default function Cart() {
           })
         )}
       </div>
-      <div className="cart__summary">
-        <div className="cart__summary__content">
-          <div className="cart__summary__row">
-            <span>Tiền hàng</span>
-            <span>{formatMoney(subtotal)} VND</span>
-          </div>
-          <div className="cart__summary__row">
-            <span>Phí vận chuyển</span>
-            <span>{formatMoney(shippingFee)} VND</span>
-          </div>
-          <div className="cart__summary__row">
-            <span>Voucher giảm giá</span>
-            <span>{formatMoney(discount)} VND</span>
-          </div>
-          <div className="cart__summary__row cart__summary__row--total">
-            <span>Tổng thanh toán</span>
-            <span>{formatMoney(grandTotal)} VND</span>
-          </div>
-          <div className="cart__summary__checkout">
-            <ButtonComponent
-              onClick={() => setOpenCheckout(true)}
-              color="#fff"
-              bgColor="#8B2E13"
-              className="cart__summary__checkout-btn"
-              disabled={selectedItems.length === 0}
-            >
-              Thanh toán
-            </ButtonComponent>
+      {/* Only show cart summary if there are items in the cart */}
+      {cartData && cartData.length > 0 ? (
+        <div className="cart__summary">
+          <div className="cart__summary__content">
+            <div className="cart__summary__row">
+              <span>Tiền hàng</span>
+              <span>{formatMoney(subtotal)} VND</span>
+            </div>
+            <div className="cart__summary__row">
+              <span>Phí vận chuyển</span>
+              <span>{formatMoney(shippingFee)} VND</span>
+            </div>
+            <div className="cart__summary__row">
+              <span>Voucher giảm giá</span>
+              <span>{formatMoney(discount)} VND</span>
+            </div>
+            <div className="cart__summary__row cart__summary__row--total">
+              <span>Tổng thanh toán</span>
+              <span>{formatMoney(grandTotal)} VND</span>
+            </div>
+            <div className="cart__summary__checkout">
+              <ButtonComponent
+                onClick={() => setOpenCheckout(true)}
+                color="#fff"
+                bgColor="#8B2E13"
+                className="cart__summary__checkout-btn"
+                disabled={selectedItems.length === 0}
+              >
+                Thanh toán
+              </ButtonComponent>
+            </div>
           </div>
         </div>
-      </div>
+      ) : null}
 
       <Checkout
         setOpen={setOpenCheckout}

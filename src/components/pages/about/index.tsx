@@ -14,7 +14,7 @@ function About() {
     AOS.init({
       duration: 800,
       easing: "ease-out-cubic",
-      once: false,
+      once: true, // Changed to true to prevent animations from disappearing on tab change
       mirror: false,
       offset: 50,
     });
@@ -46,6 +46,11 @@ function About() {
         "Những món đồ không phù hợp để bán lại sẽ được quyên góp hoặc tái chế có trách nhiệm",
     },
   ];
+
+  // Handler for tab selection that prevents AOS re-animation
+  const handleTabClick = (tabId) => {
+    setActiveTab(tabId);
+  };
 
   return (
     <div className="about">
@@ -123,20 +128,14 @@ function About() {
                 <div
                   key={tab.id}
                   className={`tab ${activeTab === tab.id ? "tab--active" : ""}`}
-                  onClick={() => setActiveTab(tab.id)}
-                  data-aos="fade-right"
-                  data-aos-delay={200 + index * 100}
+                  onClick={() => handleTabClick(tab.id)}
                 >
                   {tab.id}
                 </div>
               ))}
             </div>
 
-            <div
-              className="process__visual"
-              data-aos="zoom-in"
-              data-aos-delay="300"
-            >
+            <div className="process__visual">
               <img
                 src={tabs.find((tab) => tab.id === activeTab)?.image}
                 alt={activeTab}
@@ -144,11 +143,7 @@ function About() {
               />
             </div>
 
-            <div
-              className="process__description"
-              data-aos="fade-left"
-              data-aos-delay="400"
-            >
+            <div className="process__description">
               {tabs.find((tab) => tab.id === activeTab)?.description}
             </div>
           </div>
