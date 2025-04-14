@@ -199,6 +199,12 @@ const OrderTrackingPage: React.FC = () => {
         }
       }
 
+      // Sort orders by createdAt date (newest first)
+      ordersData.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
       console.log("Orders data:", ordersData);
       setOrders(ordersData);
       setFilteredOrders(ordersData);

@@ -250,8 +250,13 @@ const OrderList = () => {
       setLoading(true);
       const response = await api.get("/order");
       if (response.data && response.data.data) {
-        setOrders(response.data.data);
-        setFilteredOrders(response.data.data);
+        // Sort orders by createdAt (newest first)
+        const sortedOrders = [...response.data.data].sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        setOrders(sortedOrders);
+        setFilteredOrders(sortedOrders);
       }
     } catch (error) {
       console.error("Error fetching orders:", error);

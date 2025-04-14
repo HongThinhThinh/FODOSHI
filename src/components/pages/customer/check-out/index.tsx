@@ -176,9 +176,11 @@ export default function Checkout({
 
   useEffect(() => {
     setGrandTotalState(
-      grandTotalBeforeShipping +
-        shippingCost -
-        (shippingCost * (selectedVoucher?.discount || 0)) / 100
+      Math.round(
+        grandTotalBeforeShipping +
+          shippingCost -
+          (shippingCost * (selectedVoucher?.discount || 0)) / 100
+      )
     );
 
     // Log để debug
@@ -459,8 +461,8 @@ export default function Checkout({
             ...basePayload,
             addressId: selectedAddressId,
             ...(isDirectPayment && productId
-              ? { productId: productId } // For direct payment
-              : { cartItemIds: selectedCartItems }), // For cart payment
+              ? { productId: productId }
+              : { cartItemIds: selectedCartItems }),
           }
         : {
             // Guest user payload
@@ -468,14 +470,14 @@ export default function Checkout({
             guest: true,
             guestName: guestName,
             guestPhone: guestPhone,
-            guestEmail: selectedAddress.email, // Add guestEmail field from selected address
+            guestEmail: selectedAddress.email,
             ...(isDirectPayment && productId
-              ? { productId: productId } // For direct payment
+              ? { productId: productId }
               : {
                   productIds: reduxCartItems
                     .filter((item) => selectedCartItems.includes(item.id))
                     .map((item) => item.id),
-                }), // For cart payment
+                }),
             guestAddress: {
               address: selectedAddress.address,
               province: selectedAddress.province,

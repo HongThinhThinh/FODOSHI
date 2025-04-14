@@ -67,7 +67,7 @@ function Login() {
       }
     } catch (error) {
       console.error("Lỗi đăng nhập Google:", error);
-      toast.error("Đăng nhập Google thất bại. Vui lòng thử lại.");
+      // toast.error("Đăng nhập Google thất bại. Vui lòng thử lại."); 
     }
   };
 
