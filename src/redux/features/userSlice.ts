@@ -11,6 +11,7 @@ export const userSlice = createSlice({
       // Clear localStorage when logging out
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
+      localStorage.removeItem("isLoginGoogle");
       return initialState;
     },
   },

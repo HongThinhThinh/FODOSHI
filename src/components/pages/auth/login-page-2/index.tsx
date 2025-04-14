@@ -52,7 +52,7 @@ function Login() {
       // Store tokens in localStorage (same pattern as regular login)
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("refreshToken", response.data.refreshToken);
-
+      localStorage.setItem("isLoginGoogle", "true");
       // Show success message
       toast.success("Đăng nhập thành công");
 
@@ -67,7 +67,7 @@ function Login() {
       }
     } catch (error) {
       console.error("Lỗi đăng nhập Google:", error);
-      // toast.error("Đăng nhập Google thất bại. Vui lòng thử lại."); 
+      // toast.error("Đăng nhập Google thất bại. Vui lòng thử lại.");
     }
   };
 

@@ -513,13 +513,15 @@ const ProfilePage: React.FC = () => {
           <Input prefix={<MailOutlined />} placeholder="Email" />
         </Form.Item>
 
-        <Form.Item
-          name="phoneNumber"
-          label="Số điện thoại"
-          rules={[{ required: true, message: "Vui lòng nhập số điện thoại" }]}
-        >
-          <Input prefix={<PhoneOutlined />} placeholder="Số điện thoại" />
-        </Form.Item>
+        {localStorage.getItem("isLoginGoogle") !== "true" && (
+          <Form.Item
+            name="phoneNumber"
+            label="Số điện thoại"
+            rules={[{ required: true, message: "Vui lòng nhập số điện thoại" }]}
+          >
+            <Input prefix={<PhoneOutlined />} placeholder="Số điện thoại" />
+          </Form.Item>
+        )}
 
         <div className="flex justify-end gap-2 mt-4">
           <Button onClick={() => setEditModalVisible(false)}>Hủy</Button>
