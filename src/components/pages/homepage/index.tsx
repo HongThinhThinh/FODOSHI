@@ -51,7 +51,7 @@ function HomePage() {
           className="homepage-banner__img "
           src={bannerHomepage2}
           alt=""
-        />  
+        />
         {/* {isBigScreen && (
           <div
             className="homepage-banner__content"
@@ -105,7 +105,7 @@ function HomePage() {
       {/* -------------Reason------------- */}
       <section className="homepage-reason__container">
         <h1 className="homepage-reason__title" data-aos="fade-up">
-          Tại sao nên chọn FODOSHI
+          Tại sao nên chọn FODOSHII
         </h1>
         <div className="homepage-reason__wrapper">
           {reasonCard.map((item, index) => (

@@ -8,7 +8,6 @@ import { login } from "../../../../redux/features/userSlice";
 import InputComponent from "../../../atoms/input";
 import { useMediaQuery } from "react-responsive";
 import { toast } from "react-toastify";
-import { alertFail } from "../../../../hooks/useNotification";
 
 export default function LoginPage() {
   const [form] = Form.useForm();
